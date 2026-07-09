@@ -36,11 +36,44 @@
   header.app-header{
     background:linear-gradient(135deg,var(--primary),var(--primary-dark));
     color:#fff;
-    padding:20px 16px 26px;
+    padding:20px 16px 16px;
     text-align:center;
   }
-  header.app-header h1{margin:0 0 6px;font-size:1.4rem;}
-  header.app-header p{margin:0;font-size:.9rem;opacity:.9;}
+  header.app-header h1{margin:0 0 6px;font-size:1.3rem;}
+  header.app-header p{margin:0 0 16px;font-size:.85rem;opacity:.9;}
+
+  .tabs{
+    display:flex;
+    background:rgba(255,255,255,.15);
+    border-radius:12px;
+    padding:4px;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .tab{
+    flex:1;
+    background:transparent;
+    border:none;
+    color:#fff;
+    padding:10px 8px;
+    border-radius:9px;
+    font-size:.9rem;
+    font-family:inherit;
+    font-weight:600;
+    cursor:pointer;
+    opacity:.85;
+  }
+  .tab.active{background:#fff;color:var(--primary-dark);opacity:1;}
+  .tab .count{
+    display:inline-block;
+    background:var(--primary);
+    color:#fff;
+    border-radius:10px;
+    padding:1px 7px;
+    font-size:.72rem;
+    margin-right:4px;
+  }
+  .tab.active .count{background:var(--primary-light);color:var(--primary-dark);}
 
   .card{
     background:var(--card);
@@ -56,15 +89,6 @@
     display:flex;
     align-items:center;
     gap:8px;
-  }
-  .card h2 .num{
-    background:var(--primary);
-    color:#fff;
-    width:24px;height:24px;
-    border-radius:50%;
-    display:inline-flex;
-    align-items:center;justify-content:center;
-    font-size:.8rem;flex-shrink:0;
   }
 
   .field{margin-bottom:12px;}
@@ -90,31 +114,135 @@
     border-radius:10px;
     padding:10px 12px;
     margin-bottom:12px;
-    font-size:.92rem;
+    font-size:.88rem;
   }
-  .rate-line .status{font-size:.75rem;color:var(--muted);}
+  .rate-line .status{font-size:.72rem;color:var(--muted);}
   .status.live{color:var(--success);}
   .status.fallback{color:var(--warning);}
+
+  /* ---- الصفحة الرئيسية: السعر السريع ---- */
+  .hero-card{text-align:center;}
+  .hero-card label{font-size:.9rem;color:var(--muted);display:block;margin-bottom:8px;}
+  .hero-input{
+    width:100%;
+    text-align:center;
+    font-size:2rem;
+    font-weight:700;
+    padding:14px;
+    border:2px solid var(--border);
+    border-radius:12px;
+    font-family:inherit;
+    color:var(--text);
+  }
+  .hero-input:focus{outline:none;border-color:var(--primary);}
+  .hero-result{
+    margin-top:16px;
+    font-size:2.4rem;
+    font-weight:800;
+    color:var(--primary-dark);
+  }
+  .hero-result small{font-size:1.1rem;font-weight:400;color:var(--muted);}
+  .fav-btn{
+    margin-top:18px;
+    width:100%;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:13px;
+    font-size:1rem;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .fav-btn:disabled{background:#c9d3d1;cursor:not-allowed;}
+  .fav-btn:not(:disabled):hover{background:var(--primary-dark);}
+
+  .save-form h2{font-size:1rem;}
+  .photo-preview{
+    width:100%;max-height:220px;object-fit:contain;
+    border-radius:10px;margin-top:8px;border:1px solid var(--border);
+  }
+  .btn-row{display:flex;gap:10px;margin-top:14px;}
+  .btn-primary,.btn-secondary,.btn-danger{
+    border:none;border-radius:10px;padding:11px;font-size:.92rem;
+    font-family:inherit;font-weight:700;cursor:pointer;flex:1;
+  }
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover{background:var(--primary-dark);}
+  .btn-secondary{background:#eef2f1;color:var(--text);}
+  .btn-secondary:hover{background:#e2e8e7;}
+  .btn-danger{background:#fef2f2;color:var(--danger);width:100%;margin-top:14px;}
+  .btn-danger:hover{background:#fde2e2;}
+
+  /* ---- المفضلة ---- */
+  .fav-note{font-size:.8rem;color:var(--muted);text-align:center;margin:14px 0 4px;}
+  .empty-state{
+    text-align:center;color:var(--muted);font-size:.9rem;
+    padding:40px 20px;
+  }
+  .fav-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    margin-top:12px;
+    overflow:hidden;
+  }
+  .fav-summary{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 14px;cursor:pointer;
+  }
+  .fav-thumb{
+    width:46px;height:46px;border-radius:10px;
+    background:var(--primary-light);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;flex-shrink:0;overflow:hidden;
+  }
+  .fav-thumb img{width:100%;height:100%;object-fit:cover;}
+  .fav-info{flex:1;min-width:0;}
+  .fav-name{font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .fav-sub{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .fav-price{font-weight:700;color:var(--primary-dark);font-size:.92rem;white-space:nowrap;}
+  .fav-chevron{color:var(--muted);transition:transform .15s;flex-shrink:0;}
+  .fav-card.open .fav-chevron{transform:rotate(180deg);}
+  .fav-detail{border-top:1px solid var(--border);padding:14px;}
+
+  details.section{
+    margin-top:12px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:0;
+    overflow:hidden;
+  }
+  details.section summary{
+    cursor:pointer;padding:12px 14px;font-weight:600;font-size:.92rem;
+    list-style:none;display:flex;align-items:center;justify-content:space-between;
+    background:#f8fafa;
+  }
+  details.section summary::-webkit-details-marker{display:none;}
+  details.section .section-body{padding:14px;}
+  details.section[open] summary{border-bottom:1px solid var(--border);}
+
+  details.advanced{margin-top:12px;}
+  details.advanced summary{
+    cursor:pointer;color:var(--primary);font-size:.82rem;font-weight:600;
+    padding:4px 0;list-style:none;
+  }
+  details.advanced summary::-webkit-details-marker{display:none;}
+  details.advanced .row2{margin-top:10px;}
 
   .live-box{
     background:#f8fafa;
     border:1px dashed var(--border);
     border-radius:10px;
     padding:10px 12px;
-    font-size:.85rem;
+    font-size:.82rem;
     color:var(--muted);
     margin-top:10px;
   }
   .live-box b{color:var(--text);}
 
-  details.advanced{margin-top:12px;}
-  details.advanced summary{
-    cursor:pointer;color:var(--primary);font-size:.85rem;font-weight:600;
-    padding:4px 0;
-  }
-  details.advanced .row2{margin-top:10px;}
-
-  .ship-options{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+  .ship-options{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
   .ship-opt{
     border:1.5px solid var(--border);
     border-radius:12px;
@@ -127,56 +255,55 @@
     background:var(--success);color:#fff;
     font-size:.72rem;padding:3px 8px;border-radius:20px;
   }
-  .ship-opt .name{font-weight:700;font-size:.95rem;margin-bottom:4px;}
-  .ship-opt .desc{font-size:.78rem;color:var(--muted);margin-bottom:6px;}
-  .ship-opt .cost{font-size:1.1rem;font-weight:700;color:var(--primary-dark);}
-  .ship-opt .cost small{font-size:.75rem;font-weight:400;color:var(--muted);}
+  .ship-opt .name{font-weight:700;font-size:.92rem;margin-bottom:4px;}
+  .ship-opt .desc{font-size:.76rem;color:var(--muted);margin-bottom:6px;}
+  .ship-opt .cost{font-size:1.05rem;font-weight:700;color:var(--primary-dark);}
+  .ship-opt .cost small{font-size:.72rem;font-weight:400;color:var(--muted);}
 
   .disclaimer{
     background:var(--warning-light);
     color:var(--warning);
     border-radius:10px;
     padding:10px 12px;
-    font-size:.8rem;
+    font-size:.78rem;
     margin-top:10px;
   }
 
   .result-card{
     background:linear-gradient(135deg,var(--primary-dark),var(--primary));
     color:#fff;
-    border-radius:var(--radius);
-    padding:18px;
+    border-radius:12px;
+    padding:16px;
     margin-top:14px;
   }
-  .result-card h2{color:#fff;}
   .invoice-row{
     display:flex;justify-content:space-between;
-    padding:7px 0;
+    padding:6px 0;
     border-bottom:1px solid rgba(255,255,255,.18);
-    font-size:.92rem;
+    font-size:.88rem;
   }
   .invoice-row.total{
-    font-size:1.15rem;font-weight:700;border-bottom:none;
-    padding-top:12px;
+    font-size:1.1rem;font-weight:700;border-bottom:none;
+    padding-top:10px;
   }
   .margin-table{width:100%;border-collapse:collapse;margin-top:12px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;}
-  .margin-table th,.margin-table td{padding:8px 10px;text-align:center;font-size:.85rem;}
+  .margin-table th,.margin-table td{padding:7px 8px;text-align:center;font-size:.8rem;}
   .margin-table th{background:rgba(255,255,255,.12);font-weight:600;}
   .margin-table input{
-    width:56px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
-    color:#fff;border-radius:6px;padding:4px;text-align:center;font-size:.85rem;
+    width:50px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+    color:#fff;border-radius:6px;padding:4px;text-align:center;font-size:.8rem;
   }
 
   .referral-card{
     background:#fff7ed;
     border:1.5px solid #fdba74;
-    border-radius:var(--radius);
-    padding:16px;
+    border-radius:12px;
+    padding:14px;
     margin-top:14px;
     text-align:center;
   }
-  .referral-card h2{justify-content:center;color:#9a3412;}
-  .referral-card p{font-size:.88rem;color:#7c2d12;margin:0 0 12px;}
+  .referral-card h3{margin:0 0 6px;color:#9a3412;font-size:.95rem;}
+  .referral-card p{font-size:.82rem;color:#7c2d12;margin:0 0 10px;}
   .referral-card .field{text-align:right;}
   .referral-card button{
     width:100%;
@@ -184,14 +311,14 @@
     color:#fff;
     border:none;
     border-radius:10px;
-    padding:12px;
-    font-size:1rem;
+    padding:11px;
+    font-size:.92rem;
     font-weight:700;
+    font-family:inherit;
     cursor:pointer;
-    margin-top:6px;
   }
   .referral-card button:hover{background:#c2410c;}
-  .referral-note{font-size:.72rem;color:#9a3412;margin-top:8px;opacity:.85;}
+  .referral-note{font-size:.7rem;color:#9a3412;margin-top:8px;opacity:.85;}
 
   .ad-banner{
     max-width:640px;
@@ -211,181 +338,84 @@
     color:var(--muted);
     padding:16px 14px 0;
   }
+
+  .toast{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+    background:var(--text);color:#fff;padding:10px 18px;border-radius:30px;
+    font-size:.85rem;opacity:0;pointer-events:none;transition:all .25s;z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
 <header class="app-header">
   <h1>حاسبة أسعار الشراء من الصين</h1>
-  <p>احسب التكلفة الكاملة لأي منتج قبل ما تشتريه — المنتج + الشحن + الجمارك</p>
+  <p>اعرف السعر بالجنيه في ثانية — والباقي اختياري</p>
+  <div class="tabs">
+    <button class="tab active" id="tabHome" data-view="home">🧮 السعر السريع</button>
+    <button class="tab" id="tabFav" data-view="favorites">⭐ المفضلة <span class="count" id="favCount">0</span></button>
+  </div>
 </header>
 
 <div class="container">
 
-  <!-- 1. سعر الصرف -->
-  <div class="card">
-    <h2><span class="num">1</span> سعر الصرف</h2>
-    <div class="rate-line">
-      <span>1 يوان صيني = <b id="rateDisplay">—</b> جنيه مصري</span>
-      <span class="status" id="rateStatus">جارِ التحديث...</span>
+  <!-- ============== الصفحة الرئيسية ============== -->
+  <section id="view-home">
+    <div class="card">
+      <div class="rate-line">
+        <span>1 يوان صيني = <b id="rateDisplay">—</b> جنيه مصري</span>
+        <span class="status" id="rateStatus">جارِ التحديث...</span>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label for="safetyMargin">هامش أمان إضافي على سعر الصرف (%)</label>
+        <input type="number" id="safetyMargin" value="3" min="0" step="0.5">
+      </div>
     </div>
-    <div class="field">
-      <label for="safetyMargin">هامش أمان إضافي على سعر الصرف (%)</label>
-      <input type="number" id="safetyMargin" value="3" min="0" step="0.5">
-    </div>
-  </div>
 
-  <!-- 2. بيانات المنتج -->
-  <div class="card">
-    <h2><span class="num">2</span> بيانات المنتج</h2>
-    <div class="field">
-      <label for="productName">اسم / وصف المنتج</label>
-      <input type="text" id="productName" placeholder="مثال: طقم أكواب زجاج">
+    <div class="card hero-card">
+      <label for="quickPriceCny">سعر المنتج (يوان)</label>
+      <input type="number" id="quickPriceCny" class="hero-input" min="0" step="0.01" placeholder="0" inputmode="decimal">
+      <div class="hero-result"><span id="quickResultEgp">0</span> <small>جنيه</small></div>
+      <button id="quickFavBtn" class="fav-btn" disabled>⭐ حفظ في المفضلة</button>
     </div>
-    <div class="row2">
+
+    <div class="card save-form" id="saveForm" hidden>
+      <h2>حفظ بيانات المنتج (اختياري)</h2>
       <div class="field">
-        <label for="priceCny">السعر باليوان (للقطعة)</label>
-        <input type="number" id="priceCny" min="0" step="0.01" placeholder="0">
-      </div>
-      <div class="field">
-        <label for="qty">الكمية (عدد القطع)</label>
-        <input type="number" id="qty" min="1" step="1" value="1">
-      </div>
-    </div>
-    <div class="row3">
-      <div class="field">
-        <label for="lengthCm">الطول (سم)</label>
-        <input type="number" id="lengthCm" min="0" step="0.1" placeholder="0">
+        <label for="saveName">اسم المنتج</label>
+        <input type="text" id="saveName" placeholder="مثال: طقم أكواب زجاج">
       </div>
       <div class="field">
-        <label for="widthCm">العرض (سم)</label>
-        <input type="number" id="widthCm" min="0" step="0.1" placeholder="0">
+        <label for="saveSupplier">اسم المورد</label>
+        <input type="text" id="saveSupplier" placeholder="اسم المصنع / المحل">
       </div>
       <div class="field">
-        <label for="heightCm">الارتفاع (سم)</label>
-        <input type="number" id="heightCm" min="0" step="0.1" placeholder="0">
+        <label for="savePhoto">صورة المنتج</label>
+        <input type="file" id="savePhoto" accept="image/*" capture="environment">
+        <img id="savePhotoPreview" class="photo-preview" hidden>
+      </div>
+      <div class="btn-row">
+        <button id="saveConfirmBtn" class="btn-primary" type="button">حفظ في المفضلة</button>
+        <button id="saveCancelBtn" class="btn-secondary" type="button">إلغاء</button>
       </div>
     </div>
-    <div class="field">
-      <label for="weightKg">الوزن الفعلي للقطعة (كجم)</label>
-      <input type="number" id="weightKg" min="0" step="0.01" placeholder="0">
-    </div>
-    <div class="live-box" id="weightBox">
-      الوزن الحجمي للقطعة: <b>0</b> كجم — الوزن الفعلي: <b>0</b> كجم
-      <br>الوزن المُعتمد في الشحن (الأكبر): <b>0</b> كجم للقطعة
-      <br>الإجمالي: حجم <b>0</b> م³ (CBM) — وزن شحن <b>0</b> كجم
-    </div>
-  </div>
+  </section>
 
-  <!-- 3. الشحن -->
-  <div class="card">
-    <h2><span class="num">3</span> تكلفة الشحن</h2>
-    <div class="ship-options" id="shipOptions">
-      <div class="ship-opt" id="opt-air">
-        <div class="name">✈️ شحن جوي</div>
-        <div class="desc">الأسرع، مناسب للكميات الصغيرة والخفيفة</div>
-        <div class="cost">— <small>جنيه</small></div>
-      </div>
-      <div class="ship-opt" id="opt-lcl">
-        <div class="name">🚢 شحن بحري جزئي (LCL)</div>
-        <div class="desc">لميناء بورسعيد، حد أدنى تقريبي 1 م³</div>
-        <div class="cost">— <small>جنيه</small></div>
-      </div>
-      <div class="ship-opt" id="opt-container">
-        <div class="name">📦 حاوية كاملة</div>
-        <div class="desc">للكميات الكبيرة</div>
-        <div class="cost">— <small>جنيه</small></div>
-      </div>
-    </div>
+  <!-- ============== المفضلة ============== -->
+  <section id="view-favorites" hidden>
+    <div class="fav-note" id="favRateNote"></div>
+    <div class="empty-state" id="favEmpty">لسه مفيش منتجات محفوظة.<br>احسب سعر منتج من "السعر السريع" واضغط ⭐ لحفظه هنا.</div>
+    <div id="favList"></div>
+  </section>
 
-    <details class="advanced">
-      <summary>تعديل أسعار الشحن الافتراضية (بالدولار)</summary>
-      <div class="row2">
-        <div class="field">
-          <label for="airRate">شحن جوي ($/كجم)</label>
-          <input type="number" id="airRate" value="6" min="0" step="0.1">
-        </div>
-        <div class="field">
-          <label for="lclRate">شحن بحري ($/م³)</label>
-          <input type="number" id="lclRate" value="105" min="0" step="1">
-        </div>
-      </div>
-      <div class="row2">
-        <div class="field">
-          <label for="container20Rate">حاوية 20 قدم ($)</label>
-          <input type="number" id="container20Rate" value="1850" min="0" step="10">
-        </div>
-        <div class="field">
-          <label for="container40Rate">حاوية 40 قدم ($)</label>
-          <input type="number" id="container40Rate" value="2400" min="0" step="10">
-        </div>
-      </div>
-    </details>
-  </div>
-
-  <!-- 4. الجمارك -->
-  <div class="card">
-    <h2><span class="num">4</span> الجمارك التقديرية</h2>
-    <div class="field">
-      <label for="category">فئة المنتج</label>
-      <select id="category">
-        <option value="kitchen" data-rate="30">أدوات مطبخ ومائدة</option>
-        <option value="plastic" data-rate="25">بلاستيك ومنزلية</option>
-        <option value="textile" data-rate="40">تكستايل ومفروشات</option>
-        <option value="electronics" data-rate="35">أجهزة كهربائية صغيرة</option>
-        <option value="other" data-rate="30">أخرى</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="customsRate">نسبة الجمارك التقديرية (%)</label>
-      <input type="number" id="customsRate" value="30" min="0" step="1">
-    </div>
-    <div class="disclaimer">
-      هذه نسب تقديرية للاسترشاد فقط، وليست نسب جمركية رسمية. يُرجى التأكد من الجمارك الفعلية عبر مصلحة الجمارك المصرية.
-    </div>
-  </div>
-
-  <!-- 5. النتيجة -->
-  <div class="result-card">
-    <h2><span class="num">5</span> النتيجة النهائية</h2>
-    <div class="invoice-row"><span>تكلفة المنتج</span><span id="rProduct">0 جنيه</span></div>
-    <div class="invoice-row"><span>تكلفة الشحن</span><span id="rShipping">0 جنيه</span></div>
-    <div class="invoice-row"><span>الجمارك التقديرية</span><span id="rCustoms">0 جنيه</span></div>
-    <div class="invoice-row total"><span>الإجمالي الكلي</span><span id="rTotal">0 جنيه</span></div>
-
-    <table class="margin-table">
-      <thead>
-        <tr><th>هامش الربح</th><th>سعر البيع الإجمالي</th><th>سعر القطعة</th></tr>
-      </thead>
-      <tbody id="marginBody"></tbody>
-    </table>
-  </div>
-
-  <!-- 6. الإحالة -->
-  <div class="referral-card">
-    <h2>🚚 محتاج تشحن الكمية دي فعلياً؟</h2>
-    <p>اطلب عرض سعر مجاني من شركاء الشحن والتخليص الجمركي</p>
-    <div class="field">
-      <label for="refName">الاسم</label>
-      <input type="text" id="refName" placeholder="اسمك">
-    </div>
-    <div class="field">
-      <label for="refPhone">رقم الموبايل</label>
-      <input type="tel" id="refPhone" placeholder="01xxxxxxxxx">
-    </div>
-    <div class="field">
-      <label>الوزن / الحجم التقديري</label>
-      <input type="text" id="refWeight" readonly>
-    </div>
-    <button id="refSubmit" type="button">اطلب عرض سعر</button>
-    <div class="referral-note">* الخدمة قيد التجهيز — سيتم التواصل معك قريباً من أحد شركاء الشحن.</div>
-  </div>
-
-  <!-- 7. بانر إعلاني -->
+  <!-- بانر إعلاني -->
   <div class="ad-banner" id="adBanner">مساحة إعلانية</div>
 
   <footer class="app-footer">أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل</footer>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 (function(){
@@ -401,12 +431,55 @@
     lclMinCbm: 1,            // الحد الأدنى للشحن البحري الجزئي
     container20CapacityCbm: 26, // السعة العملية التقريبية لحاوية 20 قدم
     container40CapacityCbm: 56, // السعة العملية التقريبية لحاوية 40 قدم
-    profitMargins: [20, 30, 40] // هوامش الربح الافتراضية %
+    profitMargins: [20, 30, 40], // هوامش الربح الافتراضية %
+    photoMaxDim: 600,        // أقصى بعد للصورة بعد الضغط (بكسل)
+    photoQuality: 0.65,      // جودة ضغط الصورة (JPEG)
+    shippingDefaults: { airRate: 6, lclRate: 105, container20Rate: 1850, container40Rate: 2400 },
+    customsCategories: [
+      { value: "kitchen", label: "أدوات مطبخ ومائدة", rate: 30 },
+      { value: "plastic", label: "بلاستيك ومنزلية", rate: 25 },
+      { value: "textile", label: "تكستايل ومفروشات", rate: 40 },
+      { value: "electronics", label: "أجهزة كهربائية صغيرة", rate: 35 },
+      { value: "other", label: "أخرى", rate: 30 }
+    ]
   };
 
-  let liveRates = { usdToEgp: null, cnyToEgp: null, isLive: false };
-
   const $ = id => document.getElementById(id);
+  const fmt = n => Math.round(n).toLocaleString("ar-EG");
+
+  let liveRates = { usdToEgp: null, cnyToEgp: null, isLive: false };
+  let favorites = loadFavorites();
+  let shippingSettings = loadShippingSettings();
+  let capturedPhotoDataUrl = null;
+  const openIds = new Set();
+
+  /* ---------------- تخزين محلي ---------------- */
+  function loadFavorites(){
+    try{ return JSON.parse(localStorage.getItem("cpc_favorites")) || []; }
+    catch(e){ return []; }
+  }
+  function saveFavorites(){
+    localStorage.setItem("cpc_favorites", JSON.stringify(favorites));
+  }
+  function loadShippingSettings(){
+    try{
+      return Object.assign({}, DEFAULTS.shippingDefaults, JSON.parse(localStorage.getItem("cpc_shipping_settings")) || {});
+    }catch(e){ return Object.assign({}, DEFAULTS.shippingDefaults); }
+  }
+  function saveShippingSettings(){
+    localStorage.setItem("cpc_shipping_settings", JSON.stringify(shippingSettings));
+  }
+
+  /* ---------------- تبديل التابات ---------------- */
+  function switchView(view){
+    $("view-home").hidden = view !== "home";
+    $("view-favorites").hidden = view !== "favorites";
+    $("tabHome").classList.toggle("active", view === "home");
+    $("tabFav").classList.toggle("active", view === "favorites");
+    if(view === "favorites") renderFavorites();
+  }
+  $("tabHome").addEventListener("click", () => switchView("home"));
+  $("tabFav").addEventListener("click", () => switchView("favorites"));
 
   /* ---------------- سعر الصرف ---------------- */
   async function fetchExchangeRate(){
@@ -426,7 +499,8 @@
       liveRates.isLive = false;
     }
     updateRateDisplay();
-    calculateAll();
+    updateQuickResult();
+    if(!$("view-favorites").hidden) renderFavorites();
   }
 
   function updateRateDisplay(){
@@ -438,9 +512,10 @@
       statusEl.textContent = "محدّث الآن";
       statusEl.className = "status live";
     }else{
-      statusEl.textContent = "قيمة احتياطية (تعذر الاتصال)";
+      statusEl.textContent = "قيمة احتياطية";
       statusEl.className = "status fallback";
     }
+    $("favRateNote").textContent = `بناءً على سعر الصرف الحالي: 1 يوان = ${adjustedCny.toFixed(2)} جنيه`;
   }
 
   function getAdjustedRates(){
@@ -451,183 +526,533 @@
     };
   }
 
-  /* ---------------- الحساب الرئيسي ---------------- */
-  function calculateAll(){
-    if(liveRates.cnyToEgp === null) return; // لسه مفيش سعر صرف
-
+  /* ---------------- الصفحة الرئيسية: السعر السريع ---------------- */
+  function updateQuickResult(){
+    if(liveRates.cnyToEgp === null) return;
+    const priceCny = parseFloat($("quickPriceCny").value) || 0;
     const rates = getAdjustedRates();
+    const egp = priceCny * rates.cnyToEgp;
+    $("quickResultEgp").textContent = fmt(egp);
+    $("quickFavBtn").disabled = priceCny <= 0;
+  }
+  $("quickPriceCny").addEventListener("input", updateQuickResult);
+  $("safetyMargin").addEventListener("input", () => { updateRateDisplay(); updateQuickResult(); });
 
-    const priceCny = parseFloat($("priceCny").value) || 0;
-    const qty = parseInt($("qty").value) || 0;
-    const L = parseFloat($("lengthCm").value) || 0;
-    const W = parseFloat($("widthCm").value) || 0;
-    const H = parseFloat($("heightCm").value) || 0;
-    const actualWeight = parseFloat($("weightKg").value) || 0;
+  $("quickFavBtn").addEventListener("click", () => {
+    $("saveForm").hidden = false;
+    $("saveForm").scrollIntoView({behavior:"smooth", block:"nearest"});
+  });
+  $("saveCancelBtn").addEventListener("click", () => resetSaveForm());
 
-    // الوزن الحجمي والفعلي
-    const volumetricWeightPerPiece = (L * W * H) / DEFAULTS.volumetricDivisor;
-    const billableWeightPerPiece = Math.max(volumetricWeightPerPiece, actualWeight);
-    const totalBillableWeight = billableWeightPerPiece * qty;
-    const totalActualWeight = actualWeight * qty;
-    const totalCbm = (L * W * H) / 1000000 * qty;
+  function resetSaveForm(){
+    $("saveForm").hidden = true;
+    $("saveName").value = "";
+    $("saveSupplier").value = "";
+    $("savePhoto").value = "";
+    $("savePhotoPreview").hidden = true;
+    capturedPhotoDataUrl = null;
+  }
 
-    $("weightBox").innerHTML =
-      `الوزن الحجمي للقطعة: <b>${volumetricWeightPerPiece.toFixed(2)}</b> كجم — الوزن الفعلي: <b>${actualWeight.toFixed(2)}</b> كجم` +
-      `<br>الوزن المُعتمد في الشحن (الأكبر): <b>${billableWeightPerPiece.toFixed(2)}</b> كجم للقطعة` +
-      `<br>الإجمالي: حجم <b>${totalCbm.toFixed(3)}</b> م³ (CBM) — وزن شحن <b>${totalBillableWeight.toFixed(2)}</b> كجم`;
-
-    // تكلفة المنتج
-    const productCostEgp = priceCny * qty * rates.cnyToEgp;
-
-    // خيارات الشحن (بالدولار ثم تحويل للجنيه)
-    const airRate = parseFloat($("airRate").value) || 0;
-    const lclRate = parseFloat($("lclRate").value) || 0;
-    const container20Rate = parseFloat($("container20Rate").value) || 0;
-    const container40Rate = parseFloat($("container40Rate").value) || 0;
-
-    const airCostUsd = totalBillableWeight * airRate;
-    const billableCbm = Math.max(totalCbm, DEFAULTS.lclMinCbm);
-    const lclCostUsd = billableCbm * lclRate;
-
-    let containerCostUsd, containerLabel;
-    if(totalCbm <= DEFAULTS.container20CapacityCbm){
-      containerCostUsd = container20Rate;
-      containerLabel = "حاوية 20 قدم";
-    }else if(totalCbm <= DEFAULTS.container40CapacityCbm){
-      containerCostUsd = container40Rate;
-      containerLabel = "حاوية 40 قدم";
-    }else{
-      const containersNeeded = Math.ceil(totalCbm / DEFAULTS.container40CapacityCbm);
-      containerCostUsd = containersNeeded * container40Rate;
-      containerLabel = `${containersNeeded} × حاوية 40 قدم`;
+  $("savePhoto").addEventListener("change", async function(){
+    const file = this.files && this.files[0];
+    if(!file) return;
+    try{
+      capturedPhotoDataUrl = await resizeImage(file, DEFAULTS.photoMaxDim, DEFAULTS.photoQuality);
+      $("savePhotoPreview").src = capturedPhotoDataUrl;
+      $("savePhotoPreview").hidden = false;
+    }catch(e){
+      capturedPhotoDataUrl = null;
     }
+  });
 
-    const airCostEgp = airCostUsd * rates.usdToEgp;
-    const lclCostEgp = lclCostUsd * rates.usdToEgp;
-    const containerCostEgp = containerCostUsd * rates.usdToEgp;
+  function resizeImage(file, maxDim, quality){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if(w > h){ if(w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; } }
+          else{ if(h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; } }
+          const canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
 
-    const hasInput = qty > 0 && (actualWeight > 0 || (L > 0 && W > 0 && H > 0));
+  $("saveConfirmBtn").addEventListener("click", () => {
+    const priceCny = parseFloat($("quickPriceCny").value) || 0;
+    if(priceCny <= 0){ showToast("محتاج تحط سعر أولاً"); return; }
+    const defaultCategory = DEFAULTS.customsCategories[0];
+    const item = {
+      id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      createdAt: Date.now(),
+      name: $("saveName").value.trim(),
+      supplier: $("saveSupplier").value.trim(),
+      photo: capturedPhotoDataUrl,
+      priceCny: priceCny,
+      qty: 1,
+      length: 0, width: 0, height: 0, weight: 0,
+      shippingEnabled: false,
+      customsEnabled: false,
+      customsCategory: defaultCategory.value,
+      customsRate: defaultCategory.rate,
+      margins: DEFAULTS.profitMargins.slice()
+    };
+    favorites.unshift(item);
+    saveFavorites();
+    resetSaveForm();
+    $("quickPriceCny").value = "";
+    updateQuickResult();
+    showToast("تم الحفظ في المفضلة ✅");
+    updateFavCount();
+  });
 
-    renderShipOption("opt-air", airCostEgp, hasInput);
-    renderShipOption("opt-lcl", lclCostEgp, hasInput, `لميناء بورسعيد، حد أدنى تقريبي 1 م³`);
-    renderShipOption("opt-container", containerCostEgp, hasInput, containerLabel);
+  function updateFavCount(){
+    $("favCount").textContent = favorites.length;
+  }
 
-    let recommendedId = null;
-    if(hasInput){
-      const costs = { "opt-air": airCostEgp, "opt-lcl": lclCostEgp, "opt-container": containerCostEgp };
-      recommendedId = Object.keys(costs).reduce((a,b) => costs[a] <= costs[b] ? a : b);
-      ["opt-air","opt-lcl","opt-container"].forEach(id => {
-        $(id).classList.toggle("recommended", id === recommendedId);
-      });
-      let badge = document.querySelector(".ship-opt .badge");
-      document.querySelectorAll(".ship-opt .badge").forEach(b => b.remove());
-      if(recommendedId){
-        const b = document.createElement("span");
-        b.className = "badge";
-        b.textContent = "الأنسب";
-        $(recommendedId).prepend(b);
+  function showToast(msg){
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => t.classList.remove("show"), 2200);
+  }
+
+  /* ---------------- حساب عنصر مفضلة ---------------- */
+  function computeItemResult(item){
+    const rates = getAdjustedRates();
+    const qty = item.qty || 1;
+    const baseEgp = item.priceCny * qty * rates.cnyToEgp;
+
+    let shippingEgp = 0, shippingDetail = null;
+    const L = item.length, W = item.width, H = item.height, wt = item.weight;
+    if(item.shippingEnabled && L > 0 && W > 0 && H > 0 && wt > 0){
+      const volumetricWeightPerPiece = (L * W * H) / DEFAULTS.volumetricDivisor;
+      const billableWeightPerPiece = Math.max(volumetricWeightPerPiece, wt);
+      const totalBillableWeight = billableWeightPerPiece * qty;
+      const totalCbm = (L * W * H) / 1000000 * qty;
+
+      const airCostUsd = totalBillableWeight * shippingSettings.airRate;
+      const billableCbm = Math.max(totalCbm, DEFAULTS.lclMinCbm);
+      const lclCostUsd = billableCbm * shippingSettings.lclRate;
+
+      let containerCostUsd, containerLabel;
+      if(totalCbm <= DEFAULTS.container20CapacityCbm){
+        containerCostUsd = shippingSettings.container20Rate;
+        containerLabel = "حاوية 20 قدم";
+      }else if(totalCbm <= DEFAULTS.container40CapacityCbm){
+        containerCostUsd = shippingSettings.container40Rate;
+        containerLabel = "حاوية 40 قدم";
+      }else{
+        const containersNeeded = Math.ceil(totalCbm / DEFAULTS.container40CapacityCbm);
+        containerCostUsd = containersNeeded * shippingSettings.container40Rate;
+        containerLabel = `${containersNeeded} × حاوية 40 قدم`;
       }
-    }else{
-      ["opt-air","opt-lcl","opt-container"].forEach(id => $(id).classList.remove("recommended"));
-      document.querySelectorAll(".ship-opt .badge").forEach(b => b.remove());
+
+      const air = airCostUsd * rates.usdToEgp;
+      const lcl = lclCostUsd * rates.usdToEgp;
+      const container = containerCostUsd * rates.usdToEgp;
+      const costs = { air, lcl, container };
+      const recommendedKey = Object.keys(costs).reduce((a,b) => costs[a] <= costs[b] ? a : b);
+
+      shippingDetail = {
+        air, lcl, container, containerLabel, recommendedKey,
+        volumetricWeightPerPiece, billableWeightPerPiece, totalBillableWeight, totalCbm
+      };
+      shippingEgp = costs[recommendedKey];
     }
 
-    const chosenShippingCostEgp = recommendedId === "opt-air" ? airCostEgp
-      : recommendedId === "opt-lcl" ? lclCostEgp
-      : recommendedId === "opt-container" ? containerCostEgp : 0;
-
-    // الجمارك
-    const customsRatePercent = parseFloat($("customsRate").value) || 0;
-    const customsBase = productCostEgp + chosenShippingCostEgp;
-    const customsEgp = customsBase * (customsRatePercent / 100);
-
-    const totalEgp = productCostEgp + chosenShippingCostEgp + customsEgp;
-
-    $("rProduct").textContent = fmt(productCostEgp) + " جنيه";
-    $("rShipping").textContent = fmt(chosenShippingCostEgp) + " جنيه";
-    $("rCustoms").textContent = fmt(customsEgp) + " جنيه";
-    $("rTotal").textContent = fmt(totalEgp) + " جنيه";
-
-    renderMarginTable(totalEgp, qty);
-
-    // تحديث بيانات الإحالة
-    $("refWeight").value = hasInput
-      ? `${totalBillableWeight.toFixed(1)} كجم / ${totalCbm.toFixed(2)} م³`
-      : "";
-  }
-
-  function renderShipOption(id, costEgp, hasInput, descOverride){
-    const el = $(id);
-    const costEl = el.querySelector(".cost");
-    costEl.innerHTML = hasInput
-      ? `${fmt(costEgp)} <small>جنيه</small>`
-      : `— <small>جنيه</small>`;
-    if(descOverride){
-      el.querySelector(".desc").textContent = descOverride;
+    let customsEgp = 0;
+    if(item.customsEnabled){
+      customsEgp = (baseEgp + shippingEgp) * ((item.customsRate || 0) / 100);
     }
+
+    const totalEgp = baseEgp + shippingEgp + customsEgp;
+    return { baseEgp, shippingEgp, customsEgp, totalEgp, shippingDetail, qty };
   }
 
-  function renderMarginTable(totalEgp, qty){
-    const marginInputs = document.querySelectorAll(".margin-input");
-    const margins = marginInputs.length
-      ? Array.from(marginInputs).map(i => parseFloat(i.value) || 0)
-      : DEFAULTS.profitMargins;
+  /* ---------------- رسم قائمة المفضلة ---------------- */
+  function renderFavorites(){
+    updateFavCount();
+    updateRateDisplay();
+    $("favEmpty").hidden = favorites.length > 0;
+    const list = $("favList");
+    list.innerHTML = favorites.map(buildFavCardHtml).join("");
+    favorites.forEach(item => {
+      if(openIds.has(item.id)){
+        const card = list.querySelector(`.fav-card[data-id="${item.id}"]`);
+        if(card){
+          card.classList.add("open");
+          card.querySelector(".fav-detail").hidden = false;
+        }
+      }
+      refreshResults(item.id);
+    });
+  }
 
-    const body = $("marginBody");
-    body.innerHTML = "";
-    margins.forEach((m, idx) => {
-      const sellTotal = totalEgp * (1 + m/100);
-      const perPiece = qty > 0 ? sellTotal / qty : 0;
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><input type="number" class="margin-input" data-idx="${idx}" value="${m}" min="0" step="1"> %</td>
-        <td>${fmt(sellTotal)}</td>
-        <td>${fmt(perPiece)}</td>
+  function buildFavCardHtml(item){
+    const r = computeItemResult(item);
+    const thumb = item.photo
+      ? `<img src="${item.photo}" alt="">`
+      : `📦`;
+    return `
+      <div class="fav-card" data-id="${item.id}">
+        <div class="fav-summary" data-toggle="${item.id}">
+          <div class="fav-thumb">${thumb}</div>
+          <div class="fav-info">
+            <div class="fav-name">${escapeHtml(item.name) || "منتج بدون اسم"}</div>
+            <div class="fav-sub">${escapeHtml(item.supplier) || ""}</div>
+          </div>
+          <div class="fav-price">${fmt(r.totalEgp)} جنيه</div>
+          <div class="fav-chevron">˅</div>
+        </div>
+        <div class="fav-detail" hidden>
+          ${buildFavDetailHtml(item)}
+        </div>
+      </div>
+    `;
+  }
+
+  function buildFavDetailHtml(item){
+    const cats = DEFAULTS.customsCategories.map(c =>
+      `<option value="${c.value}" data-rate="${c.rate}" ${item.customsCategory===c.value?"selected":""}>${c.label}</option>`
+    ).join("");
+    return `
+      <div class="field">
+        <label>اسم المنتج</label>
+        <input type="text" data-field="name" data-id="${item.id}" value="${escapeAttr(item.name)}" placeholder="اسم المنتج">
+      </div>
+      <div class="field">
+        <label>اسم المورد</label>
+        <input type="text" data-field="supplier" data-id="${item.id}" value="${escapeAttr(item.supplier)}" placeholder="اسم المورد">
+      </div>
+      <div class="field">
+        <label>صورة المنتج</label>
+        <input type="file" accept="image/*" capture="environment" data-photo="${item.id}">
+        ${item.photo ? `<img src="${item.photo}" class="photo-preview">` : ``}
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>السعر باليوان (للقطعة)</label>
+          <input type="number" min="0" step="0.01" data-field="priceCny" data-id="${item.id}" value="${item.priceCny || ""}">
+        </div>
+        <div class="field">
+          <label>الكمية</label>
+          <input type="number" min="1" step="1" data-field="qty" data-id="${item.id}" value="${item.qty || 1}">
+        </div>
+      </div>
+
+      <details class="section" data-id="${item.id}" ${item.shippingEnabled ? "open" : ""}>
+        <summary>🚚 حساب تكلفة الشحن (اختياري)</summary>
+        <div class="section-body">
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:6px;">
+              <input type="checkbox" data-field="shippingEnabled" data-id="${item.id}" ${item.shippingEnabled?"checked":""} style="width:auto;">
+              فعّل حساب الشحن لهذا المنتج
+            </label>
+          </div>
+          <div class="row3">
+            <div class="field">
+              <label>الطول (سم)</label>
+              <input type="number" min="0" step="0.1" data-field="length" data-id="${item.id}" value="${item.length || ""}">
+            </div>
+            <div class="field">
+              <label>العرض (سم)</label>
+              <input type="number" min="0" step="0.1" data-field="width" data-id="${item.id}" value="${item.width || ""}">
+            </div>
+            <div class="field">
+              <label>الارتفاع (سم)</label>
+              <input type="number" min="0" step="0.1" data-field="height" data-id="${item.id}" value="${item.height || ""}">
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>الوزن الفعلي للقطعة (كجم)</label>
+            <input type="number" min="0" step="0.01" data-field="weight" data-id="${item.id}" value="${item.weight || ""}">
+          </div>
+          <div class="live-box" data-weightbox="${item.id}"></div>
+          <div class="ship-options" data-shipoptions="${item.id}"></div>
+          <details class="advanced">
+            <summary>⚙️ تعديل أسعار الشحن الافتراضية (بالدولار، تُطبّق على كل المنتجات)</summary>
+            <div class="row2">
+              <div class="field">
+                <label>شحن جوي ($/كجم)</label>
+                <input type="number" min="0" step="0.1" data-global-ship="airRate" value="${shippingSettings.airRate}">
+              </div>
+              <div class="field">
+                <label>شحن بحري ($/م³)</label>
+                <input type="number" min="0" step="1" data-global-ship="lclRate" value="${shippingSettings.lclRate}">
+              </div>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label>حاوية 20 قدم ($)</label>
+                <input type="number" min="0" step="10" data-global-ship="container20Rate" value="${shippingSettings.container20Rate}">
+              </div>
+              <div class="field">
+                <label>حاوية 40 قدم ($)</label>
+                <input type="number" min="0" step="10" data-global-ship="container40Rate" value="${shippingSettings.container40Rate}">
+              </div>
+            </div>
+          </details>
+          <div data-referral="${item.id}"></div>
+        </div>
+      </details>
+
+      <details class="section" data-id="${item.id}" ${item.customsEnabled ? "open" : ""}>
+        <summary>🛃 حساب الجمارك التقديرية (اختياري)</summary>
+        <div class="section-body">
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:6px;">
+              <input type="checkbox" data-field="customsEnabled" data-id="${item.id}" ${item.customsEnabled?"checked":""} style="width:auto;">
+              فعّل حساب الجمارك لهذا المنتج
+            </label>
+          </div>
+          <div class="field">
+            <label>فئة المنتج</label>
+            <select data-field="customsCategory" data-id="${item.id}">${cats}</select>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>نسبة الجمارك التقديرية (%)</label>
+            <input type="number" min="0" step="1" data-field="customsRate" data-id="${item.id}" value="${item.customsRate}">
+          </div>
+          <div class="disclaimer">
+            هذه نسب تقديرية للاسترشاد فقط، وليست نسب جمركية رسمية. يُرجى التأكد من الجمارك الفعلية عبر مصلحة الجمارك المصرية.
+          </div>
+        </div>
+      </details>
+
+      <div class="result-card" data-result="${item.id}"></div>
+
+      <button class="btn-danger" data-delete="${item.id}" type="button">🗑 حذف المنتج</button>
+    `;
+  }
+
+  function refreshResults(id){
+    const item = favorites.find(f => f.id === id);
+    if(!item) return;
+    const r = computeItemResult(item);
+
+    // صندوق الوزن + خيارات الشحن
+    const weightBox = document.querySelector(`[data-weightbox="${id}"]`);
+    const shipOptionsBox = document.querySelector(`[data-shipoptions="${id}"]`);
+    const referralBox = document.querySelector(`[data-referral="${id}"]`);
+    if(weightBox && shipOptionsBox){
+      if(r.shippingDetail){
+        const d = r.shippingDetail;
+        weightBox.innerHTML =
+          `الوزن الحجمي للقطعة: <b>${d.volumetricWeightPerPiece.toFixed(2)}</b> كجم — الوزن المُعتمد: <b>${d.billableWeightPerPiece.toFixed(2)}</b> كجم` +
+          `<br>الإجمالي: حجم <b>${d.totalCbm.toFixed(3)}</b> م³ (CBM) — وزن شحن <b>${d.totalBillableWeight.toFixed(2)}</b> كجم`;
+        shipOptionsBox.innerHTML = `
+          <div class="ship-opt ${d.recommendedKey==='air'?'recommended':''}">
+            ${d.recommendedKey==='air' ? '<span class="badge">الأنسب</span>' : ''}
+            <div class="name">✈️ شحن جوي</div>
+            <div class="desc">الأسرع، مناسب للكميات الصغيرة</div>
+            <div class="cost">${fmt(d.air)} <small>جنيه</small></div>
+          </div>
+          <div class="ship-opt ${d.recommendedKey==='lcl'?'recommended':''}">
+            ${d.recommendedKey==='lcl' ? '<span class="badge">الأنسب</span>' : ''}
+            <div class="name">🚢 شحن بحري جزئي (LCL)</div>
+            <div class="desc">لميناء بورسعيد، حد أدنى تقريبي 1 م³</div>
+            <div class="cost">${fmt(d.lcl)} <small>جنيه</small></div>
+          </div>
+          <div class="ship-opt ${d.recommendedKey==='container'?'recommended':''}">
+            ${d.recommendedKey==='container' ? '<span class="badge">الأنسب</span>' : ''}
+            <div class="name">📦 حاوية كاملة</div>
+            <div class="desc">${d.containerLabel}</div>
+            <div class="cost">${fmt(d.container)} <small>جنيه</small></div>
+          </div>
+        `;
+        if(referralBox){
+          referralBox.innerHTML = `
+            <div class="referral-card">
+              <h3>🚚 محتاج تشحن الكمية دي فعلياً؟</h3>
+              <p>اطلب عرض سعر مجاني من شركاء الشحن والتخليص الجمركي</p>
+              <div class="field"><label>الاسم</label><input type="text" data-ref="name" placeholder="اسمك"></div>
+              <div class="field"><label>رقم الموبايل</label><input type="tel" data-ref="phone" placeholder="01xxxxxxxxx"></div>
+              <div class="field"><label>الوزن / الحجم التقديري</label><input type="text" value="${d.totalBillableWeight.toFixed(1)} كجم / ${d.totalCbm.toFixed(2)} م³" readonly></div>
+              <button type="button" data-ref-submit="${id}">اطلب عرض سعر</button>
+              <div class="referral-note">* الخدمة قيد التجهيز — سيتم التواصل معك قريباً من أحد شركاء الشحن.</div>
+            </div>
+          `;
+        }
+      }else{
+        weightBox.innerHTML = `أدخل الأبعاد والوزن وفعّل حساب الشحن لعرض خيارات الشحن.`;
+        shipOptionsBox.innerHTML = "";
+        if(referralBox) referralBox.innerHTML = "";
+      }
+    }
+
+    // النتيجة النهائية
+    const resultBox = document.querySelector(`[data-result="${id}"]`);
+    if(resultBox){
+      const margins = item.margins && item.margins.length ? item.margins : DEFAULTS.profitMargins;
+      resultBox.innerHTML = `
+        <div class="invoice-row"><span>تكلفة المنتج</span><span>${fmt(r.baseEgp)} جنيه</span></div>
+        ${item.shippingEnabled ? `<div class="invoice-row"><span>تكلفة الشحن</span><span>${fmt(r.shippingEgp)} جنيه</span></div>` : ``}
+        ${item.customsEnabled ? `<div class="invoice-row"><span>الجمارك التقديرية</span><span>${fmt(r.customsEgp)} جنيه</span></div>` : ``}
+        <div class="invoice-row total"><span>الإجمالي الكلي</span><span>${fmt(r.totalEgp)} جنيه</span></div>
+        <table class="margin-table">
+          <thead><tr><th>هامش الربح</th><th>سعر البيع الإجمالي</th><th>سعر القطعة</th></tr></thead>
+          <tbody>
+            ${margins.map((m, idx) => {
+              const sellTotal = r.totalEgp * (1 + m/100);
+              const perPiece = r.qty > 0 ? sellTotal / r.qty : 0;
+              return `<tr>
+                <td><input type="number" min="0" step="1" data-margin-idx="${idx}" data-id="${id}" value="${m}"> %</td>
+                <td>${fmt(sellTotal)}</td>
+                <td>${fmt(perPiece)}</td>
+              </tr>`;
+            }).join("")}
+          </tbody>
+        </table>
       `;
-      body.appendChild(tr);
-    });
+    }
 
-    body.querySelectorAll(".margin-input").forEach(inp => {
-      inp.addEventListener("input", calculateAll);
-    });
+    // تحديث سعر الملخص العلوي بدون إعادة رسم الكارت بالكامل
+    const card = document.querySelector(`.fav-card[data-id="${id}"]`);
+    if(card){
+      const priceEl = card.querySelector(".fav-price");
+      if(priceEl) priceEl.textContent = `${fmt(r.totalEgp)} جنيه`;
+    }
   }
 
-  function fmt(n){
-    return Math.round(n).toLocaleString("ar-EG");
+  function escapeHtml(str){
+    return (str || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   }
+  function escapeAttr(str){ return escapeHtml(str); }
 
-  /* ---------------- ربط الأحداث ---------------- */
-  const liveInputs = [
-    "safetyMargin","productName","priceCny","qty","lengthCm","widthCm","heightCm","weightKg",
-    "airRate","lclRate","container20Rate","container40Rate","customsRate"
-  ];
-  liveInputs.forEach(id => {
-    $(id).addEventListener("input", () => {
-      if(id === "safetyMargin") updateRateDisplay();
-      calculateAll();
-    });
-  });
-
-  $("category").addEventListener("change", function(){
-    const opt = this.options[this.selectedIndex];
-    $("customsRate").value = opt.getAttribute("data-rate");
-    calculateAll();
-  });
-
-  $("refSubmit").addEventListener("click", function(){
-    const name = $("refName").value.trim();
-    const phone = $("refPhone").value.trim();
-    if(!name || !phone){
-      alert("من فضلك أدخل الاسم ورقم الموبايل");
+  /* ---------------- أحداث قائمة المفضلة (تفويض) ---------------- */
+  $("favList").addEventListener("click", function(e){
+    const toggle = e.target.closest("[data-toggle]");
+    if(toggle){
+      const id = toggle.getAttribute("data-toggle");
+      const card = toggle.closest(".fav-card");
+      const detail = card.querySelector(".fav-detail");
+      const isOpen = !detail.hidden;
+      detail.hidden = isOpen;
+      card.classList.toggle("open", !isOpen);
+      if(isOpen) openIds.delete(id); else { openIds.add(id); refreshResults(id); }
       return;
     }
-    alert("تم استلام طلبك! هنتواصل معك قريباً بعروض أسعار الشحن.");
-    $("refName").value = "";
-    $("refPhone").value = "";
+    const del = e.target.closest("[data-delete]");
+    if(del){
+      const id = del.getAttribute("data-delete");
+      if(confirm("تحذف المنتج ده من المفضلة؟")){
+        favorites = favorites.filter(f => f.id !== id);
+        openIds.delete(id);
+        saveFavorites();
+        renderFavorites();
+        showToast("تم الحذف");
+      }
+      return;
+    }
+    const refSubmit = e.target.closest("[data-ref-submit]");
+    if(refSubmit){
+      const card = refSubmit.closest(".fav-detail");
+      const name = card.querySelector('[data-ref="name"]').value.trim();
+      const phone = card.querySelector('[data-ref="phone"]').value.trim();
+      if(!name || !phone){ showToast("من فضلك أدخل الاسم ورقم الموبايل"); return; }
+      showToast("تم استلام طلبك! هنتواصل معك قريباً");
+      card.querySelector('[data-ref="name"]').value = "";
+      card.querySelector('[data-ref="phone"]').value = "";
+      return;
+    }
   });
 
-  // بداية التشغيل
-  renderMarginTable(0, 0);
+  $("favList").addEventListener("change", function(e){
+    const catSelect = e.target.closest('[data-field="customsCategory"]');
+    if(catSelect){
+      const id = catSelect.getAttribute("data-id");
+      const opt = catSelect.options[catSelect.selectedIndex];
+      const item = favorites.find(f => f.id === id);
+      if(item){
+        item.customsCategory = catSelect.value;
+        item.customsRate = parseFloat(opt.getAttribute("data-rate"));
+        saveFavorites();
+        renderFavorites();
+      }
+      return;
+    }
+    const photoInput = e.target.closest("[data-photo]");
+    if(photoInput){
+      const id = photoInput.getAttribute("data-photo");
+      const file = photoInput.files && photoInput.files[0];
+      if(!file) return;
+      resizeImage(file, DEFAULTS.photoMaxDim, DEFAULTS.photoQuality).then(dataUrl => {
+        const item = favorites.find(f => f.id === id);
+        if(item){
+          item.photo = dataUrl;
+          saveFavorites();
+          renderFavorites();
+        }
+      });
+      return;
+    }
+  });
+
+  $("favList").addEventListener("input", function(e){
+    const field = e.target.closest("[data-field]");
+    if(field){
+      const id = field.getAttribute("data-id");
+      const key = field.getAttribute("data-field");
+      const item = favorites.find(f => f.id === id);
+      if(!item) return;
+      if(field.type === "checkbox"){
+        item[key] = field.checked;
+      }else if(["priceCny","qty","length","width","height","weight","customsRate"].includes(key)){
+        item[key] = parseFloat(field.value) || 0;
+      }else{
+        item[key] = field.value;
+      }
+      saveFavorites();
+      refreshResults(id);
+      if(key === "name" || key === "supplier"){
+        const card = field.closest(".fav-card");
+        if(card){
+          const nameEl = card.querySelector(".fav-name");
+          const subEl = card.querySelector(".fav-sub");
+          if(key === "name") nameEl.textContent = field.value || "منتج بدون اسم";
+          if(key === "supplier") subEl.textContent = field.value || "";
+        }
+      }
+      return;
+    }
+
+    const marginInput = e.target.closest("[data-margin-idx]");
+    if(marginInput){
+      const id = marginInput.getAttribute("data-id");
+      const idx = parseInt(marginInput.getAttribute("data-margin-idx"));
+      const item = favorites.find(f => f.id === id);
+      if(item){
+        if(!item.margins) item.margins = DEFAULTS.profitMargins.slice();
+        item.margins[idx] = parseFloat(marginInput.value) || 0;
+        saveFavorites();
+        refreshResults(id);
+      }
+      return;
+    }
+
+    const globalShip = e.target.closest("[data-global-ship]");
+    if(globalShip){
+      const key = globalShip.getAttribute("data-global-ship");
+      shippingSettings[key] = parseFloat(globalShip.value) || 0;
+      saveShippingSettings();
+      favorites.forEach(item => { if(item.shippingEnabled) refreshResults(item.id); });
+      return;
+    }
+  });
+
+  /* ---------------- بدء التشغيل ---------------- */
+  updateFavCount();
   fetchExchangeRate();
 })();
 </script>
