@@ -774,17 +774,6 @@
         <input type="file" accept="image/*" capture="environment" data-photo="${item.id}">
         ${item.photo ? `<img src="${item.photo}" class="photo-preview">` : ``}
       </div>
-      <div class="row2">
-        <div class="field">
-          <label>السعر باليوان (للقطعة)</label>
-          <input type="number" min="0" step="0.01" data-field="priceCny" data-id="${item.id}" value="${item.priceCny || ""}">
-        </div>
-        <div class="field">
-          <label>الكمية</label>
-          <input type="number" min="1" step="1" data-field="qty" data-id="${item.id}" value="${item.qty || 1}">
-        </div>
-      </div>
-
       <details class="section" data-id="${item.id}" ${item.shippingEnabled ? "open" : ""}>
         <summary>🚚 حساب تكلفة الشحن (اختياري)</summary>
         <div class="section-body">
@@ -793,6 +782,10 @@
               <input type="checkbox" data-field="shippingEnabled" data-id="${item.id}" ${item.shippingEnabled?"checked":""} style="width:auto;">
               فعّل حساب الشحن لهذا المنتج
             </label>
+          </div>
+          <div class="field">
+            <label>الكمية (عدد القطع)</label>
+            <input type="number" min="1" step="1" data-field="qty" data-id="${item.id}" value="${item.qty || 1}">
           </div>
           <div class="row3">
             <div class="field">
