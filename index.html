@@ -3,12 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>حاسبة أسعار الشراء من الصين</title>
+<title>سعّرلي — حاسبة أسعار الشراء من الصين</title>
+<meta name="description" content="احسب سعر أي منتج بالجنيه المصري قبل ما تشتريه من الصين — المنتج، الشحن، والجمارك.">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f766e">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="سعّرلي">
 <style>
   :root{
     --primary:#0f766e;
     --primary-dark:#0b5a54;
     --primary-light:#e6f4f2;
+    --accent:#d97706;
+    --accent-light:#fef3e2;
     --bg:#f3f6f5;
     --card:#ffffff;
     --text:#1f2937;
@@ -20,8 +33,27 @@
     --warning-light:#fef6e7;
     --danger:#dc2626;
     --radius:14px;
+    --shadow-sm:0 1px 2px rgba(16,24,32,.05), 0 1px 1px rgba(16,24,32,.03);
+    --shadow-md:0 4px 14px rgba(16,24,32,.08);
+    --input-bg:#ffffff;
   }
-  *{box-sizing:border-box;}
+  @media (prefers-color-scheme: dark){
+    :root{
+      --primary-light:#123632;
+      --accent-light:#3a2a12;
+      --bg:#12181a;
+      --card:#1b2326;
+      --text:#eef2f1;
+      --muted:#9aa5a3;
+      --border:#2b3538;
+      --success-light:#12271c;
+      --warning-light:#2e2210;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+      --shadow-md:0 4px 14px rgba(0,0,0,.35);
+      --input-bg:#20292c;
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
     background:var(--bg);
@@ -30,8 +62,10 @@
     font-size:16px;
     line-height:1.6;
     padding-bottom:70px;
+    transition:background .2s;
   }
   .container{max-width:640px;margin:0 auto;padding:12px 14px 24px;}
+  :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
 
   header.app-header{
     background:linear-gradient(135deg,var(--primary),var(--primary-dark));
@@ -39,8 +73,18 @@
     padding:20px 16px 16px;
     text-align:center;
   }
-  header.app-header h1{margin:0 0 6px;font-size:1.3rem;}
-  header.app-header p{margin:0 0 16px;font-size:.85rem;opacity:.9;}
+  .brand{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    margin-bottom:16px;
+  }
+  .brand-icon{
+    width:38px;height:38px;border-radius:11px;
+    box-shadow:0 2px 8px rgba(0,0,0,.2);
+    flex-shrink:0;
+  }
+  .brand-text{text-align:right;}
+  header.app-header h1{margin:0;font-size:1.35rem;letter-spacing:0;}
+  header.app-header p{margin:1px 0 0;font-size:.8rem;opacity:.85;}
 
   .tabs{
     display:flex;
@@ -62,8 +106,10 @@
     font-weight:600;
     cursor:pointer;
     opacity:.85;
+    transition:background .15s, color .15s, opacity .15s;
   }
-  .tab.active{background:#fff;color:var(--primary-dark);opacity:1;}
+  .tab.active{background:#fff;color:var(--primary-dark);opacity:1;box-shadow:var(--shadow-sm);}
+  .tab:active{transform:scale(.98);}
   .tab .count{
     display:inline-block;
     background:var(--primary);
@@ -75,13 +121,35 @@
   }
   .tab.active .count{background:var(--primary-light);color:var(--primary-dark);}
 
+  .install-banner{
+    max-width:640px;margin:0 auto;
+    background:var(--accent-light);
+    border-bottom:1px solid #fbd9a5;
+    padding:10px 14px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .install-banner[hidden]{display:none;}
+  .install-text{display:flex;flex-direction:column;font-size:.78rem;color:#7c4a05;line-height:1.4;}
+  .install-text strong{font-size:.85rem;color:#7c4a05;}
+  .install-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+  .install-btn{
+    background:var(--accent);color:#fff;border:none;border-radius:8px;
+    padding:8px 14px;font-size:.82rem;font-weight:700;font-family:inherit;cursor:pointer;
+  }
+  .install-btn:hover{background:#b45309;}
+  .install-dismiss{
+    background:none;border:none;color:#7c4a05;font-size:.9rem;cursor:pointer;padding:6px;opacity:.7;
+  }
+  .install-dismiss:hover{opacity:1;}
+
   .card{
     background:var(--card);
     border:1px solid var(--border);
     border-radius:var(--radius);
     padding:16px;
     margin-top:14px;
-    box-shadow:0 1px 3px rgba(0,0,0,.04);
+    box-shadow:var(--shadow-sm);
+    transition:background .2s, border-color .2s;
   }
   .card h2{
     font-size:1.05rem;
@@ -100,7 +168,8 @@
     border:1px solid var(--border);
     border-radius:10px;
     font-size:1rem;
-    background:#fff;
+    background:var(--input-bg);
+    transition:border-color .15s, box-shadow .15s, background .2s;
     color:var(--text);
     font-family:inherit;
   }
@@ -133,13 +202,16 @@
     border-radius:12px;
     font-family:inherit;
     color:var(--text);
+    background:var(--input-bg);
   }
-  .hero-input:focus{outline:none;border-color:var(--primary);}
+  .hero-input{transition:border-color .15s, box-shadow .15s, background .2s;}
+  .hero-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light);}
   .hero-result{
     margin-top:16px;
     font-size:2.4rem;
     font-weight:800;
-    color:var(--primary-dark);
+    color:var(--warning);
+    transition:color .15s;
   }
   .hero-result small{font-size:1.1rem;font-weight:400;color:var(--muted);}
   .fav-btn{
@@ -154,9 +226,12 @@
     font-weight:700;
     font-family:inherit;
     cursor:pointer;
+    box-shadow:var(--shadow-sm);
+    transition:background .15s, transform .1s;
   }
-  .fav-btn:disabled{background:#c9d3d1;cursor:not-allowed;}
+  .fav-btn:disabled{background:#c9d3d1;cursor:not-allowed;box-shadow:none;}
   .fav-btn:not(:disabled):hover{background:var(--primary-dark);}
+  .fav-btn:not(:disabled):active{transform:scale(.98);}
 
   .save-form h2{font-size:1rem;}
   .photo-preview{
@@ -167,6 +242,7 @@
   .btn-primary,.btn-secondary,.btn-danger{
     border:none;border-radius:10px;padding:11px;font-size:.92rem;
     font-family:inherit;font-weight:700;cursor:pointer;flex:1;
+    transition:background .15s, transform .1s;
   }
   .btn-primary{background:var(--primary);color:#fff;}
   .btn-primary:hover{background:var(--primary-dark);}
@@ -174,6 +250,7 @@
   .btn-secondary:hover{background:#e2e8e7;}
   .btn-danger{background:#fef2f2;color:var(--danger);width:100%;margin-top:14px;}
   .btn-danger:hover{background:#fde2e2;}
+  .btn-primary:active,.btn-secondary:active,.btn-danger:active{transform:scale(.98);}
 
   /* ---- المفضلة ---- */
   .fav-note{font-size:.8rem;color:var(--muted);text-align:center;margin:14px 0 4px;}
@@ -187,11 +264,17 @@
     border-radius:var(--radius);
     margin-top:12px;
     overflow:hidden;
+    box-shadow:var(--shadow-sm);
+    transition:box-shadow .15s;
   }
+  .fav-card.open{box-shadow:var(--shadow-md);}
   .fav-summary{
     display:flex;align-items:center;gap:10px;
     padding:12px 14px;cursor:pointer;
+    transition:background .1s;
   }
+  .fav-summary:hover{background:var(--primary-light);}
+  .fav-summary:active{background:var(--primary-light);}
   .fav-thumb{
     width:46px;height:46px;border-radius:10px;
     background:var(--primary-light);
@@ -350,7 +433,7 @@
     text-align:center;
     color:var(--muted);
     font-size:.8rem;
-    background:#fafcfc;
+    background:var(--card);
   }
 
   footer.app-footer{
@@ -371,13 +454,29 @@
 <body>
 
 <header class="app-header">
-  <h1>حاسبة أسعار الشراء من الصين</h1>
-  <p>اعرف السعر بالجنيه في ثانية — والباقي اختياري</p>
+  <div class="brand">
+    <img src="icons/icon-192.png" alt="" class="brand-icon">
+    <div class="brand-text">
+      <h1>سعّرلي</h1>
+      <p>حاسبة أسعار الشراء من الصين</p>
+    </div>
+  </div>
   <div class="tabs">
     <button class="tab active" id="tabHome" data-view="home">🧮 السعر السريع</button>
     <button class="tab" id="tabFav" data-view="favorites">⭐ المفضلة <span class="count" id="favCount">0</span></button>
   </div>
 </header>
+
+<div class="install-banner" id="installBanner" hidden>
+  <div class="install-text">
+    <strong>ثبّت سعّرلي على جهازك 📲</strong>
+    <span id="installSubtext">هيبقى زي أي تطبيق، تفتحه من غير متصفح</span>
+  </div>
+  <div class="install-actions">
+    <button id="installBtn" class="install-btn" type="button" hidden>تثبيت</button>
+    <button id="installDismiss" class="install-dismiss" type="button" aria-label="إغلاق">✕</button>
+  </div>
+</div>
 
 <div class="container">
 
@@ -433,7 +532,7 @@
   <!-- بانر إعلاني -->
   <div class="ad-banner" id="adBanner">مساحة إعلانية</div>
 
-  <footer class="app-footer">أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل</footer>
+  <footer class="app-footer">سعّرلي — أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل</footer>
 </div>
 
 <div class="modal-overlay" id="referralModal" hidden>
@@ -1090,6 +1189,53 @@
     showToast("تم استلام طلبك! هنتواصل معك قريباً");
     closeReferralModal();
   });
+
+  /* ---------------- تثبيت التطبيق على الجهاز (PWA) ---------------- */
+  const INSTALL_DISMISS_KEY = "sa3arli_install_dismissed";
+  let deferredInstallPrompt = null;
+
+  function isStandalone(){
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  }
+  function isIos(){
+    return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  }
+  function showInstallBanner(){
+    if(isStandalone() || localStorage.getItem(INSTALL_DISMISS_KEY)) return;
+    if(deferredInstallPrompt){
+      $("installBtn").hidden = false;
+      $("installSubtext").textContent = "هيبقى زي أي تطبيق، تفتحه من غير متصفح";
+      $("installBanner").hidden = false;
+    }else if(isIos()){
+      $("installBtn").hidden = true;
+      $("installSubtext").textContent = "من Safari: اضغط زر المشاركة ⬆️ ثم \"إضافة إلى الشاشة الرئيسية\"";
+      $("installBanner").hidden = false;
+    }
+  }
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    showInstallBanner();
+  });
+  $("installBtn").addEventListener("click", async () => {
+    if(!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    $("installBanner").hidden = true;
+  });
+  $("installDismiss").addEventListener("click", () => {
+    localStorage.setItem(INSTALL_DISMISS_KEY, "1");
+    $("installBanner").hidden = true;
+  });
+  window.addEventListener("appinstalled", () => { $("installBanner").hidden = true; });
+  if(isIos() && !isStandalone()) setTimeout(showInstallBanner, 1500);
+
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
 
   /* ---------------- بدء التشغيل ---------------- */
   updateFavCount();
