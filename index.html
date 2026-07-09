@@ -15,6 +15,16 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="سعّرلي">
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9HY2NF4WZ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag("js", new Date());
+  gtag("config", "G-9HY2NF4WZ6");
+</script>
+
 <style>
   :root{
     --primary:#0f766e;
@@ -580,6 +590,11 @@
   const $ = id => document.getElementById(id);
   const fmt = n => Math.round(n).toLocaleString("ar-EG");
 
+  // تتبّع أحداث الاستخدام (Google Analytics) — من غير أي بيانات شخصية (اسم/رقم موبايل)
+  function trackEvent(name, params){
+    try{ if(typeof gtag === "function") gtag("event", name, params || {}); }catch(e){}
+  }
+
   let liveRates = { usdToEgp: null, cnyToEgp: null, isLive: false };
   let favorites = loadFavorites();
   let shippingSettings = loadShippingSettings();
@@ -610,6 +625,7 @@
     $("tabHome").classList.toggle("active", view === "home");
     $("tabFav").classList.toggle("active", view === "favorites");
     if(view === "favorites") renderFavorites();
+    trackEvent("screen_view", { screen_name: view });
   }
   $("tabHome").addEventListener("click", () => switchView("home"));
   $("tabFav").addEventListener("click", () => switchView("favorites"));
@@ -670,6 +686,10 @@
   }
   $("quickPriceCny").addEventListener("input", updateQuickResult);
   $("safetyMargin").addEventListener("input", () => { updateRateDisplay(); updateQuickResult(); });
+  $("quickPriceCny").addEventListener("blur", () => {
+    const priceCny = parseFloat($("quickPriceCny").value) || 0;
+    if(priceCny > 0) trackEvent("price_checked");
+  });
 
   $("quickFavBtn").addEventListener("click", () => {
     $("saveForm").hidden = false;
@@ -746,6 +766,7 @@
     updateQuickResult();
     showToast("تم الحفظ في المفضلة ✅");
     updateFavCount();
+    trackEvent("favorite_saved", { has_photo: !!item.photo });
   });
 
   function updateFavCount(){
@@ -1117,6 +1138,8 @@
       if(!item) return;
       if(field.type === "checkbox"){
         item[key] = field.checked;
+        if(field.checked && key === "shippingEnabled") trackEvent("shipping_calculated");
+        if(field.checked && key === "customsEnabled") trackEvent("customs_calculated");
       }else if(["priceCny","qty","length","width","height","weight","customsRate"].includes(key)){
         item[key] = parseFloat(field.value) || 0;
       }else{
@@ -1187,6 +1210,7 @@
     const phone = $("modalRefPhone").value.trim();
     if(!name || !phone){ showToast("من فضلك أدخل الاسم ورقم الموبايل"); return; }
     showToast("تم استلام طلبك! هنتواصل معك قريباً");
+    trackEvent("referral_requested");
     closeReferralModal();
   });
 
@@ -1228,7 +1252,10 @@
     localStorage.setItem(INSTALL_DISMISS_KEY, "1");
     $("installBanner").hidden = true;
   });
-  window.addEventListener("appinstalled", () => { $("installBanner").hidden = true; });
+  window.addEventListener("appinstalled", () => {
+    $("installBanner").hidden = true;
+    trackEvent("app_installed");
+  });
   if(isIos() && !isStandalone()) setTimeout(showInstallBanner, 1500);
 
   if("serviceWorker" in navigator){
