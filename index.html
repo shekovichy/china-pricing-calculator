@@ -202,6 +202,17 @@
   /* ---- الصفحة الرئيسية: السعر السريع ---- */
   .hero-card{text-align:center;}
   .hero-card label{font-size:.9rem;color:var(--muted);display:block;margin-bottom:8px;}
+  .mode-toggle{
+    display:flex;background:var(--bg);border:1px solid var(--border);
+    border-radius:11px;padding:3px;margin-bottom:16px;
+  }
+  .mode-btn{
+    flex:1;background:transparent;border:none;color:var(--muted);
+    padding:9px 8px;border-radius:8px;font-size:.85rem;font-family:inherit;
+    font-weight:600;cursor:pointer;transition:background .15s,color .15s;
+  }
+  .mode-btn.active{background:var(--primary);color:#fff;}
+  .hero-sub{margin-top:6px;font-size:.9rem;color:var(--muted);min-height:1.3em;}
   .hero-input{
     width:100%;
     text-align:center;
@@ -494,19 +505,29 @@
   <section id="view-home">
     <div class="card">
       <div class="rate-line">
-        <span>1 يوان صيني = <b id="rateDisplay">—</b> جنيه مصري</span>
+        <span>السعر العالمي: 1 دولار = <b id="liveUsdRate">—</b> جنيه</span>
         <span class="status" id="rateStatus">جارِ التحديث...</span>
       </div>
+      <div class="field" id="userUsdRateField">
+        <label for="userUsdRate">سعر الدولار اللي هتشتريه (أو اشتريته) بيه من مصر</label>
+        <input type="number" id="userUsdRate" min="0" step="0.01" placeholder="0">
+      </div>
       <div class="field" style="margin-bottom:0;">
-        <label for="safetyMargin">هامش أمان إضافي على سعر الصرف (%)</label>
+        <label for="safetyMargin">هامش أمان إضافي على سعر اليوان/الدولار (%)</label>
         <input type="number" id="safetyMargin" value="3" min="0" step="0.5">
       </div>
+      <div class="live-box" id="derivedRateBox"></div>
     </div>
 
     <div class="card hero-card">
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="modeEgpBtn" data-mode="egp" type="button">يوان ← جنيه</button>
+        <button class="mode-btn" id="modeUsdBtn" data-mode="usd" type="button">يوان ← دولار</button>
+      </div>
       <label for="quickPriceCny">سعر المنتج (يوان)</label>
       <input type="number" id="quickPriceCny" class="hero-input" min="0" step="0.01" placeholder="0" inputmode="decimal">
-      <div class="hero-result"><span id="quickResultEgp">0</span> <small>جنيه</small></div>
+      <div class="hero-result"><span id="quickResultEgp">0</span> <small id="quickResultUnit">جنيه</small></div>
+      <div class="hero-sub" id="quickResultSub"></div>
       <button id="quickFavBtn" class="fav-btn" disabled>⭐ حفظ في المفضلة</button>
     </div>
 
@@ -595,11 +616,16 @@
     try{ if(typeof gtag === "function") gtag("event", name, params || {}); }catch(e){}
   }
 
-  let liveRates = { usdToEgp: null, cnyToEgp: null, isLive: false };
+  let liveRates = { usdToEgp: null, usdToCny: null, isLive: false };
   let favorites = loadFavorites();
   let shippingSettings = loadShippingSettings();
   let capturedPhotoDataUrl = null;
   const openIds = new Set();
+
+  // سعر الدولار اللي التاجر فعليًا اشترى/هيشتري بيه من مصر — ده اللي بيُستخدم في كل تحويل لليوان أو الشحن للجنيه،
+  // مش سعر الصرف العالمي، لأن التاجر بيدفع في الصين بدولارات اشتراها هو بالجنيه المصري الأول.
+  let userUsdRate = loadUserUsdRate();
+  let quickMode = localStorage.getItem("cpc_quick_mode") || "egp";
 
   /* ---------------- تخزين محلي ---------------- */
   function loadFavorites(){
@@ -616,6 +642,13 @@
   }
   function saveShippingSettings(){
     localStorage.setItem("cpc_shipping_settings", JSON.stringify(shippingSettings));
+  }
+  function loadUserUsdRate(){
+    const saved = localStorage.getItem("cpc_user_usd_rate");
+    return saved ? parseFloat(saved) : null;
+  }
+  function saveUserUsdRate(v){
+    localStorage.setItem("cpc_user_usd_rate", String(v));
   }
 
   /* ---------------- تبديل التابات ---------------- */
@@ -640,12 +673,16 @@
       const usdToCny = data.rates && data.rates.CNY;
       if(!usdToEgp || !usdToCny) throw new Error("missing rates");
       liveRates.usdToEgp = usdToEgp;
-      liveRates.cnyToEgp = usdToEgp / usdToCny;
+      liveRates.usdToCny = usdToCny;
       liveRates.isLive = true;
     }catch(e){
       liveRates.usdToEgp = DEFAULTS.usdToEgpFallback;
-      liveRates.cnyToEgp = DEFAULTS.cnyToEgpFallback;
+      liveRates.usdToCny = DEFAULTS.usdToEgpFallback / DEFAULTS.cnyToEgpFallback;
       liveRates.isLive = false;
+    }
+    if(userUsdRate === null){
+      userUsdRate = liveRates.usdToEgp;
+      $("userUsdRate").value = userUsdRate.toFixed(2);
     }
     updateRateDisplay();
     updateQuickResult();
@@ -653,9 +690,7 @@
   }
 
   function updateRateDisplay(){
-    const margin = parseFloat($("safetyMargin").value) || 0;
-    const adjustedCny = liveRates.cnyToEgp * (1 + margin/100);
-    $("rateDisplay").textContent = adjustedCny.toFixed(2);
+    $("liveUsdRate").textContent = liveRates.usdToEgp.toFixed(2);
     const statusEl = $("rateStatus");
     if(liveRates.isLive){
       statusEl.textContent = "محدّث الآن";
@@ -664,28 +699,70 @@
       statusEl.textContent = "قيمة احتياطية";
       statusEl.className = "status fallback";
     }
-    $("favRateNote").textContent = `بناءً على سعر الصرف الحالي: 1 يوان = ${adjustedCny.toFixed(2)} جنيه`;
+    const rates = getAdjustedRates();
+    $("derivedRateBox").innerHTML =
+      `1 يوان صيني ≈ <b>${rates.cnyToUsd.toFixed(3)}</b> دولار ≈ <b>${rates.cnyToEgp.toFixed(2)}</b> جنيه` +
+      `<br>(الحساب بيعدّي على الدولار بالسعر اللي إنت حاطّه فوق، مش السعر العالمي، لأنك بتدفع في الصين بدولار اشتريته إنت بالجنيه)`;
+    $("favRateNote").textContent = `بناءً على سعرك الحالي: 1 يوان ≈ ${rates.cnyToEgp.toFixed(2)} جنيه`;
   }
 
   function getAdjustedRates(){
     const margin = parseFloat($("safetyMargin").value) || 0;
+    const cnyToUsd = liveRates.usdToCny ? (1 / liveRates.usdToCny) * (1 + margin/100) : 0;
+    const effectiveUsdToEgp = userUsdRate || liveRates.usdToEgp || 0;
     return {
-      cnyToEgp: liveRates.cnyToEgp * (1 + margin/100),
-      usdToEgp: liveRates.usdToEgp * (1 + margin/100)
+      cnyToUsd,
+      usdToEgp: effectiveUsdToEgp,
+      cnyToEgp: cnyToUsd * effectiveUsdToEgp
     };
   }
 
   /* ---------------- الصفحة الرئيسية: السعر السريع ---------------- */
+  function applyQuickModeUI(){
+    $("modeEgpBtn").classList.toggle("active", quickMode === "egp");
+    $("modeUsdBtn").classList.toggle("active", quickMode === "usd");
+    $("userUsdRateField").hidden = quickMode === "usd";
+  }
+  function setQuickMode(mode){
+    quickMode = mode;
+    localStorage.setItem("cpc_quick_mode", mode);
+    applyQuickModeUI();
+    updateQuickResult();
+  }
+  $("modeEgpBtn").addEventListener("click", () => setQuickMode("egp"));
+  $("modeUsdBtn").addEventListener("click", () => setQuickMode("usd"));
+
   function updateQuickResult(){
-    if(liveRates.cnyToEgp === null) return;
+    if(liveRates.usdToCny === null) return;
     const priceCny = parseFloat($("quickPriceCny").value) || 0;
     const rates = getAdjustedRates();
-    const egp = priceCny * rates.cnyToEgp;
-    $("quickResultEgp").textContent = fmt(egp);
+    const usdAmount = priceCny * rates.cnyToUsd;
+    if(quickMode === "usd"){
+      $("quickResultEgp").textContent = usdAmount.toFixed(2);
+      $("quickResultUnit").textContent = "دولار";
+      $("quickResultSub").textContent = "";
+    }else{
+      const egpAmount = usdAmount * rates.usdToEgp;
+      $("quickResultEgp").textContent = fmt(egpAmount);
+      $("quickResultUnit").textContent = "جنيه";
+      $("quickResultSub").textContent = priceCny > 0 ? `≈ ${usdAmount.toFixed(2)} $` : "";
+    }
     $("quickFavBtn").disabled = priceCny <= 0;
   }
   $("quickPriceCny").addEventListener("input", updateQuickResult);
   $("safetyMargin").addEventListener("input", () => { updateRateDisplay(); updateQuickResult(); });
+  $("userUsdRate").addEventListener("input", () => {
+    const v = parseFloat($("userUsdRate").value);
+    if(!isNaN(v) && v > 0){
+      userUsdRate = v;
+      saveUserUsdRate(v);
+    }else{
+      userUsdRate = liveRates.usdToEgp;
+    }
+    updateRateDisplay();
+    updateQuickResult();
+    if(!$("view-favorites").hidden) renderFavorites();
+  });
   $("quickPriceCny").addEventListener("blur", () => {
     const priceCny = parseFloat($("quickPriceCny").value) || 0;
     if(priceCny > 0) trackEvent("price_checked");
@@ -1265,6 +1342,8 @@
   }
 
   /* ---------------- بدء التشغيل ---------------- */
+  if(userUsdRate !== null) $("userUsdRate").value = userUsdRate.toFixed(2);
+  applyQuickModeUI();
   updateFavCount();
   fetchExchangeRate();
 })();
