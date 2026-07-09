@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>حاسبة أسعار الشراء من الصين</title>
+<style>
+  :root{
+    --primary:#0f766e;
+    --primary-dark:#0b5a54;
+    --primary-light:#e6f4f2;
+    --bg:#f3f6f5;
+    --card:#ffffff;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --border:#e3e8e7;
+    --success:#16a34a;
+    --success-light:#eafaf0;
+    --warning:#b45309;
+    --warning-light:#fef6e7;
+    --danger:#dc2626;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI","Tahoma","Cairo",Arial,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    padding-bottom:70px;
+  }
+  .container{max-width:640px;margin:0 auto;padding:12px 14px 24px;}
+
+  header.app-header{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    padding:20px 16px 26px;
+    text-align:center;
+  }
+  header.app-header h1{margin:0 0 6px;font-size:1.4rem;}
+  header.app-header p{margin:0;font-size:.9rem;opacity:.9;}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-top:14px;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .card h2{
+    font-size:1.05rem;
+    margin:0 0 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card h2 .num{
+    background:var(--primary);
+    color:#fff;
+    width:24px;height:24px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    font-size:.8rem;flex-shrink:0;
+  }
+
+  .field{margin-bottom:12px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px;}
+  .field input,.field select{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    font-size:1rem;
+    background:#fff;
+    color:var(--text);
+    font-family:inherit;
+  }
+  .field input:focus,.field select:focus{outline:2px solid var(--primary);border-color:var(--primary);}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+
+  .rate-line{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--primary-light);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:12px;
+    font-size:.92rem;
+  }
+  .rate-line .status{font-size:.75rem;color:var(--muted);}
+  .status.live{color:var(--success);}
+  .status.fallback{color:var(--warning);}
+
+  .live-box{
+    background:#f8fafa;
+    border:1px dashed var(--border);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    margin-top:10px;
+  }
+  .live-box b{color:var(--text);}
+
+  details.advanced{margin-top:12px;}
+  details.advanced summary{
+    cursor:pointer;color:var(--primary);font-size:.85rem;font-weight:600;
+    padding:4px 0;
+  }
+  details.advanced .row2{margin-top:10px;}
+
+  .ship-options{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+  .ship-opt{
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    padding:12px;
+    position:relative;
+  }
+  .ship-opt.recommended{border-color:var(--success);background:var(--success-light);}
+  .ship-opt .badge{
+    position:absolute;top:-10px;left:12px;
+    background:var(--success);color:#fff;
+    font-size:.72rem;padding:3px 8px;border-radius:20px;
+  }
+  .ship-opt .name{font-weight:700;font-size:.95rem;margin-bottom:4px;}
+  .ship-opt .desc{font-size:.78rem;color:var(--muted);margin-bottom:6px;}
+  .ship-opt .cost{font-size:1.1rem;font-weight:700;color:var(--primary-dark);}
+  .ship-opt .cost small{font-size:.75rem;font-weight:400;color:var(--muted);}
+
+  .disclaimer{
+    background:var(--warning-light);
+    color:var(--warning);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:.8rem;
+    margin-top:10px;
+  }
+
+  .result-card{
+    background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+    color:#fff;
+    border-radius:var(--radius);
+    padding:18px;
+    margin-top:14px;
+  }
+  .result-card h2{color:#fff;}
+  .invoice-row{
+    display:flex;justify-content:space-between;
+    padding:7px 0;
+    border-bottom:1px solid rgba(255,255,255,.18);
+    font-size:.92rem;
+  }
+  .invoice-row.total{
+    font-size:1.15rem;font-weight:700;border-bottom:none;
+    padding-top:12px;
+  }
+  .margin-table{width:100%;border-collapse:collapse;margin-top:12px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;}
+  .margin-table th,.margin-table td{padding:8px 10px;text-align:center;font-size:.85rem;}
+  .margin-table th{background:rgba(255,255,255,.12);font-weight:600;}
+  .margin-table input{
+    width:56px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+    color:#fff;border-radius:6px;padding:4px;text-align:center;font-size:.85rem;
+  }
+
+  .referral-card{
+    background:#fff7ed;
+    border:1.5px solid #fdba74;
+    border-radius:var(--radius);
+    padding:16px;
+    margin-top:14px;
+    text-align:center;
+  }
+  .referral-card h2{justify-content:center;color:#9a3412;}
+  .referral-card p{font-size:.88rem;color:#7c2d12;margin:0 0 12px;}
+  .referral-card .field{text-align:right;}
+  .referral-card button{
+    width:100%;
+    background:#ea580c;
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:12px;
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .referral-card button:hover{background:#c2410c;}
+  .referral-note{font-size:.72rem;color:#9a3412;margin-top:8px;opacity:.85;}
+
+  .ad-banner{
+    max-width:640px;
+    margin:16px auto 0;
+    border:1.5px dashed var(--border);
+    border-radius:10px;
+    padding:14px;
+    text-align:center;
+    color:var(--muted);
+    font-size:.8rem;
+    background:#fafcfc;
+  }
+
+  footer.app-footer{
+    text-align:center;
+    font-size:.72rem;
+    color:var(--muted);
+    padding:16px 14px 0;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>حاسبة أسعار الشراء من الصين</h1>
+  <p>احسب التكلفة الكاملة لأي منتج قبل ما تشتريه — المنتج + الشحن + الجمارك</p>
+</header>
+
+<div class="container">
+
+  <!-- 1. سعر الصرف -->
+  <div class="card">
+    <h2><span class="num">1</span> سعر الصرف</h2>
+    <div class="rate-line">
+      <span>1 يوان صيني = <b id="rateDisplay">—</b> جنيه مصري</span>
+      <span class="status" id="rateStatus">جارِ التحديث...</span>
+    </div>
+    <div class="field">
+      <label for="safetyMargin">هامش أمان إضافي على سعر الصرف (%)</label>
+      <input type="number" id="safetyMargin" value="3" min="0" step="0.5">
+    </div>
+  </div>
+
+  <!-- 2. بيانات المنتج -->
+  <div class="card">
+    <h2><span class="num">2</span> بيانات المنتج</h2>
+    <div class="field">
+      <label for="productName">اسم / وصف المنتج</label>
+      <input type="text" id="productName" placeholder="مثال: طقم أكواب زجاج">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="priceCny">السعر باليوان (للقطعة)</label>
+        <input type="number" id="priceCny" min="0" step="0.01" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="qty">الكمية (عدد القطع)</label>
+        <input type="number" id="qty" min="1" step="1" value="1">
+      </div>
+    </div>
+    <div class="row3">
+      <div class="field">
+        <label for="lengthCm">الطول (سم)</label>
+        <input type="number" id="lengthCm" min="0" step="0.1" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="widthCm">العرض (سم)</label>
+        <input type="number" id="widthCm" min="0" step="0.1" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="heightCm">الارتفاع (سم)</label>
+        <input type="number" id="heightCm" min="0" step="0.1" placeholder="0">
+      </div>
+    </div>
+    <div class="field">
+      <label for="weightKg">الوزن الفعلي للقطعة (كجم)</label>
+      <input type="number" id="weightKg" min="0" step="0.01" placeholder="0">
+    </div>
+    <div class="live-box" id="weightBox">
+      الوزن الحجمي للقطعة: <b>0</b> كجم — الوزن الفعلي: <b>0</b> كجم
+      <br>الوزن المُعتمد في الشحن (الأكبر): <b>0</b> كجم للقطعة
+      <br>الإجمالي: حجم <b>0</b> م³ (CBM) — وزن شحن <b>0</b> كجم
+    </div>
+  </div>
+
+  <!-- 3. الشحن -->
+  <div class="card">
+    <h2><span class="num">3</span> تكلفة الشحن</h2>
+    <div class="ship-options" id="shipOptions">
+      <div class="ship-opt" id="opt-air">
+        <div class="name">✈️ شحن جوي</div>
+        <div class="desc">الأسرع، مناسب للكميات الصغيرة والخفيفة</div>
+        <div class="cost">— <small>جنيه</small></div>
+      </div>
+      <div class="ship-opt" id="opt-lcl">
+        <div class="name">🚢 شحن بحري جزئي (LCL)</div>
+        <div class="desc">لميناء بورسعيد، حد أدنى تقريبي 1 م³</div>
+        <div class="cost">— <small>جنيه</small></div>
+      </div>
+      <div class="ship-opt" id="opt-container">
+        <div class="name">📦 حاوية كاملة</div>
+        <div class="desc">للكميات الكبيرة</div>
+        <div class="cost">— <small>جنيه</small></div>
+      </div>
+    </div>
+
+    <details class="advanced">
+      <summary>تعديل أسعار الشحن الافتراضية (بالدولار)</summary>
+      <div class="row2">
+        <div class="field">
+          <label for="airRate">شحن جوي ($/كجم)</label>
+          <input type="number" id="airRate" value="6" min="0" step="0.1">
+        </div>
+        <div class="field">
+          <label for="lclRate">شحن بحري ($/م³)</label>
+          <input type="number" id="lclRate" value="105" min="0" step="1">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="container20Rate">حاوية 20 قدم ($)</label>
+          <input type="number" id="container20Rate" value="1850" min="0" step="10">
+        </div>
+        <div class="field">
+          <label for="container40Rate">حاوية 40 قدم ($)</label>
+          <input type="number" id="container40Rate" value="2400" min="0" step="10">
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- 4. الجمارك -->
+  <div class="card">
+    <h2><span class="num">4</span> الجمارك التقديرية</h2>
+    <div class="field">
+      <label for="category">فئة المنتج</label>
+      <select id="category">
+        <option value="kitchen" data-rate="30">أدوات مطبخ ومائدة</option>
+        <option value="plastic" data-rate="25">بلاستيك ومنزلية</option>
+        <option value="textile" data-rate="40">تكستايل ومفروشات</option>
+        <option value="electronics" data-rate="35">أجهزة كهربائية صغيرة</option>
+        <option value="other" data-rate="30">أخرى</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="customsRate">نسبة الجمارك التقديرية (%)</label>
+      <input type="number" id="customsRate" value="30" min="0" step="1">
+    </div>
+    <div class="disclaimer">
+      هذه نسب تقديرية للاسترشاد فقط، وليست نسب جمركية رسمية. يُرجى التأكد من الجمارك الفعلية عبر مصلحة الجمارك المصرية.
+    </div>
+  </div>
+
+  <!-- 5. النتيجة -->
+  <div class="result-card">
+    <h2><span class="num">5</span> النتيجة النهائية</h2>
+    <div class="invoice-row"><span>تكلفة المنتج</span><span id="rProduct">0 جنيه</span></div>
+    <div class="invoice-row"><span>تكلفة الشحن</span><span id="rShipping">0 جنيه</span></div>
+    <div class="invoice-row"><span>الجمارك التقديرية</span><span id="rCustoms">0 جنيه</span></div>
+    <div class="invoice-row total"><span>الإجمالي الكلي</span><span id="rTotal">0 جنيه</span></div>
+
+    <table class="margin-table">
+      <thead>
+        <tr><th>هامش الربح</th><th>سعر البيع الإجمالي</th><th>سعر القطعة</th></tr>
+      </thead>
+      <tbody id="marginBody"></tbody>
+    </table>
+  </div>
+
+  <!-- 6. الإحالة -->
+  <div class="referral-card">
+    <h2>🚚 محتاج تشحن الكمية دي فعلياً؟</h2>
+    <p>اطلب عرض سعر مجاني من شركاء الشحن والتخليص الجمركي</p>
+    <div class="field">
+      <label for="refName">الاسم</label>
+      <input type="text" id="refName" placeholder="اسمك">
+    </div>
+    <div class="field">
+      <label for="refPhone">رقم الموبايل</label>
+      <input type="tel" id="refPhone" placeholder="01xxxxxxxxx">
+    </div>
+    <div class="field">
+      <label>الوزن / الحجم التقديري</label>
+      <input type="text" id="refWeight" readonly>
+    </div>
+    <button id="refSubmit" type="button">اطلب عرض سعر</button>
+    <div class="referral-note">* الخدمة قيد التجهيز — سيتم التواصل معك قريباً من أحد شركاء الشحن.</div>
+  </div>
+
+  <!-- 7. بانر إعلاني -->
+  <div class="ad-banner" id="adBanner">مساحة إعلانية</div>
+
+  <footer class="app-footer">أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل</footer>
+</div>
+
+<script>
+(function(){
+
+  /* ============================================================
+     القيم الافتراضية — عدّلها هنا عند الحاجة لتحديث دوري
+     ============================================================ */
+  const DEFAULTS = {
+    cnyToEgpFallback: 6.9,   // 1 يوان = X جنيه (احتياطي لو فشل الـ API)
+    usdToEgpFallback: 49,    // 1 دولار = X جنيه (احتياطي لو فشل الـ API)
+    exchangeApiUrl: "https://open.er-api.com/v6/latest/USD",
+    volumetricDivisor: 6000, // (طول×عرض×ارتفاع بالسم) ÷ 6000 = كجم
+    lclMinCbm: 1,            // الحد الأدنى للشحن البحري الجزئي
+    container20CapacityCbm: 26, // السعة العملية التقريبية لحاوية 20 قدم
+    container40CapacityCbm: 56, // السعة العملية التقريبية لحاوية 40 قدم
+    profitMargins: [20, 30, 40] // هوامش الربح الافتراضية %
+  };
+
+  let liveRates = { usdToEgp: null, cnyToEgp: null, isLive: false };
+
+  const $ = id => document.getElementById(id);
+
+  /* ---------------- سعر الصرف ---------------- */
+  async function fetchExchangeRate(){
+    try{
+      const res = await fetch(DEFAULTS.exchangeApiUrl);
+      if(!res.ok) throw new Error("bad response");
+      const data = await res.json();
+      const usdToEgp = data.rates && data.rates.EGP;
+      const usdToCny = data.rates && data.rates.CNY;
+      if(!usdToEgp || !usdToCny) throw new Error("missing rates");
+      liveRates.usdToEgp = usdToEgp;
+      liveRates.cnyToEgp = usdToEgp / usdToCny;
+      liveRates.isLive = true;
+    }catch(e){
+      liveRates.usdToEgp = DEFAULTS.usdToEgpFallback;
+      liveRates.cnyToEgp = DEFAULTS.cnyToEgpFallback;
+      liveRates.isLive = false;
+    }
+    updateRateDisplay();
+    calculateAll();
+  }
+
+  function updateRateDisplay(){
+    const margin = parseFloat($("safetyMargin").value) || 0;
+    const adjustedCny = liveRates.cnyToEgp * (1 + margin/100);
+    $("rateDisplay").textContent = adjustedCny.toFixed(2);
+    const statusEl = $("rateStatus");
+    if(liveRates.isLive){
+      statusEl.textContent = "محدّث الآن";
+      statusEl.className = "status live";
+    }else{
+      statusEl.textContent = "قيمة احتياطية (تعذر الاتصال)";
+      statusEl.className = "status fallback";
+    }
+  }
+
+  function getAdjustedRates(){
+    const margin = parseFloat($("safetyMargin").value) || 0;
+    return {
+      cnyToEgp: liveRates.cnyToEgp * (1 + margin/100),
+      usdToEgp: liveRates.usdToEgp * (1 + margin/100)
+    };
+  }
+
+  /* ---------------- الحساب الرئيسي ---------------- */
+  function calculateAll(){
+    if(liveRates.cnyToEgp === null) return; // لسه مفيش سعر صرف
+
+    const rates = getAdjustedRates();
+
+    const priceCny = parseFloat($("priceCny").value) || 0;
+    const qty = parseInt($("qty").value) || 0;
+    const L = parseFloat($("lengthCm").value) || 0;
+    const W = parseFloat($("widthCm").value) || 0;
+    const H = parseFloat($("heightCm").value) || 0;
+    const actualWeight = parseFloat($("weightKg").value) || 0;
+
+    // الوزن الحجمي والفعلي
+    const volumetricWeightPerPiece = (L * W * H) / DEFAULTS.volumetricDivisor;
+    const billableWeightPerPiece = Math.max(volumetricWeightPerPiece, actualWeight);
+    const totalBillableWeight = billableWeightPerPiece * qty;
+    const totalActualWeight = actualWeight * qty;
+    const totalCbm = (L * W * H) / 1000000 * qty;
+
+    $("weightBox").innerHTML =
+      `الوزن الحجمي للقطعة: <b>${volumetricWeightPerPiece.toFixed(2)}</b> كجم — الوزن الفعلي: <b>${actualWeight.toFixed(2)}</b> كجم` +
+      `<br>الوزن المُعتمد في الشحن (الأكبر): <b>${billableWeightPerPiece.toFixed(2)}</b> كجم للقطعة` +
+      `<br>الإجمالي: حجم <b>${totalCbm.toFixed(3)}</b> م³ (CBM) — وزن شحن <b>${totalBillableWeight.toFixed(2)}</b> كجم`;
+
+    // تكلفة المنتج
+    const productCostEgp = priceCny * qty * rates.cnyToEgp;
+
+    // خيارات الشحن (بالدولار ثم تحويل للجنيه)
+    const airRate = parseFloat($("airRate").value) || 0;
+    const lclRate = parseFloat($("lclRate").value) || 0;
+    const container20Rate = parseFloat($("container20Rate").value) || 0;
+    const container40Rate = parseFloat($("container40Rate").value) || 0;
+
+    const airCostUsd = totalBillableWeight * airRate;
+    const billableCbm = Math.max(totalCbm, DEFAULTS.lclMinCbm);
+    const lclCostUsd = billableCbm * lclRate;
+
+    let containerCostUsd, containerLabel;
+    if(totalCbm <= DEFAULTS.container20CapacityCbm){
+      containerCostUsd = container20Rate;
+      containerLabel = "حاوية 20 قدم";
+    }else if(totalCbm <= DEFAULTS.container40CapacityCbm){
+      containerCostUsd = container40Rate;
+      containerLabel = "حاوية 40 قدم";
+    }else{
+      const containersNeeded = Math.ceil(totalCbm / DEFAULTS.container40CapacityCbm);
+      containerCostUsd = containersNeeded * container40Rate;
+      containerLabel = `${containersNeeded} × حاوية 40 قدم`;
+    }
+
+    const airCostEgp = airCostUsd * rates.usdToEgp;
+    const lclCostEgp = lclCostUsd * rates.usdToEgp;
+    const containerCostEgp = containerCostUsd * rates.usdToEgp;
+
+    const hasInput = qty > 0 && (actualWeight > 0 || (L > 0 && W > 0 && H > 0));
+
+    renderShipOption("opt-air", airCostEgp, hasInput);
+    renderShipOption("opt-lcl", lclCostEgp, hasInput, `لميناء بورسعيد، حد أدنى تقريبي 1 م³`);
+    renderShipOption("opt-container", containerCostEgp, hasInput, containerLabel);
+
+    let recommendedId = null;
+    if(hasInput){
+      const costs = { "opt-air": airCostEgp, "opt-lcl": lclCostEgp, "opt-container": containerCostEgp };
+      recommendedId = Object.keys(costs).reduce((a,b) => costs[a] <= costs[b] ? a : b);
+      ["opt-air","opt-lcl","opt-container"].forEach(id => {
+        $(id).classList.toggle("recommended", id === recommendedId);
+      });
+      let badge = document.querySelector(".ship-opt .badge");
+      document.querySelectorAll(".ship-opt .badge").forEach(b => b.remove());
+      if(recommendedId){
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "الأنسب";
+        $(recommendedId).prepend(b);
+      }
+    }else{
+      ["opt-air","opt-lcl","opt-container"].forEach(id => $(id).classList.remove("recommended"));
+      document.querySelectorAll(".ship-opt .badge").forEach(b => b.remove());
+    }
+
+    const chosenShippingCostEgp = recommendedId === "opt-air" ? airCostEgp
+      : recommendedId === "opt-lcl" ? lclCostEgp
+      : recommendedId === "opt-container" ? containerCostEgp : 0;
+
+    // الجمارك
+    const customsRatePercent = parseFloat($("customsRate").value) || 0;
+    const customsBase = productCostEgp + chosenShippingCostEgp;
+    const customsEgp = customsBase * (customsRatePercent / 100);
+
+    const totalEgp = productCostEgp + chosenShippingCostEgp + customsEgp;
+
+    $("rProduct").textContent = fmt(productCostEgp) + " جنيه";
+    $("rShipping").textContent = fmt(chosenShippingCostEgp) + " جنيه";
+    $("rCustoms").textContent = fmt(customsEgp) + " جنيه";
+    $("rTotal").textContent = fmt(totalEgp) + " جنيه";
+
+    renderMarginTable(totalEgp, qty);
+
+    // تحديث بيانات الإحالة
+    $("refWeight").value = hasInput
+      ? `${totalBillableWeight.toFixed(1)} كجم / ${totalCbm.toFixed(2)} م³`
+      : "";
+  }
+
+  function renderShipOption(id, costEgp, hasInput, descOverride){
+    const el = $(id);
+    const costEl = el.querySelector(".cost");
+    costEl.innerHTML = hasInput
+      ? `${fmt(costEgp)} <small>جنيه</small>`
+      : `— <small>جنيه</small>`;
+    if(descOverride){
+      el.querySelector(".desc").textContent = descOverride;
+    }
+  }
+
+  function renderMarginTable(totalEgp, qty){
+    const marginInputs = document.querySelectorAll(".margin-input");
+    const margins = marginInputs.length
+      ? Array.from(marginInputs).map(i => parseFloat(i.value) || 0)
+      : DEFAULTS.profitMargins;
+
+    const body = $("marginBody");
+    body.innerHTML = "";
+    margins.forEach((m, idx) => {
+      const sellTotal = totalEgp * (1 + m/100);
+      const perPiece = qty > 0 ? sellTotal / qty : 0;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><input type="number" class="margin-input" data-idx="${idx}" value="${m}" min="0" step="1"> %</td>
+        <td>${fmt(sellTotal)}</td>
+        <td>${fmt(perPiece)}</td>
+      `;
+      body.appendChild(tr);
+    });
+
+    body.querySelectorAll(".margin-input").forEach(inp => {
+      inp.addEventListener("input", calculateAll);
+    });
+  }
+
+  function fmt(n){
+    return Math.round(n).toLocaleString("ar-EG");
+  }
+
+  /* ---------------- ربط الأحداث ---------------- */
+  const liveInputs = [
+    "safetyMargin","productName","priceCny","qty","lengthCm","widthCm","heightCm","weightKg",
+    "airRate","lclRate","container20Rate","container40Rate","customsRate"
+  ];
+  liveInputs.forEach(id => {
+    $(id).addEventListener("input", () => {
+      if(id === "safetyMargin") updateRateDisplay();
+      calculateAll();
+    });
+  });
+
+  $("category").addEventListener("change", function(){
+    const opt = this.options[this.selectedIndex];
+    $("customsRate").value = opt.getAttribute("data-rate");
+    calculateAll();
+  });
+
+  $("refSubmit").addEventListener("click", function(){
+    const name = $("refName").value.trim();
+    const phone = $("refPhone").value.trim();
+    if(!name || !phone){
+      alert("من فضلك أدخل الاسم ورقم الموبايل");
+      return;
+    }
+    alert("تم استلام طلبك! هنتواصل معك قريباً بعروض أسعار الشحن.");
+    $("refName").value = "";
+    $("refPhone").value = "";
+  });
+
+  // بداية التشغيل
+  renderMarginTable(0, 0);
+  fetchExchangeRate();
+})();
+</script>
+</body>
+</html>
