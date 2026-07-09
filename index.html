@@ -294,18 +294,39 @@
     color:#fff;border-radius:6px;padding:4px;text-align:center;font-size:.8rem;
   }
 
-  .referral-card{
+  .referral-link-wrap{text-align:center;margin-top:14px;}
+  .referral-link{
+    background:none;border:none;font-family:inherit;
+    color:#c2410c;font-size:.85rem;font-weight:700;
+    text-decoration:underline;cursor:pointer;padding:6px;
+  }
+  .referral-link:hover{color:#9a3412;}
+
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.5);
+    display:flex;align-items:center;justify-content:center;
+    padding:16px;z-index:100;
+  }
+  .modal-overlay[hidden]{display:none;}
+  .modal-box{
     background:#fff7ed;
     border:1.5px solid #fdba74;
-    border-radius:12px;
-    padding:14px;
-    margin-top:14px;
+    border-radius:14px;
+    padding:20px 16px 16px;
+    max-width:400px;width:100%;
+    max-height:90vh;overflow-y:auto;
     text-align:center;
+    position:relative;
   }
-  .referral-card h3{margin:0 0 6px;color:#9a3412;font-size:.95rem;}
-  .referral-card p{font-size:.82rem;color:#7c2d12;margin:0 0 10px;}
-  .referral-card .field{text-align:right;}
-  .referral-card button{
+  .modal-close{
+    position:absolute;top:10px;left:10px;
+    background:none;border:none;font-size:1.1rem;
+    color:#9a3412;cursor:pointer;padding:4px 8px;
+  }
+  .modal-box h3{margin:0 0 6px;color:#9a3412;font-size:.95rem;}
+  .modal-box p{font-size:.82rem;color:#7c2d12;margin:0 0 10px;}
+  .modal-box .field{text-align:right;}
+  .modal-box button.submit-btn{
     width:100%;
     background:#ea580c;
     color:#fff;
@@ -317,7 +338,7 @@
     font-family:inherit;
     cursor:pointer;
   }
-  .referral-card button:hover{background:#c2410c;}
+  .modal-box button.submit-btn:hover{background:#c2410c;}
   .referral-note{font-size:.7rem;color:#9a3412;margin-top:8px;opacity:.85;}
 
   .ad-banner{
@@ -413,6 +434,19 @@
   <div class="ad-banner" id="adBanner">مساحة إعلانية</div>
 
   <footer class="app-footer">أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل</footer>
+</div>
+
+<div class="modal-overlay" id="referralModal" hidden>
+  <div class="modal-box">
+    <button class="modal-close" id="modalCloseBtn" type="button">✕</button>
+    <h3>🚚 محتاج تشحن الكمية دي فعلياً؟</h3>
+    <p>اطلب عرض سعر مجاني من شركاء الشحن والتخليص الجمركي</p>
+    <div class="field"><label>الاسم</label><input type="text" id="modalRefName" placeholder="اسمك"></div>
+    <div class="field"><label>رقم الموبايل</label><input type="tel" id="modalRefPhone" placeholder="01xxxxxxxxx"></div>
+    <div class="field"><label>الوزن / الحجم التقديري</label><input type="text" id="modalRefWeight" placeholder="مثال: 160 كجم / 0.6 م³"></div>
+    <button class="submit-btn" id="modalRefSubmit" type="button">اطلب عرض سعر</button>
+    <div class="referral-note">* الخدمة قيد التجهيز — سيتم التواصل معك قريباً من أحد شركاء الشحن.</div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -803,7 +837,6 @@
               </div>
             </div>
           </details>
-          <div data-referral="${item.id}"></div>
         </div>
       </details>
 
@@ -832,6 +865,10 @@
 
       <div class="result-card" data-result="${item.id}"></div>
 
+      <div class="referral-link-wrap">
+        <button type="button" class="referral-link" data-open-referral="${item.id}">🚚 محتاج تشحن الكمية دي فعلياً؟ اطلب عرض سعر</button>
+      </div>
+
       <button class="btn-danger" data-delete="${item.id}" type="button">🗑 حذف المنتج</button>
     `;
   }
@@ -844,7 +881,6 @@
     // صندوق الوزن + خيارات الشحن
     const weightBox = document.querySelector(`[data-weightbox="${id}"]`);
     const shipOptionsBox = document.querySelector(`[data-shipoptions="${id}"]`);
-    const referralBox = document.querySelector(`[data-referral="${id}"]`);
     if(weightBox && shipOptionsBox){
       if(r.shippingDetail){
         const d = r.shippingDetail;
@@ -871,23 +907,9 @@
             <div class="cost">${fmt(d.container)} <small>جنيه</small></div>
           </div>
         `;
-        if(referralBox){
-          referralBox.innerHTML = `
-            <div class="referral-card">
-              <h3>🚚 محتاج تشحن الكمية دي فعلياً؟</h3>
-              <p>اطلب عرض سعر مجاني من شركاء الشحن والتخليص الجمركي</p>
-              <div class="field"><label>الاسم</label><input type="text" data-ref="name" placeholder="اسمك"></div>
-              <div class="field"><label>رقم الموبايل</label><input type="tel" data-ref="phone" placeholder="01xxxxxxxxx"></div>
-              <div class="field"><label>الوزن / الحجم التقديري</label><input type="text" value="${d.totalBillableWeight.toFixed(1)} كجم / ${d.totalCbm.toFixed(2)} م³" readonly></div>
-              <button type="button" data-ref-submit="${id}">اطلب عرض سعر</button>
-              <div class="referral-note">* الخدمة قيد التجهيز — سيتم التواصل معك قريباً من أحد شركاء الشحن.</div>
-            </div>
-          `;
-        }
       }else{
         weightBox.innerHTML = `أدخل الأبعاد والوزن وفعّل حساب الشحن لعرض خيارات الشحن.`;
         shipOptionsBox.innerHTML = "";
-        if(referralBox) referralBox.innerHTML = "";
       }
     }
 
@@ -955,15 +977,10 @@
       }
       return;
     }
-    const refSubmit = e.target.closest("[data-ref-submit]");
-    if(refSubmit){
-      const card = refSubmit.closest(".fav-detail");
-      const name = card.querySelector('[data-ref="name"]').value.trim();
-      const phone = card.querySelector('[data-ref="phone"]').value.trim();
-      if(!name || !phone){ showToast("من فضلك أدخل الاسم ورقم الموبايل"); return; }
-      showToast("تم استلام طلبك! هنتواصل معك قريباً");
-      card.querySelector('[data-ref="name"]').value = "";
-      card.querySelector('[data-ref="phone"]').value = "";
+    const openRef = e.target.closest("[data-open-referral]");
+    if(openRef){
+      const id = openRef.getAttribute("data-open-referral");
+      openReferralModal(id);
       return;
     }
   });
@@ -1049,6 +1066,36 @@
       favorites.forEach(item => { if(item.shippingEnabled) refreshResults(item.id); });
       return;
     }
+  });
+
+  /* ---------------- نافذة طلب عرض الشحن ---------------- */
+  function openReferralModal(itemId){
+    const item = favorites.find(f => f.id === itemId);
+    let weightText = "";
+    if(item){
+      const r = computeItemResult(item);
+      if(r.shippingDetail){
+        weightText = `${r.shippingDetail.totalBillableWeight.toFixed(1)} كجم / ${r.shippingDetail.totalCbm.toFixed(2)} م³`;
+      }
+    }
+    $("modalRefName").value = "";
+    $("modalRefPhone").value = "";
+    $("modalRefWeight").value = weightText;
+    $("referralModal").hidden = false;
+  }
+  function closeReferralModal(){
+    $("referralModal").hidden = true;
+  }
+  $("modalCloseBtn").addEventListener("click", closeReferralModal);
+  $("referralModal").addEventListener("click", function(e){
+    if(e.target === this) closeReferralModal();
+  });
+  $("modalRefSubmit").addEventListener("click", function(){
+    const name = $("modalRefName").value.trim();
+    const phone = $("modalRefPhone").value.trim();
+    if(!name || !phone){ showToast("من فضلك أدخل الاسم ورقم الموبايل"); return; }
+    showToast("تم استلام طلبك! هنتواصل معك قريباً");
+    closeReferralModal();
   });
 
   /* ---------------- بدء التشغيل ---------------- */
