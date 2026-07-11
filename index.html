@@ -390,6 +390,16 @@
     font-size:1.1rem;font-weight:700;border-bottom:none;
     padding-top:10px;
   }
+  .share-btn{
+    width:100%;margin-top:12px;
+    background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.35);
+    color:#fff;border-radius:10px;
+    padding:9px;font-size:.85rem;font-weight:700;
+    font-family:inherit;cursor:pointer;
+    transition:background .15s;
+  }
+  .share-btn:hover{background:rgba(255,255,255,.25);}
   .margin-table{width:100%;border-collapse:collapse;margin-top:12px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;}
   .margin-table th,.margin-table td{padding:7px 8px;text-align:center;font-size:.8rem;}
   .margin-table th{background:rgba(255,255,255,.12);font-weight:600;}
@@ -573,6 +583,16 @@
     <p>اطلب عرض سعر مجاني من شركاء الشحن والتخليص الجمركي</p>
     <div class="field"><label>الاسم</label><input type="text" id="modalRefName" placeholder="اسمك"></div>
     <div class="field"><label>رقم الموبايل</label><input type="tel" id="modalRefPhone" placeholder="01xxxxxxxxx"></div>
+    <div class="field">
+      <label>طريقة الشحن المفضلة</label>
+      <select id="modalRefShipType">
+        <option value="air">✈️ شحن جوي</option>
+        <option value="lcl">🚢 شحن بحري جزئي (LCL)</option>
+        <option value="container">📦 حاوية كاملة</option>
+        <option value="unsure">مش عارف / محتاج استشارة</option>
+      </select>
+    </div>
+    <div class="field"><label>المدينة في مصر</label><input type="text" id="modalRefCity" placeholder="مثال: القاهرة، الإسكندرية"></div>
     <div class="field"><label>الوزن / الحجم التقديري</label><input type="text" id="modalRefWeight" placeholder="مثال: 160 كجم / 0.6 م³"></div>
     <button class="submit-btn" id="modalRefSubmit" type="button">اطلب عرض سعر</button>
     <div class="referral-note">* الخدمة قيد التجهيز — سيتم التواصل معك قريباً من أحد شركاء الشحن.</div>
@@ -596,6 +616,7 @@
     container20CapacityCbm: 26, // السعة العملية التقريبية لحاوية 20 قدم
     container40CapacityCbm: 56, // السعة العملية التقريبية لحاوية 40 قدم
     profitMargins: [20, 30, 40], // هوامش الربح الافتراضية %
+    vatRate: 14,             // نسبة ضريبة القيمة المضافة الافتراضية %
     photoMaxDim: 600,        // أقصى بعد للصورة بعد الضغط (بكسل)
     photoQuality: 0.65,      // جودة ضغط الصورة (JPEG)
     shippingDefaults: { airRate: 6, lclRate: 105, container20Rate: 1850, container40Rate: 2400 },
@@ -834,6 +855,8 @@
       customsEnabled: false,
       customsCategory: defaultCategory.value,
       customsRate: defaultCategory.rate,
+      vatEnabled: false,
+      vatRate: DEFAULTS.vatRate,
       margins: DEFAULTS.profitMargins.slice()
     };
     favorites.unshift(item);
@@ -907,8 +930,13 @@
       customsEgp = (baseEgp + shippingEgp) * ((item.customsRate || 0) / 100);
     }
 
-    const totalEgp = baseEgp + shippingEgp + customsEgp;
-    return { baseEgp, shippingEgp, customsEgp, totalEgp, shippingDetail, qty };
+    let vatEgp = 0;
+    if(item.vatEnabled){
+      vatEgp = (baseEgp + shippingEgp + customsEgp) * ((item.vatRate || 0) / 100);
+    }
+
+    const totalEgp = baseEgp + shippingEgp + customsEgp + vatEgp;
+    return { baseEgp, shippingEgp, customsEgp, vatEgp, totalEgp, shippingDetail, qty };
   }
 
   /* ---------------- رسم قائمة المفضلة ---------------- */
@@ -1053,6 +1081,25 @@
         </div>
       </details>
 
+      <details class="section" data-id="${item.id}" ${item.vatEnabled ? "open" : ""}>
+        <summary>🧾 ضريبة القيمة المضافة (اختياري)</summary>
+        <div class="section-body">
+          <div class="field">
+            <label style="display:flex;align-items:center;gap:6px;">
+              <input type="checkbox" data-field="vatEnabled" data-id="${item.id}" ${item.vatEnabled?"checked":""} style="width:auto;">
+              فعّل حساب الضريبة لهذا المنتج
+            </label>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>نسبة ضريبة القيمة المضافة (%)</label>
+            <input type="number" min="0" step="0.5" data-field="vatRate" data-id="${item.id}" value="${item.vatRate}">
+          </div>
+          <div class="disclaimer">
+            بتتحسب على (المنتج + الشحن + الجمارك) — القيمة الافتراضية 14% حسب الشريحة العامة في مصر، وقد تختلف حسب نوع السلعة.
+          </div>
+        </div>
+      </details>
+
       <div class="result-card" data-result="${item.id}"></div>
 
       <div class="referral-link-wrap">
@@ -1111,7 +1158,9 @@
         <div class="invoice-row"><span>تكلفة المنتج</span><span>${fmt(r.baseEgp)} جنيه</span></div>
         ${item.shippingEnabled ? `<div class="invoice-row"><span>تكلفة الشحن</span><span>${fmt(r.shippingEgp)} جنيه</span></div>` : ``}
         ${item.customsEnabled ? `<div class="invoice-row"><span>الجمارك التقديرية</span><span>${fmt(r.customsEgp)} جنيه</span></div>` : ``}
+        ${item.vatEnabled ? `<div class="invoice-row"><span>ضريبة القيمة المضافة</span><span>${fmt(r.vatEgp)} جنيه</span></div>` : ``}
         <div class="invoice-row total"><span>الإجمالي الكلي</span><span>${fmt(r.totalEgp)} جنيه</span></div>
+        <button type="button" class="share-btn" data-share="${id}">📤 شارك النتيجة</button>
         <table class="margin-table">
           <thead><tr><th>هامش الربح</th><th>سعر البيع الإجمالي</th><th>سعر القطعة</th></tr></thead>
           <tbody>
@@ -1173,6 +1222,11 @@
       openReferralModal(id);
       return;
     }
+    const shareBtn = e.target.closest("[data-share]");
+    if(shareBtn){
+      shareResult(shareBtn.getAttribute("data-share"));
+      return;
+    }
   });
 
   $("favList").addEventListener("change", function(e){
@@ -1217,7 +1271,8 @@
         item[key] = field.checked;
         if(field.checked && key === "shippingEnabled") trackEvent("shipping_calculated");
         if(field.checked && key === "customsEnabled") trackEvent("customs_calculated");
-      }else if(["priceCny","qty","length","width","height","weight","customsRate"].includes(key)){
+        if(field.checked && key === "vatEnabled") trackEvent("vat_calculated");
+      }else if(["priceCny","qty","length","width","height","weight","customsRate","vatRate"].includes(key)){
         item[key] = parseFloat(field.value) || 0;
       }else{
         item[key] = field.value;
@@ -1260,18 +1315,47 @@
     }
   });
 
+  /* ---------------- مشاركة النتيجة ---------------- */
+  function shareResult(itemId){
+    const item = favorites.find(f => f.id === itemId);
+    if(!item) return;
+    const r = computeItemResult(item);
+    const lines = [
+      `📦 ${item.name || "منتج"}`,
+      `تكلفة المنتج: ${fmt(r.baseEgp)} جنيه`
+    ];
+    if(item.shippingEnabled) lines.push(`الشحن: ${fmt(r.shippingEgp)} جنيه`);
+    if(item.customsEnabled) lines.push(`الجمارك: ${fmt(r.customsEgp)} جنيه`);
+    if(item.vatEnabled) lines.push(`ضريبة القيمة المضافة: ${fmt(r.vatEgp)} جنيه`);
+    lines.push(`الإجمالي: ${fmt(r.totalEgp)} جنيه`);
+    lines.push("", "حُسب بواسطة سعّرلي 🧮");
+    const text = lines.join("\n");
+
+    trackEvent("result_shared");
+
+    if(navigator.share){
+      navigator.share({ text }).catch(() => {});
+    }else{
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    }
+  }
+
   /* ---------------- نافذة طلب عرض الشحن ---------------- */
   function openReferralModal(itemId){
     const item = favorites.find(f => f.id === itemId);
     let weightText = "";
+    let recommended = "unsure";
     if(item){
       const r = computeItemResult(item);
       if(r.shippingDetail){
         weightText = `${r.shippingDetail.totalBillableWeight.toFixed(1)} كجم / ${r.shippingDetail.totalCbm.toFixed(2)} م³`;
+        recommended = r.shippingDetail.recommendedKey;
       }
     }
     $("modalRefName").value = "";
     $("modalRefPhone").value = "";
+    $("modalRefCity").value = "";
+    $("modalRefShipType").value = recommended;
     $("modalRefWeight").value = weightText;
     $("referralModal").hidden = false;
   }
@@ -1285,9 +1369,11 @@
   $("modalRefSubmit").addEventListener("click", function(){
     const name = $("modalRefName").value.trim();
     const phone = $("modalRefPhone").value.trim();
+    const city = $("modalRefCity").value.trim();
     if(!name || !phone){ showToast("من فضلك أدخل الاسم ورقم الموبايل"); return; }
+    if(!city){ showToast("من فضلك أدخل المدينة"); return; }
     showToast("تم استلام طلبك! هنتواصل معك قريباً");
-    trackEvent("referral_requested");
+    trackEvent("referral_requested", { ship_type: $("modalRefShipType").value });
     closeReferralModal();
   });
 
