@@ -4,8 +4,8 @@
 """
 from PIL import Image, ImageDraw, ImageFont
 
-PRIMARY = (15, 118, 110)       # #0f766e
-PRIMARY_DARK = (11, 90, 84)    # #0b5a54
+PRIMARY = (224, 141, 44)       # #e08d2c (زعفران)
+PRIMARY_DARK = (168, 71, 26)   # #a8471a (فلفل أحمر/بابريكا)
 WHITE = (255, 255, 255)
 
 FONT_PATH = "C:/Windows/Fonts/tahomabd.ttf"
