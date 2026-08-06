@@ -95,6 +95,24 @@
   :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
   b, strong{font-family:var(--font-display);font-weight:700;}
 
+  .app-switcher{
+    display:flex;
+    background:var(--card);
+    border-bottom:2px solid var(--border);
+    position:sticky;top:0;z-index:40;
+    max-width:640px;margin:0 auto;
+  }
+  .app-tab{
+    flex:1;background:none;border:none;
+    padding:13px 8px;font-family:var(--font-display);font-weight:700;
+    font-size:.9rem;color:var(--muted);cursor:pointer;
+    border-bottom:3px solid transparent;
+    transition:color .15s,border-color .15s,background .15s;
+  }
+  .app-tab:hover{background:var(--primary-light);}
+  .app-tab.active{color:var(--secondary);border-bottom-color:var(--secondary);}
+  .placeholder-note{text-align:center;color:var(--muted);padding:34px 12px;font-size:.92rem;}
+
   header.app-header{
     background:linear-gradient(135deg,var(--primary),var(--secondary));
     color:#fff;
@@ -510,6 +528,13 @@
 </head>
 <body>
 
+<div class="app-switcher">
+  <button class="app-tab active" id="appTabSaarli" data-app="saarli" type="button">سعّرلي</button>
+  <button class="app-tab" id="appTabAbdelrazek" data-app="abdelrazek" type="button">عبد الرازق في الصين</button>
+</div>
+
+<div id="app-saarli">
+
 <header class="app-header">
   <div class="brand">
     <img src="icons/icon-192.png" alt="" class="brand-icon">
@@ -627,6 +652,36 @@
 
 <div class="toast" id="toast"></div>
 
+</div><!-- /app-saarli -->
+
+<div id="app-abdelrazek" hidden>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-text" style="text-align:center;">
+        <h1>عبد الرازق في الصين</h1>
+        <p>قارن الأسعار قبل ما تستورد</p>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" id="tabAhram" data-view="ahram" type="button">أسعار الأهرام</button>
+      <button class="tab" id="tabAmazon" data-view="amazon" type="button">أسعار أمازون</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <section id="view-ahram">
+      <div class="card">
+        <p class="placeholder-note">قريبًا — هنضيف المحتوى هنا</p>
+      </div>
+    </section>
+    <section id="view-amazon" hidden>
+      <div class="card">
+        <p class="placeholder-note">قريبًا — هنضيف المحتوى هنا</p>
+      </div>
+    </section>
+  </div>
+</div><!-- /app-abdelrazek -->
+
 <script>
 (function(){
 
@@ -709,6 +764,27 @@
   }
   $("tabHome").addEventListener("click", () => switchView("home"));
   $("tabFav").addEventListener("click", () => switchView("favorites"));
+
+  /* ---------------- تبديل بين سعّرلي وعبد الرازق في الصين ---------------- */
+  function switchApp(app){
+    $("app-saarli").hidden = app !== "saarli";
+    $("app-abdelrazek").hidden = app !== "abdelrazek";
+    $("appTabSaarli").classList.toggle("active", app === "saarli");
+    $("appTabAbdelrazek").classList.toggle("active", app === "abdelrazek");
+    trackEvent("app_switched", { app });
+  }
+  $("appTabSaarli").addEventListener("click", () => switchApp("saarli"));
+  $("appTabAbdelrazek").addEventListener("click", () => switchApp("abdelrazek"));
+
+  function switchArView(view){
+    $("view-ahram").hidden = view !== "ahram";
+    $("view-amazon").hidden = view !== "amazon";
+    $("tabAhram").classList.toggle("active", view === "ahram");
+    $("tabAmazon").classList.toggle("active", view === "amazon");
+    trackEvent("screen_view", { screen_name: "abdelrazek_" + view });
+  }
+  $("tabAhram").addEventListener("click", () => switchArView("ahram"));
+  $("tabAmazon").addEventListener("click", () => switchArView("amazon"));
 
   /* ---------------- سعر الصرف ---------------- */
   async function fetchExchangeRate(){
