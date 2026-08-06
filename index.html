@@ -886,6 +886,7 @@
     $("app-saarli").hidden = app !== "saarli";
     $("app-abdelrazek").hidden = app !== "abdelrazek";
     trackEvent("app_opened", { app });
+    if(app === "abdelrazek") initCloudPriceSync();
   }
   $("tileSaarli").addEventListener("click", () => openApp("saarli"));
   $("tileAbdelrazek").addEventListener("click", () => openApp("abdelrazek"));
@@ -903,7 +904,7 @@
   $("tabAhram").addEventListener("click", () => switchArView("ahram"));
   $("tabAmazon").addEventListener("click", () => switchArView("amazon"));
 
-  /* ---------------- شيتات الأسعار (رفع إكسيل + بحث) ---------------- */
+  /* ---------------- شيتات الأسعار (رفع إكسيل + مزامنة سحابية + بحث) ---------------- */
   let xlsxLoadPromise = null;
   function ensureXlsxLoaded(){
     if(window.XLSX) return Promise.resolve();
@@ -916,6 +917,83 @@
       document.head.appendChild(script);
     });
     return xlsxLoadPromise;
+  }
+
+  // مزامنة سحابية عبر Firestore — نفس بيانات الأسعار تظهر على كل أجهزتك، مش بس الجهاز اللي رفعت منه.
+  // بيستخدم مشروع Firebase مشترك مع تطبيق تاني (Nexus) غير مرتبط بيه إطلاقًا — Collection معزولة تمامًا.
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCzDuaf-4hN0f9ZZYUXUywQ6Lbe_ZbBVVQ",
+    authDomain: "nexus-2fec6.firebaseapp.com",
+    projectId: "nexus-2fec6",
+    storageBucket: "nexus-2fec6.firebasestorage.app",
+    messagingSenderId: "923229931538",
+    appId: "1:923229931538:web:f0c13bf6533018d38230cb"
+  };
+  const PRICE_SOURCES = ["ahram", "amazon"];
+  const priceListeners = {};
+  let firestoreDb = null;
+  let firebaseLoadPromise = null;
+  let firebaseReadyPromise = null;
+  let cloudSyncEnabled = false;
+
+  function ensureFirebaseLoaded(){
+    if(window.firebase && window.firebase.apps) return Promise.resolve();
+    if(firebaseLoadPromise) return firebaseLoadPromise;
+    const scripts = [
+      "https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js",
+      "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js",
+      "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"
+    ];
+    firebaseLoadPromise = scripts.reduce((p, src) => p.then(() => new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    })), Promise.resolve());
+    return firebaseLoadPromise;
+  }
+
+  async function ensureFirebaseReady(){
+    await ensureFirebaseLoaded();
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    firestoreDb = firebase.firestore();
+    if(!firebaseReadyPromise){
+      try{ firestoreDb.enablePersistence({ synchronizeTabs: true }).catch(() => {}); }catch(e){}
+      firebaseReadyPromise = new Promise((resolve) => {
+        firebase.auth().onAuthStateChanged(user => {
+          if(user) resolve(user);
+          else firebase.auth().signInAnonymously().catch(() => resolve(null));
+        });
+      });
+    }
+    return firebaseReadyPromise;
+  }
+
+  async function initCloudPriceSync(){
+    if(cloudSyncEnabled) return;
+    try{
+      await ensureFirebaseReady();
+      cloudSyncEnabled = true;
+      PRICE_SOURCES.forEach(source => {
+        if(priceListeners[source]) return;
+        priceListeners[source] = firestoreDb.collection("china_pricing_prices").doc(source)
+          .onSnapshot(snap => {
+            if(!snap.exists) return;
+            const data = snap.data();
+            const rows = Array.isArray(data.rows) ? data.rows : [];
+            localStorage.setItem("cpc_prices_" + source, JSON.stringify(rows));
+            localStorage.setItem("cpc_prices_" + source + "_meta", JSON.stringify({
+              updatedAt: (data.updatedAt && data.updatedAt.toMillis) ? data.updatedAt.toMillis() : Date.now(),
+              count: rows.length
+            }));
+            const activeSearch = document.querySelector(`[data-search="${source}"]`);
+            renderPriceTable(source, activeSearch ? activeSearch.value : "");
+          }, () => { /* أوفلاين أو تعذر الوصول — الأداة تفضل شغالة بآخر نسخة محفوظة محليًا */ });
+      });
+    }catch(e){
+      // تعذر تحميل Firebase (مفيش إنترنت غالبًا) — رجوع صامت للتخزين المحلي بس
+    }
   }
 
   function loadPriceData(source){
@@ -981,6 +1059,17 @@
         if(searchInput) searchInput.value = "";
         showToast(`تم رفع ${parsed.length} صنف`);
         trackEvent("price_sheet_uploaded", { source, rows: parsed.length });
+
+        ensureFirebaseReady().then(() => {
+          return firestoreDb.collection("china_pricing_prices").doc(source).set({
+            rows: parsed,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }).then(() => {
+          trackEvent("price_sheet_synced", { source });
+        }).catch(() => {
+          showToast("اتحفظ على الجهاز ده، لكن تعذرت المزامنة مع باقي أجهزتك — هيحاول تاني لما يبقى فيه إنترنت");
+        });
       }catch(err){
         showToast("تعذر قراءة الملف — تأكد إنه إكسيل صحيح");
       }
@@ -1058,6 +1147,9 @@
       localStorage.removeItem("cpc_prices_" + source + "_meta");
       renderPriceTable(source, "");
       showToast("اتمسحت البيانات");
+      ensureFirebaseReady().then(() => {
+        return firestoreDb.collection("china_pricing_prices").doc(source).delete();
+      }).catch(() => {});
     }
   });
   renderPriceTable("ahram", "");
