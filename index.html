@@ -339,6 +339,33 @@
   .btn-danger:hover{color:#fff;}
   .btn-primary:active,.btn-secondary:active,.btn-danger:active{transform:scale(.98);}
 
+  /* ---- شيتات الأسعار (عبد الرازق) ---- */
+  .upload-meta{
+    margin-top:10px;font-size:.8rem;color:var(--muted);
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+  .clear-data-btn{
+    background:none;border:none;color:var(--danger);font-size:.78rem;
+    font-family:var(--font-body);text-decoration:underline;cursor:pointer;padding:2px;
+  }
+  .price-table-scroll{
+    overflow-x:auto;
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);margin-top:14px;
+  }
+  table.price-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
+  table.price-table th, table.price-table td{
+    padding:10px 12px;text-align:right;white-space:nowrap;font-size:.86rem;
+    border-bottom:1px solid var(--border);
+  }
+  table.price-table thead th{
+    font-family:var(--font-display);font-weight:700;color:var(--secondary-dark);
+    background:var(--primary-light);position:sticky;top:0;
+  }
+  table.price-table tbody tr:last-child td{border-bottom:none;}
+  table.price-table tbody tr:hover{background:var(--primary-light);}
+  .price-table-note{text-align:center;color:var(--muted);font-size:.78rem;padding:8px;}
+
   /* ---- المفضلة ---- */
   .fav-note{font-size:.8rem;color:var(--muted);text-align:center;margin:14px 0 4px;}
   .empty-state{
@@ -704,13 +731,37 @@
   <div class="container">
     <section id="view-ahram">
       <div class="card">
-        <p class="placeholder-note">قريبًا — هنضيف المحتوى هنا</p>
+        <h2>📤 رفع شيت الأسعار</h2>
+        <div class="field" style="margin-bottom:0;">
+          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
+          <input type="file" accept=".xlsx,.xls,.csv" data-upload="ahram">
+        </div>
+        <div class="upload-meta" data-upload-meta="ahram"></div>
       </div>
+      <div class="card">
+        <div class="field" style="margin-bottom:0;">
+          <label>بحث بالكود أو الاسم</label>
+          <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="ahram">
+        </div>
+      </div>
+      <div data-table="ahram"></div>
     </section>
     <section id="view-amazon" hidden>
       <div class="card">
-        <p class="placeholder-note">قريبًا — هنضيف المحتوى هنا</p>
+        <h2>📤 رفع شيت الأسعار</h2>
+        <div class="field" style="margin-bottom:0;">
+          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
+          <input type="file" accept=".xlsx,.xls,.csv" data-upload="amazon">
+        </div>
+        <div class="upload-meta" data-upload-meta="amazon"></div>
       </div>
+      <div class="card">
+        <div class="field" style="margin-bottom:0;">
+          <label>بحث بالكود أو الاسم</label>
+          <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="amazon">
+        </div>
+      </div>
+      <div data-table="amazon"></div>
     </section>
   </div>
 </div><!-- /app-abdelrazek -->
@@ -826,6 +877,160 @@
   }
   $("tabAhram").addEventListener("click", () => switchArView("ahram"));
   $("tabAmazon").addEventListener("click", () => switchArView("amazon"));
+
+  /* ---------------- شيتات الأسعار (رفع إكسيل + بحث) ---------------- */
+  let xlsxLoadPromise = null;
+  function ensureXlsxLoaded(){
+    if(window.XLSX) return Promise.resolve();
+    if(xlsxLoadPromise) return xlsxLoadPromise;
+    xlsxLoadPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+    return xlsxLoadPromise;
+  }
+
+  function loadPriceData(source){
+    try{ return JSON.parse(localStorage.getItem("cpc_prices_" + source)) || []; }
+    catch(e){ return []; }
+  }
+  function savePriceData(source, rows){
+    localStorage.setItem("cpc_prices_" + source, JSON.stringify(rows));
+    localStorage.setItem("cpc_prices_" + source + "_meta", JSON.stringify({ updatedAt: Date.now(), count: rows.length }));
+  }
+  function loadPriceMeta(source){
+    try{ return JSON.parse(localStorage.getItem("cpc_prices_" + source + "_meta")); }
+    catch(e){ return null; }
+  }
+
+  function findColumnIndex(headerRow, names){
+    for(let i = 0; i < headerRow.length; i++){
+      const h = String(headerRow[i] || "").trim().toLowerCase();
+      if(names.includes(h)) return i;
+    }
+    return -1;
+  }
+
+  async function handlePriceUpload(source, file){
+    showToast("جارِ قراءة الملف...");
+    try{
+      await ensureXlsxLoaded();
+    }catch(e){
+      showToast("تعذر تحميل قارئ الإكسيل — تأكد من الاتصال بالإنترنت");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try{
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: "array" });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+        if(!rows.length){ showToast("الملف فاضي"); return; }
+
+        let codeIdx = findColumnIndex(rows[0], ["code", "كود"]);
+        let nameIdx = findColumnIndex(rows[0], ["name", "اسم", "الاسم"]);
+        let priceIdx = findColumnIndex(rows[0], ["price", "سعر", "السعر"]);
+        const hasHeaderRow = codeIdx >= 0 || nameIdx >= 0 || priceIdx >= 0;
+        const dataRows = hasHeaderRow ? rows.slice(1) : rows;
+        if(codeIdx < 0) codeIdx = 0;
+        if(nameIdx < 0) nameIdx = 1;
+        if(priceIdx < 0) priceIdx = 2;
+
+        const parsed = dataRows
+          .filter(r => String(r[codeIdx] || "").trim() || String(r[nameIdx] || "").trim())
+          .map(r => ({
+            code: String(r[codeIdx] ?? "").trim(),
+            name: String(r[nameIdx] ?? "").trim(),
+            price: parseFloat(r[priceIdx]) || 0
+          }));
+
+        if(!parsed.length){ showToast("مفيش صفوف قابلة للقراءة في الملف"); return; }
+
+        savePriceData(source, parsed);
+        renderPriceTable(source, "");
+        const searchInput = document.querySelector(`[data-search="${source}"]`);
+        if(searchInput) searchInput.value = "";
+        showToast(`تم رفع ${parsed.length} صنف`);
+        trackEvent("price_sheet_uploaded", { source, rows: parsed.length });
+      }catch(err){
+        showToast("تعذر قراءة الملف — تأكد إنه إكسيل صحيح");
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function renderUploadMeta(source){
+    const metaEl = document.querySelector(`[data-upload-meta="${source}"]`);
+    if(!metaEl) return;
+    const meta = loadPriceMeta(source);
+    if(meta && meta.count){
+      const d = new Date(meta.updatedAt);
+      metaEl.innerHTML = `<span>آخر تحديث: ${d.toLocaleDateString("ar-EG")} — ${meta.count} صنف</span><button type="button" class="clear-data-btn" data-clear="${source}">حذف البيانات</button>`;
+    }else{
+      metaEl.textContent = "لسه مفيش بيانات مرفوعة";
+    }
+  }
+
+  function renderPriceTable(source, filter){
+    const wrap = document.querySelector(`[data-table="${source}"]`);
+    if(!wrap) return;
+    const rows = loadPriceData(source);
+    renderUploadMeta(source);
+    if(!rows.length){
+      wrap.innerHTML = `<div class="empty-state">مفيش بيانات مرفوعة لسه — ارفع شيت الإكسيل فوق.</div>`;
+      return;
+    }
+    const q = (filter || "").trim().toLowerCase();
+    const filtered = q ? rows.filter(r => r.code.toLowerCase().includes(q) || r.name.toLowerCase().includes(q)) : rows;
+    if(!filtered.length){
+      wrap.innerHTML = `<div class="empty-state">مفيش نتايج مطابقة</div>`;
+      return;
+    }
+    const shown = filtered.slice(0, 300);
+    wrap.innerHTML = `
+      <div class="price-table-scroll">
+        <table class="price-table">
+          <thead><tr><th>الكود</th><th>الاسم</th><th>السعر</th></tr></thead>
+          <tbody>
+            ${shown.map(r => `<tr><td>${escapeHtml(r.code)}</td><td>${escapeHtml(r.name)}</td><td>${fmt(r.price)}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+      ${filtered.length > 300 ? `<div class="price-table-note">عرض أول 300 من ${filtered.length} نتيجة — ضيّق البحث لعرض أدق</div>` : ``}
+    `;
+  }
+
+  document.querySelectorAll("[data-upload]").forEach(input => {
+    input.addEventListener("change", function(){
+      const source = this.getAttribute("data-upload");
+      const file = this.files && this.files[0];
+      if(!file) return;
+      handlePriceUpload(source, file);
+      this.value = "";
+    });
+  });
+  document.querySelectorAll("[data-search]").forEach(input => {
+    input.addEventListener("input", function(){
+      renderPriceTable(this.getAttribute("data-search"), this.value);
+    });
+  });
+  document.body.addEventListener("click", function(e){
+    const clearBtn = e.target.closest("[data-clear]");
+    if(!clearBtn) return;
+    const source = clearBtn.getAttribute("data-clear");
+    if(confirm("متأكد إنك عايز تمسح كل البيانات المرفوعة؟")){
+      localStorage.removeItem("cpc_prices_" + source);
+      localStorage.removeItem("cpc_prices_" + source + "_meta");
+      renderPriceTable(source, "");
+      showToast("اتمسحت البيانات");
+    }
+  });
+  renderPriceTable("ahram", "");
+  renderPriceTable("amazon", "");
 
   /* ---------------- سعر الصرف ---------------- */
   async function fetchExchangeRate(){
