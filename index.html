@@ -348,23 +348,40 @@
     background:none;border:none;color:var(--danger);font-size:.78rem;
     font-family:var(--font-body);text-decoration:underline;cursor:pointer;padding:2px;
   }
-  .price-table-scroll{
-    overflow-x:auto;
+  .search-field{position:relative;}
+  .search-field input{padding-right:40px !important;}
+  .search-field .search-icon{
+    position:absolute;right:12px;top:50%;transform:translateY(-50%);
+    font-size:1rem;color:var(--muted);pointer-events:none;
+  }
+  .result-count{font-size:.78rem;color:var(--muted);margin-top:6px;text-align:left;}
+
+  .price-list{
     background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    box-shadow:var(--shadow-sm);margin-top:14px;
+    box-shadow:var(--shadow-sm);margin-top:14px;overflow:hidden;
   }
-  table.price-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
-  table.price-table th, table.price-table td{
-    padding:10px 12px;text-align:right;white-space:nowrap;font-size:.86rem;
-    border-bottom:1px solid var(--border);
+  .price-row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:13px 14px;border-bottom:1px solid var(--border);
+    transition:background .1s;
   }
-  table.price-table thead th{
-    font-family:var(--font-display);font-weight:700;color:var(--secondary-dark);
-    background:var(--primary-light);position:sticky;top:0;
+  .price-row:last-child{border-bottom:none;}
+  .price-row:hover{background:var(--primary-light);}
+  .price-row-info{min-width:0;flex:1;}
+  .price-row-name{
+    font-weight:700;font-family:var(--font-display);font-size:.94rem;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
-  table.price-table tbody tr:last-child td{border-bottom:none;}
-  table.price-table tbody tr:hover{background:var(--primary-light);}
-  .price-table-note{text-align:center;color:var(--muted);font-size:.78rem;padding:8px;}
+  .price-row-code{
+    font-size:.76rem;color:var(--muted);margin-top:2px;
+    font-variant-numeric:tabular-nums;font-family:ui-monospace,"Consolas",monospace;
+  }
+  .price-row-value{
+    font-weight:800;font-family:var(--font-display);color:var(--secondary);
+    font-size:1.05rem;white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums;
+  }
+  .price-row-value small{font-size:.68rem;font-weight:400;color:var(--muted);font-family:var(--font-body);}
+  .price-table-note{text-align:center;color:var(--muted);font-size:.78rem;padding:10px;}
 
   /* ---- المفضلة ---- */
   .fav-note{font-size:.8rem;color:var(--muted);text-align:center;margin:14px 0 4px;}
@@ -741,8 +758,12 @@
       <div class="card">
         <div class="field" style="margin-bottom:0;">
           <label>بحث بالكود أو الاسم</label>
-          <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="ahram">
+          <div class="search-field">
+            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="ahram" inputmode="search">
+            <span class="search-icon">🔍</span>
+          </div>
         </div>
+        <div class="result-count" data-result-count="ahram"></div>
       </div>
       <div data-table="ahram"></div>
     </section>
@@ -758,8 +779,12 @@
       <div class="card">
         <div class="field" style="margin-bottom:0;">
           <label>بحث بالكود أو الاسم</label>
-          <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="amazon">
+          <div class="search-field">
+            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="amazon" inputmode="search">
+            <span class="search-icon">🔍</span>
+          </div>
         </div>
+        <div class="result-count" data-result-count="amazon"></div>
       </div>
       <div data-table="amazon"></div>
     </section>
@@ -977,28 +1002,34 @@
 
   function renderPriceTable(source, filter){
     const wrap = document.querySelector(`[data-table="${source}"]`);
+    const countEl = document.querySelector(`[data-result-count="${source}"]`);
     if(!wrap) return;
     const rows = loadPriceData(source);
     renderUploadMeta(source);
     if(!rows.length){
       wrap.innerHTML = `<div class="empty-state">مفيش بيانات مرفوعة لسه — ارفع شيت الإكسيل فوق.</div>`;
+      if(countEl) countEl.textContent = "";
       return;
     }
     const q = (filter || "").trim().toLowerCase();
     const filtered = q ? rows.filter(r => r.code.toLowerCase().includes(q) || r.name.toLowerCase().includes(q)) : rows;
+    if(countEl) countEl.textContent = q ? `${filtered.length} نتيجة` : `${rows.length} صنف`;
     if(!filtered.length){
       wrap.innerHTML = `<div class="empty-state">مفيش نتايج مطابقة</div>`;
       return;
     }
     const shown = filtered.slice(0, 300);
     wrap.innerHTML = `
-      <div class="price-table-scroll">
-        <table class="price-table">
-          <thead><tr><th>الكود</th><th>الاسم</th><th>السعر</th></tr></thead>
-          <tbody>
-            ${shown.map(r => `<tr><td>${escapeHtml(r.code)}</td><td>${escapeHtml(r.name)}</td><td>${fmt(r.price)}</td></tr>`).join("")}
-          </tbody>
-        </table>
+      <div class="price-list">
+        ${shown.map(r => `
+          <div class="price-row">
+            <div class="price-row-info">
+              <div class="price-row-name">${escapeHtml(r.name) || "بدون اسم"}</div>
+              <div class="price-row-code">${escapeHtml(r.code)}</div>
+            </div>
+            <div class="price-row-value">${fmt(r.price)} <small>جنيه</small></div>
+          </div>
+        `).join("")}
       </div>
       ${filtered.length > 300 ? `<div class="price-table-note">عرض أول 300 من ${filtered.length} نتيجة — ضيّق البحث لعرض أدق</div>` : ``}
     `;
