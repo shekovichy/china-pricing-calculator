@@ -83,34 +83,57 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--bg);
+    background:#0b0d13;
     color:var(--text);
     font-family:var(--font-body);
     font-size:16px;
     line-height:1.6;
-    padding-bottom:70px;
     transition:background .2s;
   }
+  #app-saarli, #app-abdelrazek{background:var(--bg);padding-bottom:70px;min-height:100vh;}
   .container{max-width:640px;margin:0 auto;padding:12px 14px 24px;}
   :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
   b, strong{font-family:var(--font-display);font-weight:700;}
 
-  .app-switcher{
-    display:flex;
-    background:var(--card);
-    border-bottom:2px solid var(--border);
-    position:sticky;top:0;z-index:40;
-    max-width:640px;margin:0 auto;
+  #app-launcher[hidden], #app-saarli[hidden], #app-abdelrazek[hidden]{display:none;}
+  #app-launcher{
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    background-color:#0b0d13;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 15v14M15 22h14' stroke='%23ffffff' stroke-opacity='0.08' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    padding:40px 20px;
   }
-  .app-tab{
-    flex:1;background:none;border:none;
-    padding:13px 8px;font-family:var(--font-display);font-weight:700;
-    font-size:.9rem;color:var(--muted);cursor:pointer;
-    border-bottom:3px solid transparent;
-    transition:color .15s,border-color .15s,background .15s;
+  .launcher-grid{
+    display:flex;gap:36px;justify-content:center;flex-wrap:wrap;
   }
-  .app-tab:hover{background:var(--primary-light);}
-  .app-tab.active{color:var(--secondary);border-bottom-color:var(--secondary);}
+  .launcher-tile{
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+    background:none;border:none;cursor:pointer;padding:6px;
+    width:120px;
+  }
+  .tile-icon{
+    width:92px;height:92px;border-radius:26px;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+    transition:transform .15s;
+  }
+  .launcher-tile:active .tile-icon{transform:scale(.94);}
+  .tile-icon img{width:100%;height:100%;object-fit:cover;}
+  .tile-icon-saarli{box-shadow:0 8px 24px rgba(224,141,44,.45);}
+  .tile-icon-abdelrazek{box-shadow:0 8px 24px rgba(124,58,237,.45);}
+  .tile-label{
+    color:#fff;font-family:var(--font-display);font-weight:700;
+    font-size:.92rem;text-align:center;line-height:1.4;
+  }
+
+  .home-btn{
+    display:block;margin:12px auto 0;
+    background:var(--card);border:1px solid var(--border);
+    color:var(--secondary);font-family:var(--font-display);font-weight:700;
+    font-size:.82rem;padding:7px 16px;border-radius:20px;cursor:pointer;
+    box-shadow:var(--shadow-sm);
+  }
+  .home-btn:hover{background:var(--primary-light);}
   .placeholder-note{text-align:center;color:var(--muted);padding:34px 12px;font-size:.92rem;}
 
   header.app-header{
@@ -528,12 +551,21 @@
 </head>
 <body>
 
-<div class="app-switcher">
-  <button class="app-tab active" id="appTabSaarli" data-app="saarli" type="button">سعّرلي</button>
-  <button class="app-tab" id="appTabAbdelrazek" data-app="abdelrazek" type="button">عبد الرازق في الصين</button>
+<div id="app-launcher">
+  <div class="launcher-grid">
+    <button class="launcher-tile" id="tileSaarli" data-app="saarli" type="button">
+      <span class="tile-icon tile-icon-saarli"><img src="icons/icon-192.png" alt=""></span>
+      <span class="tile-label">سعّرلي</span>
+    </button>
+    <button class="launcher-tile" id="tileAbdelrazek" data-app="abdelrazek" type="button">
+      <span class="tile-icon tile-icon-abdelrazek"><img src="icons/icon-abdelrazek-192.png" alt=""></span>
+      <span class="tile-label">عبد الرازق<br>في الصين</span>
+    </button>
+  </div>
 </div>
 
-<div id="app-saarli">
+<div id="app-saarli" hidden>
+  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
 
 <header class="app-header">
   <div class="brand">
@@ -655,6 +687,7 @@
 </div><!-- /app-saarli -->
 
 <div id="app-abdelrazek" hidden>
+  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
   <header class="app-header">
     <div class="brand">
       <div class="brand-text" style="text-align:center;">
@@ -765,16 +798,24 @@
   $("tabHome").addEventListener("click", () => switchView("home"));
   $("tabFav").addEventListener("click", () => switchView("favorites"));
 
-  /* ---------------- تبديل بين سعّرلي وعبد الرازق في الصين ---------------- */
-  function switchApp(app){
+  /* ---------------- الشاشة الرئيسية (لانشر) وتبديل التطبيقات ---------------- */
+  function goHome(){
+    $("app-launcher").hidden = false;
+    $("app-saarli").hidden = true;
+    $("app-abdelrazek").hidden = true;
+    trackEvent("screen_view", { screen_name: "launcher" });
+  }
+  function openApp(app){
+    $("app-launcher").hidden = true;
     $("app-saarli").hidden = app !== "saarli";
     $("app-abdelrazek").hidden = app !== "abdelrazek";
-    $("appTabSaarli").classList.toggle("active", app === "saarli");
-    $("appTabAbdelrazek").classList.toggle("active", app === "abdelrazek");
-    trackEvent("app_switched", { app });
+    trackEvent("app_opened", { app });
   }
-  $("appTabSaarli").addEventListener("click", () => switchApp("saarli"));
-  $("appTabAbdelrazek").addEventListener("click", () => switchApp("abdelrazek"));
+  $("tileSaarli").addEventListener("click", () => openApp("saarli"));
+  $("tileAbdelrazek").addEventListener("click", () => openApp("abdelrazek"));
+  document.querySelectorAll("[data-go-home]").forEach(btn => {
+    btn.addEventListener("click", goHome);
+  });
 
   function switchArView(view){
     $("view-ahram").hidden = view !== "ahram";
