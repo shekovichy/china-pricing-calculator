@@ -90,12 +90,12 @@
     line-height:1.6;
     transition:background .2s;
   }
-  #app-saarli, #app-abdelrazek{background:var(--bg);padding-bottom:70px;min-height:100vh;}
+  #app-saarli, #app-ahram, #app-container12, #app-container3{background:var(--bg);padding-bottom:70px;min-height:100vh;}
   .container{max-width:640px;margin:0 auto;padding:12px 14px 24px;}
   :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
   b, strong{font-family:var(--font-display);font-weight:700;}
 
-  #app-launcher[hidden], #app-saarli[hidden], #app-abdelrazek[hidden],
+  #app-launcher[hidden], #app-saarli[hidden],
   #app-ahram[hidden], #app-container12[hidden], #app-container3[hidden]{display:none;}
   #app-launcher{
     min-height:100vh;
@@ -121,7 +121,6 @@
   .launcher-tile:active .tile-icon{transform:scale(.94);}
   .tile-icon img{width:100%;height:100%;object-fit:cover;}
   .tile-icon-saarli{box-shadow:0 8px 24px rgba(224,141,44,.45);}
-  .tile-icon-abdelrazek{box-shadow:0 8px 24px rgba(124,58,237,.45);}
   .tile-icon-emoji{font-size:2.4rem;}
   .tile-icon-ahram{background:linear-gradient(135deg,#f0c869,#b8860b);box-shadow:0 8px 24px rgba(184,134,11,.45);}
   .tile-icon-container12{background:linear-gradient(135deg,#60a5fa,#2563eb);box-shadow:0 8px 24px rgba(37,99,235,.45);}
@@ -606,10 +605,6 @@
       <span class="tile-icon tile-icon-saarli"><img src="icons/icon-192.png" alt=""></span>
       <span class="tile-label">سعّرلي</span>
     </button>
-    <button class="launcher-tile" id="tileAbdelrazek" data-app="abdelrazek" type="button">
-      <span class="tile-icon tile-icon-abdelrazek"><img src="icons/icon-abdelrazek-192.png" alt=""></span>
-      <span class="tile-label">عبد الرازق<br>في الصين</span>
-    </button>
     <button class="launcher-tile" id="tileAhram" data-app="ahram" type="button">
       <span class="tile-icon tile-icon-emoji tile-icon-ahram">🏛️</span>
       <span class="tile-label">أسعار الأهرام</span>
@@ -746,42 +741,6 @@
 <div class="toast" id="toast"></div>
 
 </div><!-- /app-saarli -->
-
-<div id="app-abdelrazek" hidden>
-  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
-  <header class="app-header">
-    <div class="brand">
-      <div class="brand-text" style="text-align:center;">
-        <h1>عبد الرازق في الصين</h1>
-        <p>أسعار أمازون</p>
-      </div>
-    </div>
-  </header>
-
-  <div class="container">
-    <section>
-      <div class="card">
-        <h2>📤 رفع شيت الأسعار</h2>
-        <div class="field" style="margin-bottom:0;">
-          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
-          <input type="file" accept=".xlsx,.xls,.csv" data-upload="amazon">
-        </div>
-        <div class="upload-meta" data-upload-meta="amazon"></div>
-      </div>
-      <div class="card">
-        <div class="field" style="margin-bottom:0;">
-          <label>بحث بالكود أو الاسم</label>
-          <div class="search-field">
-            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="amazon" inputmode="search">
-            <span class="search-icon">🔍</span>
-          </div>
-        </div>
-        <div class="result-count" data-result-count="amazon"></div>
-      </div>
-      <div data-table="amazon"></div>
-    </section>
-  </div>
-</div><!-- /app-abdelrazek -->
 
 <div id="app-ahram" hidden>
   <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
@@ -972,8 +931,8 @@
   $("tabFav").addEventListener("click", () => switchView("favorites"));
 
   /* ---------------- الشاشة الرئيسية (لانشر) وتبديل التطبيقات ---------------- */
-  const ALL_APPS = ["saarli", "abdelrazek", "ahram", "container12", "container3"];
-  const PRICE_APPS = ["abdelrazek", "ahram", "container12", "container3"]; // فيها حاسبة أسعار محتاجة Firebase
+  const ALL_APPS = ["saarli", "ahram", "container12", "container3"];
+  const PRICE_APPS = ["ahram", "container12", "container3"]; // فيها حاسبة أسعار محتاجة Firebase
 
   function goHome(){
     $("app-launcher").hidden = false;
@@ -1018,7 +977,7 @@
     messagingSenderId: "923229931538",
     appId: "1:923229931538:web:f0c13bf6533018d38230cb"
   };
-  const PRICE_SOURCES = ["ahram", "amazon", "container12", "container3"];
+  const PRICE_SOURCES = ["ahram", "container12", "container3"];
   const priceListeners = {};
   let firestoreDb = null;
   let firebaseLoadPromise = null;

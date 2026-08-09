@@ -69,8 +69,3 @@ if __name__ == "__main__":
     make_icon(180, SAARLI_PRIMARY, SAARLI_DARK, "س", rounded=False, filename=f"{out}/apple-touch-icon.png")
     make_icon(48, SAARLI_PRIMARY, SAARLI_DARK, "س", rounded=True, filename=f"{out}/favicon-48.png")
     make_icon(32, SAARLI_PRIMARY, SAARLI_DARK, "س", rounded=True, filename=f"{out}/favicon-32.png")
-
-    # عبد الرازق في الصين — نيلي/بنفسجي
-    AR_PRIMARY = (124, 58, 237)          # #7c3aed
-    AR_DARK = (91, 33, 182)              # #5b21b6
-    make_icon(192, AR_PRIMARY, AR_DARK, "ع", rounded=True, filename=f"{out}/icon-abdelrazek-192.png")
