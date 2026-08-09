@@ -380,6 +380,10 @@
     font-size:.76rem;color:var(--muted);margin-top:2px;
     font-variant-numeric:tabular-nums;font-family:ui-monospace,"Consolas",monospace;
   }
+  .price-row-extra{
+    font-size:.74rem;color:var(--muted);margin-top:2px;
+    font-variant-numeric:tabular-nums;
+  }
   .price-row-value{
     font-weight:800;font-family:var(--font-display);color:var(--secondary);
     font-size:1.05rem;white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums;
@@ -877,6 +881,7 @@
 
   const $ = id => document.getElementById(id);
   const fmt = n => Math.round(n).toLocaleString("ar-EG");
+  const fmtPriceOrDash = n => (n === null || n === undefined || isNaN(n)) ? "—" : fmt(n);
 
   // تتبّع أحداث الاستخدام (Google Analytics) — من غير أي بيانات شخصية (اسم/رقم موبايل)
   function trackEvent(name, params){
@@ -1065,6 +1070,39 @@
     return -1;
   }
 
+  // شيتات كتالوج حقيقية بتستخدم "خلايا مدمجة" (Merge) عشان تجمع أكتر من صنف تحت نفس الاسم/الرقم —
+  // البرنامج اللي بيقرأ الإكسيل بيشوف بس الخلية الأولى من الدمج، والباقي بيرجع فاضي. الدالة دي بتاخد
+  // القيمة من أول خلية في كل نطاق دمج وتحطها في كل الصفوف اللي تحته، زي بالظبط اللي إكسيل بيوريه للعين.
+  function forwardFillMerges(sheet, rows){
+    const merges = sheet["!merges"] || [];
+    merges.forEach(m => {
+      const topAddr = XLSX.utils.encode_cell({ r: m.s.r, c: m.s.c });
+      const topCell = sheet[topAddr];
+      const val = topCell ? topCell.v : undefined;
+      if(val === undefined || val === null || val === "") return;
+      for(let r = m.s.r; r <= m.e.r; r++){
+        if(!rows[r]) continue;
+        for(let c = m.s.c; c <= m.e.c; c++){
+          const cur = rows[r][c];
+          if(cur === undefined || cur === null || String(cur).trim() === ""){
+            rows[r][c] = val;
+          }
+        }
+      }
+    });
+    return rows;
+  }
+
+  // خلايا اكسل ممكن تفضل فيها نصوص أخطاء صيغ قديمة (زي #N/A لو دالة VLOOKUP فشلت) — دي مش "صفر"،
+  // دي "مجهول"، فمينفعش نحولها صفر لأن الصفر بيبقى قيمة حقيقية مضللة (يبان وكأنه سعر فعلي).
+  const EXCEL_ERROR_STRINGS = new Set(["#N/A", "#REF!", "#DIV/0!", "#VALUE!", "#NAME?", "#NULL!", "#NUM!"]);
+  function parsePriceCell(val){
+    if(val === undefined || val === null || val === "") return null;
+    if(typeof val === "string" && EXCEL_ERROR_STRINGS.has(val.trim().toUpperCase())) return null;
+    const n = parseFloat(val);
+    return isNaN(n) ? null : n;
+  }
+
   async function handlePriceUpload(source, file){
     showToast("جارِ قراءة الملف...");
     try{
@@ -1079,25 +1117,43 @@
         const data = new Uint8Array(e.target.result);
         const wb = XLSX.read(data, { type: "array" });
         const sheet = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+        let rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
         if(!rows.length){ showToast("الملف فاضي"); return; }
+        rows = forwardFillMerges(sheet, rows);
 
-        let codeIdx = findColumnIndex(rows[0], ["code", "كود"]);
-        let nameIdx = findColumnIndex(rows[0], ["name", "اسم", "الاسم"]);
-        let priceIdx = findColumnIndex(rows[0], ["price", "سعر", "السعر"]);
-        const hasHeaderRow = codeIdx >= 0 || nameIdx >= 0 || priceIdx >= 0;
+        const header = rows[0];
+        const itemNoIdx = findColumnIndex(header, ["item no", "itemno", "item", "item number", "رقم الصنف"]);
+        let codeIdx = findColumnIndex(header, ["code", "كود"]);
+        let nameIdx = findColumnIndex(header, ["name", "اسم", "الاسم"]);
+        const chinaPriceIdx = findColumnIndex(header, ["china price", "china", "سعر الصين"]);
+        const costIdx = findColumnIndex(header, ["cost", "تكلفة", "التكلفة"]);
+        const sellingIdx = findColumnIndex(header, ["selling price", "selling", "سعر البيع"]);
+        const photoIdx = findColumnIndex(header, ["photo", "صورة", "الصورة"]);
+        let priceIdx = findColumnIndex(header, ["price", "سعر", "السعر"]); // توافق مع شيتات بسيطة قديمة (3 أعمدة بس)
+
+        const hasHeaderRow = [itemNoIdx, codeIdx, nameIdx, chinaPriceIdx, costIdx, sellingIdx, priceIdx].some(i => i >= 0);
         const dataRows = hasHeaderRow ? rows.slice(1) : rows;
-        if(codeIdx < 0) codeIdx = 0;
-        if(nameIdx < 0) nameIdx = 1;
-        if(priceIdx < 0) priceIdx = 2;
+        if(!hasHeaderRow){ codeIdx = 0; nameIdx = 1; priceIdx = 2; }
 
         const parsed = dataRows
-          .filter(r => String(r[codeIdx] || "").trim() || String(r[nameIdx] || "").trim())
-          .map(r => ({
-            code: String(r[codeIdx] ?? "").trim(),
-            name: String(r[nameIdx] ?? "").trim(),
-            price: parseFloat(r[priceIdx]) || 0
-          }));
+          .filter(r => String(r[codeIdx] ?? "").trim() || String(r[nameIdx] ?? "").trim())
+          .map(r => {
+            const item = {
+              code: codeIdx >= 0 ? String(r[codeIdx] ?? "").trim() : "",
+              name: nameIdx >= 0 ? String(r[nameIdx] ?? "").trim() : ""
+            };
+            if(itemNoIdx >= 0){
+              const v = String(r[itemNoIdx] ?? "").trim();
+              if(v) item.itemNo = v;
+            }
+            if(chinaPriceIdx >= 0) item.chinaPrice = parsePriceCell(r[chinaPriceIdx]);
+            if(costIdx >= 0) item.cost = parsePriceCell(r[costIdx]);
+            if(sellingIdx >= 0) item.sellingPrice = parsePriceCell(r[sellingIdx]);
+            item.price = (chinaPriceIdx >= 0 || sellingIdx >= 0)
+              ? (item.sellingPrice !== undefined ? item.sellingPrice : null)
+              : parsePriceCell(r[priceIdx]);
+            return item;
+          });
 
         if(!parsed.length){ showToast("مفيش صفوف قابلة للقراءة في الملف"); return; }
 
@@ -1105,7 +1161,7 @@
         renderPriceTable(source, "");
         const searchInput = document.querySelector(`[data-search="${source}"]`);
         if(searchInput) searchInput.value = "";
-        showToast(`تم رفع ${parsed.length} صنف`);
+        showToast(`تم رفع ${parsed.length} صنف` + (photoIdx >= 0 ? " (⚠️ عمود الصور اتجاهل — صور مضمنة في الملف، مش نص/رابط، فمينفعش تتقرأ تلقائيًا)" : ""));
         trackEvent("price_sheet_uploaded", { source, rows: parsed.length });
 
         ensureFirebaseReady().then(() => {
@@ -1149,7 +1205,11 @@
       return;
     }
     const q = (filter || "").trim().toLowerCase();
-    const filtered = q ? rows.filter(r => r.code.toLowerCase().includes(q) || r.name.toLowerCase().includes(q)) : rows;
+    const filtered = q ? rows.filter(r =>
+      r.code.toLowerCase().includes(q) ||
+      r.name.toLowerCase().includes(q) ||
+      (r.itemNo && r.itemNo.toLowerCase().includes(q))
+    ) : rows;
     if(countEl) countEl.textContent = q ? `${filtered.length} نتيجة` : `${rows.length} صنف`;
     if(!filtered.length){
       wrap.innerHTML = `<div class="empty-state">مفيش نتايج مطابقة</div>`;
@@ -1158,15 +1218,21 @@
     const shown = filtered.slice(0, 300);
     wrap.innerHTML = `
       <div class="price-list">
-        ${shown.map(r => `
+        ${shown.map(r => {
+          const idBits = [r.itemNo, r.code].filter(Boolean).map(escapeHtml).join(" · ");
+          const extraBits = [];
+          if(r.chinaPrice != null) extraBits.push(`الصين: ¥${fmt(r.chinaPrice)}`);
+          if(r.cost != null) extraBits.push(`التكلفة: ${fmt(r.cost)} جنيه`);
+          return `
           <div class="price-row">
             <div class="price-row-info">
               <div class="price-row-name">${escapeHtml(r.name) || "بدون اسم"}</div>
-              <div class="price-row-code">${escapeHtml(r.code)}</div>
+              ${idBits ? `<div class="price-row-code">${idBits}</div>` : ``}
+              ${extraBits.length ? `<div class="price-row-extra">${extraBits.join(" · ")}</div>` : ``}
             </div>
-            <div class="price-row-value">${fmt(r.price)} <small>جنيه</small></div>
+            <div class="price-row-value">${fmtPriceOrDash(r.price)} <small>جنيه</small></div>
           </div>
-        `).join("")}
+        `;}).join("")}
       </div>
       ${filtered.length > 300 ? `<div class="price-table-note">عرض أول 300 من ${filtered.length} نتيجة — ضيّق البحث لعرض أدق</div>` : ``}
     `;
