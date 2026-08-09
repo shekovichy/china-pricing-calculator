@@ -95,7 +95,8 @@
   :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
   b, strong{font-family:var(--font-display);font-weight:700;}
 
-  #app-launcher[hidden], #app-saarli[hidden], #app-abdelrazek[hidden]{display:none;}
+  #app-launcher[hidden], #app-saarli[hidden], #app-abdelrazek[hidden],
+  #app-ahram[hidden], #app-container12[hidden], #app-container3[hidden]{display:none;}
   #app-launcher{
     min-height:100vh;
     display:flex;align-items:center;justify-content:center;
@@ -121,6 +122,10 @@
   .tile-icon img{width:100%;height:100%;object-fit:cover;}
   .tile-icon-saarli{box-shadow:0 8px 24px rgba(224,141,44,.45);}
   .tile-icon-abdelrazek{box-shadow:0 8px 24px rgba(124,58,237,.45);}
+  .tile-icon-emoji{font-size:2.4rem;}
+  .tile-icon-ahram{background:linear-gradient(135deg,#f0c869,#b8860b);box-shadow:0 8px 24px rgba(184,134,11,.45);}
+  .tile-icon-container12{background:linear-gradient(135deg,#60a5fa,#2563eb);box-shadow:0 8px 24px rgba(37,99,235,.45);}
+  .tile-icon-container3{background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 8px 24px rgba(5,150,105,.45);}
   .tile-label{
     color:#fff;font-family:var(--font-display);font-weight:700;
     font-size:.92rem;text-align:center;line-height:1.4;
@@ -605,6 +610,18 @@
       <span class="tile-icon tile-icon-abdelrazek"><img src="icons/icon-abdelrazek-192.png" alt=""></span>
       <span class="tile-label">عبد الرازق<br>في الصين</span>
     </button>
+    <button class="launcher-tile" id="tileAhram" data-app="ahram" type="button">
+      <span class="tile-icon tile-icon-emoji tile-icon-ahram">🏛️</span>
+      <span class="tile-label">أسعار الأهرام</span>
+    </button>
+    <button class="launcher-tile" id="tileContainer12" data-app="container12" type="button">
+      <span class="tile-icon tile-icon-emoji tile-icon-container12">📦</span>
+      <span class="tile-label">أسعار الحاوية<br>1&amp;2</span>
+    </button>
+    <button class="launcher-tile" id="tileContainer3" data-app="container3" type="button">
+      <span class="tile-icon tile-icon-emoji tile-icon-container3">📦</span>
+      <span class="tile-label">أسعار الحاوية 3</span>
+    </button>
   </div>
 </div>
 
@@ -736,38 +753,13 @@
     <div class="brand">
       <div class="brand-text" style="text-align:center;">
         <h1>عبد الرازق في الصين</h1>
-        <p>قارن الأسعار قبل ما تستورد</p>
+        <p>أسعار أمازون</p>
       </div>
-    </div>
-    <div class="tabs">
-      <button class="tab active" id="tabAhram" data-view="ahram" type="button">أسعار الأهرام</button>
-      <button class="tab" id="tabAmazon" data-view="amazon" type="button">أسعار أمازون</button>
     </div>
   </header>
 
   <div class="container">
-    <section id="view-ahram">
-      <div class="card">
-        <h2>📤 رفع شيت الأسعار</h2>
-        <div class="field" style="margin-bottom:0;">
-          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
-          <input type="file" accept=".xlsx,.xls,.csv" data-upload="ahram">
-        </div>
-        <div class="upload-meta" data-upload-meta="ahram"></div>
-      </div>
-      <div class="card">
-        <div class="field" style="margin-bottom:0;">
-          <label>بحث بالكود أو الاسم</label>
-          <div class="search-field">
-            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="ahram" inputmode="search">
-            <span class="search-icon">🔍</span>
-          </div>
-        </div>
-        <div class="result-count" data-result-count="ahram"></div>
-      </div>
-      <div data-table="ahram"></div>
-    </section>
-    <section id="view-amazon" hidden>
+    <section>
       <div class="card">
         <h2>📤 رفع شيت الأسعار</h2>
         <div class="field" style="margin-bottom:0;">
@@ -790,6 +782,111 @@
     </section>
   </div>
 </div><!-- /app-abdelrazek -->
+
+<div id="app-ahram" hidden>
+  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-text" style="text-align:center;">
+        <h1>أسعار الأهرام</h1>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <section>
+      <div class="card">
+        <h2>📤 رفع شيت الأسعار</h2>
+        <div class="field" style="margin-bottom:0;">
+          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
+          <input type="file" accept=".xlsx,.xls,.csv" data-upload="ahram">
+        </div>
+        <div class="upload-meta" data-upload-meta="ahram"></div>
+      </div>
+      <div class="card">
+        <div class="field" style="margin-bottom:0;">
+          <label>بحث بالكود أو الاسم</label>
+          <div class="search-field">
+            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="ahram" inputmode="search">
+            <span class="search-icon">🔍</span>
+          </div>
+        </div>
+        <div class="result-count" data-result-count="ahram"></div>
+      </div>
+      <div data-table="ahram"></div>
+    </section>
+  </div>
+</div><!-- /app-ahram -->
+
+<div id="app-container12" hidden>
+  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-text" style="text-align:center;">
+        <h1>أسعار الحاوية 1&amp;2</h1>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <section>
+      <div class="card">
+        <h2>📤 رفع شيت الأسعار</h2>
+        <div class="field" style="margin-bottom:0;">
+          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
+          <input type="file" accept=".xlsx,.xls,.csv" data-upload="container12">
+        </div>
+        <div class="upload-meta" data-upload-meta="container12"></div>
+      </div>
+      <div class="card">
+        <div class="field" style="margin-bottom:0;">
+          <label>بحث بالكود أو الاسم</label>
+          <div class="search-field">
+            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="container12" inputmode="search">
+            <span class="search-icon">🔍</span>
+          </div>
+        </div>
+        <div class="result-count" data-result-count="container12"></div>
+      </div>
+      <div data-table="container12"></div>
+    </section>
+  </div>
+</div><!-- /app-container12 -->
+
+<div id="app-container3" hidden>
+  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-text" style="text-align:center;">
+        <h1>أسعار الحاوية 3</h1>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <section>
+      <div class="card">
+        <h2>📤 رفع شيت الأسعار</h2>
+        <div class="field" style="margin-bottom:0;">
+          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
+          <input type="file" accept=".xlsx,.xls,.csv" data-upload="container3">
+        </div>
+        <div class="upload-meta" data-upload-meta="container3"></div>
+      </div>
+      <div class="card">
+        <div class="field" style="margin-bottom:0;">
+          <label>بحث بالكود أو الاسم</label>
+          <div class="search-field">
+            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="container3" inputmode="search">
+            <span class="search-icon">🔍</span>
+          </div>
+        </div>
+        <div class="result-count" data-result-count="container3"></div>
+      </div>
+      <div data-table="container3"></div>
+    </section>
+  </div>
+</div><!-- /app-container3 -->
 
 <script>
 (function(){
@@ -875,34 +972,26 @@
   $("tabFav").addEventListener("click", () => switchView("favorites"));
 
   /* ---------------- الشاشة الرئيسية (لانشر) وتبديل التطبيقات ---------------- */
+  const ALL_APPS = ["saarli", "abdelrazek", "ahram", "container12", "container3"];
+  const PRICE_APPS = ["abdelrazek", "ahram", "container12", "container3"]; // فيها حاسبة أسعار محتاجة Firebase
+
   function goHome(){
     $("app-launcher").hidden = false;
-    $("app-saarli").hidden = true;
-    $("app-abdelrazek").hidden = true;
+    ALL_APPS.forEach(a => { $("app-" + a).hidden = true; });
     trackEvent("screen_view", { screen_name: "launcher" });
   }
   function openApp(app){
     $("app-launcher").hidden = true;
-    $("app-saarli").hidden = app !== "saarli";
-    $("app-abdelrazek").hidden = app !== "abdelrazek";
+    ALL_APPS.forEach(a => { $("app-" + a).hidden = (a !== app); });
     trackEvent("app_opened", { app });
-    if(app === "abdelrazek") initCloudPriceSync();
+    if(PRICE_APPS.includes(app)) initCloudPriceSync();
   }
-  $("tileSaarli").addEventListener("click", () => openApp("saarli"));
-  $("tileAbdelrazek").addEventListener("click", () => openApp("abdelrazek"));
+  document.querySelectorAll(".launcher-tile").forEach(tile => {
+    tile.addEventListener("click", () => openApp(tile.getAttribute("data-app")));
+  });
   document.querySelectorAll("[data-go-home]").forEach(btn => {
     btn.addEventListener("click", goHome);
   });
-
-  function switchArView(view){
-    $("view-ahram").hidden = view !== "ahram";
-    $("view-amazon").hidden = view !== "amazon";
-    $("tabAhram").classList.toggle("active", view === "ahram");
-    $("tabAmazon").classList.toggle("active", view === "amazon");
-    trackEvent("screen_view", { screen_name: "abdelrazek_" + view });
-  }
-  $("tabAhram").addEventListener("click", () => switchArView("ahram"));
-  $("tabAmazon").addEventListener("click", () => switchArView("amazon"));
 
   /* ---------------- شيتات الأسعار (رفع إكسيل + مزامنة سحابية + بحث) ---------------- */
   let xlsxLoadPromise = null;
@@ -929,7 +1018,7 @@
     messagingSenderId: "923229931538",
     appId: "1:923229931538:web:f0c13bf6533018d38230cb"
   };
-  const PRICE_SOURCES = ["ahram", "amazon"];
+  const PRICE_SOURCES = ["ahram", "amazon", "container12", "container3"];
   const priceListeners = {};
   let firestoreDb = null;
   let firebaseLoadPromise = null;
@@ -1152,8 +1241,7 @@
       }).catch(() => {});
     }
   });
-  renderPriceTable("ahram", "");
-  renderPriceTable("amazon", "");
+  PRICE_SOURCES.forEach(source => renderPriceTable(source, ""));
 
   /* ---------------- سعر الصرف ---------------- */
   async function fetchExchangeRate(){
