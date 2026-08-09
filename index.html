@@ -268,17 +268,25 @@
   /* ---- الصفحة الرئيسية: السعر السريع ---- */
   .hero-card{text-align:center;}
   .hero-card label{font-size:.9rem;color:var(--muted);display:block;margin-bottom:8px;}
-  .mode-toggle{
-    display:flex;background:var(--bg);border:1px solid var(--border);
-    border-radius:11px;padding:3px;margin-bottom:16px;
-  }
-  .mode-btn{
-    flex:1;background:transparent;border:none;color:var(--muted);
-    padding:9px 8px;border-radius:8px;font-size:.85rem;font-family:var(--font-display);
-    font-weight:700;cursor:pointer;transition:background .15s,color .15s;
-  }
-  .mode-btn.active{background:var(--primary);color:#fff;}
   .hero-sub{margin-top:6px;font-size:.9rem;color:var(--muted);min-height:1.3em;font-variant-numeric:tabular-nums;}
+  .price-chain{margin-top:18px;text-align:right;}
+  .chain-row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:8px 2px;border-bottom:1px dashed var(--border);
+    font-size:.86rem;color:var(--muted);
+  }
+  .chain-row b{
+    color:var(--text);font-family:var(--font-display);font-size:1rem;
+    font-variant-numeric:tabular-nums;
+  }
+  .chain-field{padding:12px 2px 4px;}
+  .chain-field label{font-size:.8rem;color:var(--muted);display:block;margin-bottom:5px;}
+  .chain-field input{
+    width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:9px;
+    font-size:.95rem;background:var(--input-bg);color:var(--secondary);
+    font-family:var(--font-display);font-weight:700;text-align:center;
+  }
+  .chain-field input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light);}
   .hero-input{
     width:100%;
     text-align:center;
@@ -661,25 +669,36 @@
         <span>السعر العالمي: 1 دولار = <b id="liveUsdRate">—</b> جنيه</span>
         <span class="status" id="rateStatus">جارِ التحديث...</span>
       </div>
-      <div class="field" id="userUsdRateField">
+      <div class="field" id="userUsdRateField" style="margin-bottom:0;">
         <label for="userUsdRate">سعر الدولار اللي هتشتريه (أو اشتريته) بيه من مصر</label>
         <input type="number" id="userUsdRate" min="0" step="0.01" placeholder="0">
-      </div>
-      <div class="field" style="margin-bottom:0;">
-        <label for="safetyMargin">هامش أمان إضافي على سعر اليوان/الدولار (%)</label>
-        <input type="number" id="safetyMargin" value="3" min="0" step="0.5">
       </div>
       <div class="live-box" id="derivedRateBox"></div>
     </div>
 
     <div class="card hero-card">
-      <div class="mode-toggle">
-        <button class="mode-btn active" id="modeEgpBtn" data-mode="egp" type="button">يوان ← جنيه</button>
-        <button class="mode-btn" id="modeUsdBtn" data-mode="usd" type="button">يوان ← دولار</button>
-      </div>
       <label for="quickPriceCny">سعر المنتج (يوان)</label>
       <input type="number" id="quickPriceCny" class="hero-input" min="0" step="0.01" placeholder="0" inputmode="decimal">
-      <div class="hero-result"><span id="quickResultEgp">0</span> <small id="quickResultUnit">جنيه</small></div>
+
+      <div class="price-chain">
+        <div class="chain-row"><span>السعر بالجنيه</span><b id="chainBase">0</b></div>
+        <div class="chain-field">
+          <label for="markup1Percent">نسبة الزيادة الأولى (%)</label>
+          <input type="number" id="markup1Percent" value="60" min="0" step="1">
+        </div>
+        <div class="chain-row"><span>بعد الزيادة</span><b id="chainAfterMarkup1">0</b></div>
+        <div class="chain-field">
+          <label for="markup2Percent">نسبة إضافية (%)</label>
+          <input type="number" id="markup2Percent" value="22" min="0" step="1">
+        </div>
+        <div class="chain-row"><span>بعد الإضافة</span><b id="chainAfterMarkup2">0</b></div>
+        <div class="chain-field">
+          <label for="marginPercent">هامش الربح (%)</label>
+          <input type="number" id="marginPercent" value="35" min="0" step="1">
+        </div>
+      </div>
+
+      <div class="hero-result"><span id="quickResultEgp">0</span> <small>جنيه</small></div>
       <div class="hero-sub" id="quickResultSub"></div>
       <button id="quickFavBtn" class="fav-btn" disabled>⭐ حفظ في المفضلة</button>
     </div>
@@ -867,6 +886,9 @@
     container40CapacityCbm: 56, // السعة العملية التقريبية لحاوية 40 قدم
     profitMargins: [20, 30, 40], // هوامش الربح الافتراضية %
     vatRate: 14,             // نسبة ضريبة القيمة المضافة الافتراضية %
+    homeMarkup1: 60,         // نسبة الزيادة الأولى الافتراضية على سعر اليوان (%) — شاشة السعر السريع
+    homeMarkup2: 22,         // نسبة الإضافة التانية الافتراضية (%) — بتتحسب على الناتج بعد الزيادة الأولى
+    homeMargin: 35,          // هامش الربح الافتراضي (%) — بيتحسب على الإجمالي بعد الزيادتين
     photoMaxDim: 600,        // أقصى بعد للصورة بعد الضغط (بكسل)
     photoQuality: 0.65,      // جودة ضغط الصورة (JPEG)
     shippingDefaults: { airRate: 6, lclRate: 105, container20Rate: 1850, container40Rate: 2400 },
@@ -897,7 +919,6 @@
   // سعر الدولار اللي التاجر فعليًا اشترى/هيشتري بيه من مصر — ده اللي بيُستخدم في كل تحويل لليوان أو الشحن للجنيه،
   // مش سعر الصرف العالمي، لأن التاجر بيدفع في الصين بدولارات اشتراها هو بالجنيه المصري الأول.
   let userUsdRate = loadUserUsdRate();
-  let quickMode = localStorage.getItem("cpc_quick_mode") || "egp";
 
   /* ---------------- تخزين محلي ---------------- */
   function loadFavorites(){
@@ -1312,8 +1333,7 @@
   }
 
   function getAdjustedRates(){
-    const margin = parseFloat($("safetyMargin").value) || 0;
-    const cnyToUsd = liveRates.usdToCny ? (1 / liveRates.usdToCny) * (1 + margin/100) : 0;
+    const cnyToUsd = liveRates.usdToCny ? (1 / liveRates.usdToCny) : 0;
     const effectiveUsdToEgp = userUsdRate || liveRates.usdToEgp || 0;
     return {
       cnyToUsd,
@@ -1322,40 +1342,41 @@
     };
   }
 
-  /* ---------------- الصفحة الرئيسية: السعر السريع ---------------- */
-  function applyQuickModeUI(){
-    $("modeEgpBtn").classList.toggle("active", quickMode === "egp");
-    $("modeUsdBtn").classList.toggle("active", quickMode === "usd");
-    $("userUsdRateField").hidden = quickMode === "usd";
+  /* ---------------- الصفحة الرئيسية: السعر السريع (سلسلة الزيادة/المارجن) ---------------- */
+  // بيحسب السعر خطوة بخطوة: يوان → جنيه → +نسبة أولى → +نسبة تانية → +هامش ربح = السعر النهائي للقطعة
+  function computeQuickChain(){
+    const rates = getAdjustedRates();
+    const priceCny = parseFloat($("quickPriceCny").value) || 0;
+    const baseEgp = priceCny * rates.cnyToEgp;
+    const m1 = parseFloat($("markup1Percent").value) || 0;
+    const m2 = parseFloat($("markup2Percent").value) || 0;
+    const mg = parseFloat($("marginPercent").value) || 0;
+    const afterMarkup1 = baseEgp * (1 + m1 / 100);
+    const afterMarkup2 = afterMarkup1 * (1 + m2 / 100);
+    const finalEgp = afterMarkup2 * (1 + mg / 100);
+    return { priceCny, rates, baseEgp, m1, m2, mg, afterMarkup1, afterMarkup2, finalEgp };
   }
-  function setQuickMode(mode){
-    quickMode = mode;
-    localStorage.setItem("cpc_quick_mode", mode);
-    applyQuickModeUI();
-    updateQuickResult();
-  }
-  $("modeEgpBtn").addEventListener("click", () => setQuickMode("egp"));
-  $("modeUsdBtn").addEventListener("click", () => setQuickMode("usd"));
 
   function updateQuickResult(){
     if(liveRates.usdToCny === null) return;
-    const priceCny = parseFloat($("quickPriceCny").value) || 0;
-    const rates = getAdjustedRates();
-    const usdAmount = priceCny * rates.cnyToUsd;
-    if(quickMode === "usd"){
-      $("quickResultEgp").textContent = usdAmount.toFixed(2);
-      $("quickResultUnit").textContent = "دولار";
-      $("quickResultSub").textContent = "";
+    const c = computeQuickChain();
+    $("chainBase").textContent = fmt(c.baseEgp);
+    $("chainAfterMarkup1").textContent = fmt(c.afterMarkup1);
+    $("chainAfterMarkup2").textContent = fmt(c.afterMarkup2);
+    $("quickResultEgp").textContent = fmt(c.finalEgp);
+    if(c.priceCny > 0){
+      const finalUsd = c.rates.usdToEgp ? c.finalEgp / c.rates.usdToEgp : 0;
+      const finalCny = c.rates.cnyToEgp ? c.finalEgp / c.rates.cnyToEgp : 0;
+      $("quickResultSub").textContent = `≈ ${fmt(finalCny)} يوان · ${finalUsd.toFixed(2)} $`;
     }else{
-      const egpAmount = usdAmount * rates.usdToEgp;
-      $("quickResultEgp").textContent = fmt(egpAmount);
-      $("quickResultUnit").textContent = "جنيه";
-      $("quickResultSub").textContent = priceCny > 0 ? `≈ ${usdAmount.toFixed(2)} $` : "";
+      $("quickResultSub").textContent = "";
     }
-    $("quickFavBtn").disabled = priceCny <= 0;
+    $("quickFavBtn").disabled = c.priceCny <= 0;
   }
   $("quickPriceCny").addEventListener("input", updateQuickResult);
-  $("safetyMargin").addEventListener("input", () => { updateRateDisplay(); updateQuickResult(); });
+  $("markup1Percent").addEventListener("input", updateQuickResult);
+  $("markup2Percent").addEventListener("input", updateQuickResult);
+  $("marginPercent").addEventListener("input", updateQuickResult);
   $("userUsdRate").addEventListener("input", () => {
     const v = parseFloat($("userUsdRate").value);
     if(!isNaN(v) && v > 0){
@@ -1433,6 +1454,9 @@
       supplier: $("saveSupplier").value.trim(),
       photo: capturedPhotoDataUrl,
       priceCny: priceCny,
+      markup1Percent: parseFloat($("markup1Percent").value) || 0,
+      markup2Percent: parseFloat($("markup2Percent").value) || 0,
+      marginPercent: parseFloat($("marginPercent").value) || 0,
       qty: 1,
       length: 0, width: 0, height: 0, weight: 0,
       shippingEnabled: false,
@@ -1469,7 +1493,20 @@
   function computeItemResult(item){
     const rates = getAdjustedRates();
     const qty = item.qty || 1;
-    const baseEgp = item.priceCny * qty * rates.cnyToEgp;
+
+    // منتجات اتحفظت قبل إضافة سلسلة "الزيادة/المارجن" (مفيش عندها markup1Percent) بتفضل بسعرها المباشر
+    // القديم زي ما اتحفظت بالظبط، مش بتتأثر بالنسب الافتراضية الجديدة.
+    const hasMarkupChain = item.markup1Percent !== undefined || item.markup2Percent !== undefined || item.marginPercent !== undefined;
+    let baseEgp;
+    if(hasMarkupChain){
+      const perUnitBase = item.priceCny * rates.cnyToEgp;
+      const perUnitAfterMarkup1 = perUnitBase * (1 + (item.markup1Percent || 0) / 100);
+      const perUnitAfterMarkup2 = perUnitAfterMarkup1 * (1 + (item.markup2Percent || 0) / 100);
+      const perUnitFinal = perUnitAfterMarkup2 * (1 + (item.marginPercent || 0) / 100);
+      baseEgp = perUnitFinal * qty;
+    }else{
+      baseEgp = item.priceCny * qty * rates.cnyToEgp;
+    }
 
     let shippingEgp = 0, shippingDetail = null;
     const L = item.length, W = item.width, H = item.height, wt = item.weight;
@@ -1582,6 +1619,23 @@
         <label>صورة المنتج</label>
         <input type="file" accept="image/*" capture="environment" data-photo="${item.id}">
         ${item.photo ? `<img src="${item.photo}" class="photo-preview">` : ``}
+      </div>
+      <div class="field">
+        <label>نسب التسعير (بتتحسب بالترتيب على سعر اليوان)</label>
+        <div class="row3">
+          <div class="field" style="margin-bottom:0;">
+            <label>الزيادة الأولى (%)</label>
+            <input type="number" min="0" step="1" data-field="markup1Percent" data-id="${item.id}" value="${item.markup1Percent !== undefined ? item.markup1Percent : DEFAULTS.homeMarkup1}">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>الإضافة (%)</label>
+            <input type="number" min="0" step="1" data-field="markup2Percent" data-id="${item.id}" value="${item.markup2Percent !== undefined ? item.markup2Percent : DEFAULTS.homeMarkup2}">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>هامش الربح (%)</label>
+            <input type="number" min="0" step="1" data-field="marginPercent" data-id="${item.id}" value="${item.marginPercent !== undefined ? item.marginPercent : DEFAULTS.homeMargin}">
+          </div>
+        </div>
       </div>
       <details class="section" data-id="${item.id}" ${item.shippingEnabled ? "open" : ""}>
         <summary>🚚 حساب تكلفة الشحن (اختياري)</summary>
@@ -1856,7 +1910,7 @@
         if(field.checked && key === "shippingEnabled") trackEvent("shipping_calculated");
         if(field.checked && key === "customsEnabled") trackEvent("customs_calculated");
         if(field.checked && key === "vatEnabled") trackEvent("vat_calculated");
-      }else if(["priceCny","qty","length","width","height","weight","customsRate","vatRate"].includes(key)){
+      }else if(["priceCny","qty","length","width","height","weight","customsRate","vatRate","markup1Percent","markup2Percent","marginPercent"].includes(key)){
         item[key] = parseFloat(field.value) || 0;
       }else{
         item[key] = field.value;
@@ -2013,7 +2067,6 @@
 
   /* ---------------- بدء التشغيل ---------------- */
   if(userUsdRate !== null) $("userUsdRate").value = userUsdRate.toFixed(2);
-  applyQuickModeUI();
   updateFavCount();
   fetchExchangeRate();
 })();
