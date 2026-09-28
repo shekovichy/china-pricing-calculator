@@ -326,7 +326,7 @@
   .field{margin-bottom:12px;}
   .field:last-child{margin-bottom:0;}
   .field label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px;}
-  .field input,.field select{
+  .field input,.field select,.field textarea{
     width:100%;
     padding:10px 12px;
     border:1px solid var(--border);
@@ -337,7 +337,8 @@
     color:var(--text);
     font-family:inherit;
   }
-  .field input:focus,.field select:focus{outline:2px solid var(--primary);border-color:var(--primary);}
+  .field textarea{resize:vertical;min-height:90px;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--primary);border-color:var(--primary);}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 
@@ -656,10 +657,31 @@
     font-size:.85rem;opacity:0;pointer-events:none;transition:all .25s;z-index:50;
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .talk-fab{
+    position:fixed;bottom:20px;inset-inline-end:16px;z-index:60;
+    display:flex;align-items:center;gap:8px;
+    background:var(--secondary);color:#fff;border:none;border-radius:30px;
+    padding:13px 18px;font-size:.9rem;font-weight:700;font-family:var(--font-display);
+    cursor:pointer;box-shadow:var(--shadow-md);transition:transform .1s, background .15s;
+  }
+  .talk-fab:hover{background:var(--secondary-dark);}
+  .talk-fab:active{transform:scale(.96);}
+
+  .admin-view{background:var(--bg);min-height:100vh;padding-bottom:40px;}
+  .admin-view[hidden]{display:none;}
+  .feedback-item{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:14px;margin-top:12px;box-shadow:var(--shadow-sm);
+  }
+  .feedback-item .fi-head{display:flex;justify-content:space-between;gap:10px;font-size:.78rem;color:var(--muted);margin-bottom:6px;}
+  .feedback-item .fi-name{font-weight:700;font-family:var(--font-display);color:var(--text);}
+  .feedback-item .fi-msg{font-size:.92rem;white-space:pre-wrap;}
 </style>
 </head>
 <body>
 
+<div id="mainApp">
 <header class="app-header">
   <div class="header-utils">
     <label class="util-select">
@@ -806,7 +828,39 @@
   </div>
 </div>
 
+<button class="talk-fab" id="talkToUsBtn" type="button">💬 <span data-i18n="talkToUsBtn">Talk to us</span></button>
+
+<div class="modal-overlay" id="feedbackModal" hidden>
+  <div class="modal-box">
+    <button class="modal-close" id="feedbackCloseBtn" type="button" data-i18n-aria="modalCloseAria" aria-label="Close">✕</button>
+    <h3 data-i18n="feedbackTitle">💬 Talk to us</h3>
+    <p data-i18n="feedbackDesc">Got a review or an idea for a new feature? Tell us — we read every message.</p>
+    <div class="field"><label data-i18n="feedbackNameLabel">Name (optional)</label><input type="text" id="feedbackName" data-i18n-placeholder="feedbackNamePlaceholder" placeholder="Your name"></div>
+    <div class="field"><label data-i18n="feedbackMessageLabel">Your message</label><textarea id="feedbackMessage" rows="4" data-i18n-placeholder="feedbackMessagePlaceholder" placeholder="Write your review or idea here..."></textarea></div>
+    <button class="submit-btn" id="feedbackSubmitBtn" type="button" data-i18n="feedbackSubmitBtn">Send</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
+</div><!-- /mainApp -->
+
+<div class="admin-view" id="adminView" hidden>
+  <div class="container">
+    <header class="app-header" style="text-align:center;">
+      <h1 style="margin:0;font-family:var(--font-display);">💬 Feedback</h1>
+      <p style="margin:4px 0 0;">Ship To Sell — owner only</p>
+    </header>
+    <div class="card" id="adminLoginCard">
+      <h2>Owner login</h2>
+      <div class="field"><label>Email</label><input type="email" id="adminEmail" autocomplete="username"></div>
+      <div class="field"><label>Password</label><input type="password" id="adminPassword" autocomplete="current-password"></div>
+      <button class="btn-primary" id="adminLoginBtn" type="button" style="width:100%;">Log in</button>
+      <div id="adminLoginError" style="color:var(--danger);font-size:.8rem;margin-top:8px;"></div>
+    </div>
+    <div id="adminFeedbackList" hidden></div>
+    <button class="home-btn" id="adminLogoutBtn" type="button" hidden>Log out</button>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -938,6 +992,17 @@
       footerText: "Ship To Sell — a free tool for Egyptian traders — figures are estimates and editable",
       toastNeedPrice: "Enter a price first",
       toastSavedFav: "Saved to favorites ✅",
+      talkToUsBtn: "Talk to us",
+      feedbackTitle: "💬 Talk to us",
+      feedbackDesc: "Got a review or an idea for a new feature? Tell us — we read every message.",
+      feedbackNameLabel: "Name (optional)",
+      feedbackNamePlaceholder: "Your name",
+      feedbackMessageLabel: "Your message",
+      feedbackMessagePlaceholder: "Write your review or idea here...",
+      feedbackSubmitBtn: "Send",
+      toastFeedbackEmpty: "Write a message first",
+      toastFeedbackSent: "Thanks! Your message was sent 🙏",
+      toastFeedbackError: "Couldn't send — check your connection and try again",
       shareCalculatedBy: "Calculated by Ship To Sell 🧮",
       shareProductFallback: "Product"
     },
@@ -1064,6 +1129,17 @@
       footerText: "Ship To Sell — أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل",
       toastNeedPrice: "محتاج تحط سعر أولاً",
       toastSavedFav: "تم الحفظ في المفضلة ✅",
+      talkToUsBtn: "كلمنا",
+      feedbackTitle: "💬 كلمنا",
+      feedbackDesc: "عندك رأي أو فكرة لفيتشر جديد؟ قولّنا — بنقرا كل رسالة.",
+      feedbackNameLabel: "الاسم (اختياري)",
+      feedbackNamePlaceholder: "اسمك",
+      feedbackMessageLabel: "رسالتك",
+      feedbackMessagePlaceholder: "اكتب رأيك أو فكرتك هنا...",
+      feedbackSubmitBtn: "إرسال",
+      toastFeedbackEmpty: "اكتب رسالة الأول",
+      toastFeedbackSent: "شكراً! تم إرسال رسالتك 🙏",
+      toastFeedbackError: "تعذر الإرسال — تأكد من الاتصال بالإنترنت وحاول تاني",
       shareCalculatedBy: "حُسب بواسطة Ship To Sell 🧮",
       shareProductFallback: "منتج"
     },
@@ -1190,6 +1266,17 @@
       footerText: "Ship To Sell — 面向埃及贸易商的免费工具 — 数据为估算值，可自行编辑",
       toastNeedPrice: "请先输入价格",
       toastSavedFav: "已保存到收藏 ✅",
+      talkToUsBtn: "联系我们",
+      feedbackTitle: "💬 联系我们",
+      feedbackDesc: "有评价或新功能的想法吗？告诉我们 — 我们会阅读每一条消息。",
+      feedbackNameLabel: "姓名（可选）",
+      feedbackNamePlaceholder: "您的姓名",
+      feedbackMessageLabel: "您的留言",
+      feedbackMessagePlaceholder: "在此写下您的评价或想法...",
+      feedbackSubmitBtn: "发送",
+      toastFeedbackEmpty: "请先输入留言内容",
+      toastFeedbackSent: "谢谢！您的留言已发送 🙏",
+      toastFeedbackError: "发送失败 — 请检查网络连接后重试",
       shareCalculatedBy: "由 Ship To Sell 计算 🧮",
       shareProductFallback: "产品"
     }
@@ -2167,6 +2254,145 @@
     closeReferralModal();
   });
 
+  /* ---------------- Firebase — عشان "Talk to us" بس (مفيش مزامنة أسعار تاني) ----------------
+     نفس مشروع Firebase المشترك مع voodo-erp (Nexus) — Collection معزولة تماماً
+     (china_pricing_feedback)، بنفس منطق العزل المستخدم قبل كده لأسعار الحاويات.
+     الزوّار بيدخلوا anonymous (create بس، مفيش read) عشان محدش يشوف رسايل التانيين؛
+     المالك بس (isOwner في القواعد) يقدر يقرا الرسايل، عن طريق شاشة #admin تحت. */
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCzDuaf-4hN0f9ZZYUXUywQ6Lbe_ZbBVVQ",
+    authDomain: "nexus-2fec6.firebaseapp.com",
+    projectId: "nexus-2fec6",
+    storageBucket: "nexus-2fec6.firebasestorage.app",
+    messagingSenderId: "923229931538",
+    appId: "1:923229931538:web:f0c13bf6533018d38230cb"
+  };
+  let firestoreDb = null;
+  let firebaseLoadPromise = null;
+  let firebaseReadyPromise = null;
+
+  function ensureFirebaseLoaded(){
+    if(window.firebase && window.firebase.apps) return Promise.resolve();
+    if(firebaseLoadPromise) return firebaseLoadPromise;
+    const scripts = [
+      "https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js",
+      "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js",
+      "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"
+    ];
+    firebaseLoadPromise = scripts.reduce((p, src) => p.then(() => new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    })), Promise.resolve());
+    return firebaseLoadPromise;
+  }
+
+  async function ensureFirebaseReady(){
+    await ensureFirebaseLoaded();
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    firestoreDb = firebase.firestore();
+    if(!firebaseReadyPromise){
+      firebaseReadyPromise = new Promise((resolve) => {
+        firebase.auth().onAuthStateChanged(user => {
+          if(user) resolve(user);
+          else firebase.auth().signInAnonymously().catch(() => resolve(null));
+        });
+      });
+    }
+    return firebaseReadyPromise;
+  }
+
+  /* ---------------- نافذة "Talk to us" ---------------- */
+  function openFeedbackModal(){
+    $("feedbackName").value = "";
+    $("feedbackMessage").value = "";
+    $("feedbackModal").hidden = false;
+    trackEvent("feedback_opened");
+  }
+  function closeFeedbackModal(){
+    $("feedbackModal").hidden = true;
+  }
+  $("talkToUsBtn").addEventListener("click", openFeedbackModal);
+  $("feedbackCloseBtn").addEventListener("click", closeFeedbackModal);
+  $("feedbackModal").addEventListener("click", function(e){
+    if(e.target === this) closeFeedbackModal();
+  });
+  $("feedbackSubmitBtn").addEventListener("click", async function(){
+    const message = $("feedbackMessage").value.trim();
+    if(!message){ showToast(t("toastFeedbackEmpty")); return; }
+    const name = $("feedbackName").value.trim();
+    const btn = $("feedbackSubmitBtn");
+    btn.disabled = true;
+    try{
+      await ensureFirebaseReady();
+      await firestoreDb.collection("china_pricing_feedback").add({
+        name: name || null,
+        message,
+        lang: currentLang,
+        currency: targetCurrency,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast(t("toastFeedbackSent"));
+      trackEvent("feedback_sent");
+      closeFeedbackModal();
+    }catch(e){
+      showToast(t("toastFeedbackError"));
+    }finally{
+      btn.disabled = false;
+    }
+  });
+
+  /* ---------------- شاشة #admin لمراجعة الرسايل (المالك بس) ----------------
+     مفيش صفحة عادية بتوديك ليها — لازم تفتح الرابط بـ #admin في الآخر يدوي.
+     الدخول بنفس حساب المالك (shekovichy@gmail.com) المستخدم في voodo-erp،
+     ومفعّل مسبقاً Email/Password على نفس مشروع Firebase ده بالظبط. */
+  function isAdminRoute(){ return location.hash === "#admin"; }
+  function renderFeedbackList(docs){
+    const wrap = $("adminFeedbackList");
+    if(!docs.length){
+      wrap.innerHTML = `<div class="empty-state">No messages yet.</div>`;
+      return;
+    }
+    wrap.innerHTML = docs.map(d => {
+      const data = d.data();
+      const when = data.createdAt && data.createdAt.toDate ? data.createdAt.toDate().toLocaleString() : "";
+      return `
+        <div class="feedback-item">
+          <div class="fi-head"><span class="fi-name">${escapeHtml(data.name || "Anonymous")}</span><span>${when}</span></div>
+          <div class="fi-msg">${escapeHtml(data.message || "")}</div>
+        </div>
+      `;
+    }).join("");
+  }
+  async function initAdminView(){
+    $("mainApp").hidden = true;
+    $("adminView").hidden = false;
+    await ensureFirebaseLoaded();
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    firestoreDb = firebase.firestore();
+    firebase.auth().onAuthStateChanged(user => {
+      const isOwner = user && user.email === "shekovichy@gmail.com";
+      $("adminLoginCard").hidden = !!isOwner;
+      $("adminFeedbackList").hidden = !isOwner;
+      $("adminLogoutBtn").hidden = !isOwner;
+      if(isOwner){
+        firestoreDb.collection("china_pricing_feedback").orderBy("createdAt", "desc").limit(200).get()
+          .then(snap => renderFeedbackList(snap.docs))
+          .catch(() => { $("adminFeedbackList").innerHTML = `<div class="empty-state">Couldn't load messages — check your permissions.</div>`; });
+      }
+    });
+    $("adminLoginBtn").addEventListener("click", () => {
+      const email = $("adminEmail").value.trim();
+      const password = $("adminPassword").value;
+      $("adminLoginError").textContent = "";
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .catch(e => { $("adminLoginError").textContent = e.message; });
+    });
+    $("adminLogoutBtn").addEventListener("click", () => firebase.auth().signOut());
+  }
+
   /* ---------------- تثبيت التطبيق على الجهاز (PWA) ---------------- */
   const INSTALL_DISMISS_KEY = "sa3arli_install_dismissed";
   let deferredInstallPrompt = null;
@@ -2218,12 +2444,16 @@
   }
 
   /* ---------------- بدء التشغيل ---------------- */
-  applyTheme();
-  applyTranslations();
-  if(userUsdRate !== null) $("userUsdRate").value = userUsdRate.toFixed(2);
-  updateFavCount();
-  trackEvent("app_opened", { app: "saarli" });
-  fetchExchangeRate();
+  if(isAdminRoute()){
+    initAdminView();
+  }else{
+    applyTheme();
+    applyTranslations();
+    if(userUsdRate !== null) $("userUsdRate").value = userUsdRate.toFixed(2);
+    updateFavCount();
+    trackEvent("app_opened", { app: "saarli" });
+    fetchExchangeRate();
+  }
 })();
 </script>
 
