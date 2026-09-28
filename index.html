@@ -410,6 +410,10 @@
   }
   .rate-currency-note{font-size:.78rem;color:var(--muted);margin-top:10px;}
   .rate-currency-note[hidden]{display:none;}
+  .currency-picker-row{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:10px;font-size:.85rem;color:var(--muted);
+  }
   .fav-btn{
     margin-top:18px;
     width:100%;
@@ -740,6 +744,10 @@
         <input type="number" id="userUsdRate" min="0" step="0.01" placeholder="0">
       </div>
       <div class="rate-currency-note" id="nonEgpRateNote" hidden></div>
+      <div class="currency-picker-row">
+        <label for="currencySelect" data-i18n="currencyPickerLabel">Show prices in</label>
+        <select id="currencySelect" class="currency-select" aria-label="Currency"></select>
+      </div>
       <div class="live-box" id="derivedRateBox"></div>
     </div>
 
@@ -765,7 +773,7 @@
         </div>
       </div>
 
-      <div class="hero-result"><span id="quickResultEgp">0</span> <select id="currencySelect" class="currency-select" aria-label="Currency"></select></div>
+      <div class="hero-result"><span id="quickResultEgp">0</span> <small id="resultCurrencyLabel">EGP</small></div>
       <div class="hero-sub" id="quickResultSub"></div>
       <button id="quickFavBtn" class="fav-btn" disabled><span data-i18n="quickFavBtn">⭐ Save to favorites</span></button>
     </div>
@@ -802,7 +810,7 @@
   <!-- Ad banner -->
   <div class="ad-banner" id="adBanner" data-i18n="adBannerText">Ad space</div>
 
-  <footer class="app-footer" data-i18n="footerText">Ship To Sell — a free tool for Egyptian traders — figures are estimates and editable</footer>
+  <footer class="app-footer" data-i18n="footerText">Ship To Sell — a free landed-cost tool for import traders — figures are estimates and editable</footer>
 </div>
 
 <div class="modal-overlay" id="referralModal" hidden>
@@ -881,6 +889,7 @@
       installBtn: "Install",
       installDismissAria: "Close",
       rateLabelPrefix: "Global rate: 1 USD =",
+      currencyPickerLabel: "Show prices in",
       rateStatusUpdating: "Updating...",
       rateStatusLive: "Updated now",
       rateStatusFallback: "Fallback value",
@@ -989,7 +998,7 @@
       toastFillCity: "Please enter your city",
       toastRequestReceived: "Your request has been received! We'll contact you soon",
       adBannerText: "Ad space",
-      footerText: "Ship To Sell — a free tool for Egyptian traders — figures are estimates and editable",
+      footerText: "Ship To Sell — a free landed-cost tool for import traders — figures are estimates and editable",
       toastNeedPrice: "Enter a price first",
       toastSavedFav: "Saved to favorites ✅",
       talkToUsBtn: "Talk to us",
@@ -1018,6 +1027,7 @@
       installBtn: "تثبيت",
       installDismissAria: "إغلاق",
       rateLabelPrefix: "السعر العالمي: 1 دولار =",
+      currencyPickerLabel: "اعرض الأسعار بعملة",
       rateStatusUpdating: "جارِ التحديث...",
       rateStatusLive: "محدّث الآن",
       rateStatusFallback: "قيمة احتياطية",
@@ -1126,7 +1136,7 @@
       toastFillCity: "من فضلك أدخل المدينة",
       toastRequestReceived: "تم استلام طلبك! هنتواصل معك قريباً",
       adBannerText: "مساحة إعلانية",
-      footerText: "Ship To Sell — أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل",
+      footerText: "Ship To Sell — أداة مجانية لتجار الاستيراد — الأرقام تقديرية وقابلة للتعديل",
       toastNeedPrice: "محتاج تحط سعر أولاً",
       toastSavedFav: "تم الحفظ في المفضلة ✅",
       talkToUsBtn: "كلمنا",
@@ -1155,6 +1165,7 @@
       installBtn: "安装",
       installDismissAria: "关闭",
       rateLabelPrefix: "全球汇率：1 美元 =",
+      currencyPickerLabel: "以此货币显示价格",
       rateStatusUpdating: "更新中...",
       rateStatusLive: "刚刚更新",
       rateStatusFallback: "备用数值",
@@ -1263,7 +1274,7 @@
       toastFillCity: "请输入城市",
       toastRequestReceived: "已收到您的申请！我们会尽快与您联系",
       adBannerText: "广告位",
-      footerText: "Ship To Sell — 面向埃及贸易商的免费工具 — 数据为估算值，可自行编辑",
+      footerText: "Ship To Sell — 面向进口贸易商的免费工具 — 数据为估算值，可自行编辑",
       toastNeedPrice: "请先输入价格",
       toastSavedFav: "已保存到收藏 ✅",
       talkToUsBtn: "联系我们",
@@ -1442,6 +1453,7 @@
   function updateCurrencyLabels(){
     if($("rateCurrencyCode")) $("rateCurrencyCode").textContent = targetCurrency;
     if($("chainBaseLabelText")) $("chainBaseLabelText").textContent = tf("chainBaseLabel", { cur: targetCurrency });
+    if($("resultCurrencyLabel")) $("resultCurrencyLabel").textContent = targetCurrency;
   }
   function setCurrency(code){
     targetCurrency = code;
@@ -1534,7 +1546,10 @@
   }
 
   function updateRateDisplay(){
-    $("liveUsdRate").textContent = liveRates.usdToEgp.toFixed(2);
+    // ده معدل السوق الحي (مش سعر التاجر الشخصي) — لازم يتغيّر مع تغيير عملة الإخراج،
+    // مش يفضل ثابت على الجنيه المصري زي ما كان بالغلط قبل كده.
+    const marketRate = targetCurrency === "EGP" ? liveRates.usdToEgp : (liveRates.allRates && liveRates.allRates[targetCurrency]);
+    $("liveUsdRate").textContent = marketRate ? marketRate.toFixed(decimalsFor(targetCurrency)) : "—";
     $("rateCurrencyCode").textContent = targetCurrency;
     const statusEl = $("rateStatus");
     if(liveRates.isLive){
