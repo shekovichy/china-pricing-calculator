@@ -60,12 +60,14 @@ def make_icon(size, primary, primary_dark, letter, rounded=True, safe_padding=0.
 if __name__ == "__main__":
     out = "C:/Projects/china-pricing-calculator/icons"
 
-    # سعّرلي — زعفران/بابريكا
+    # سعّرلي — زعفران/بابريكا. الشعار بقى رمز اليوان "¥" بدل حرف عربي واحد
+    # عشان التطبيق بقى متعدد اللغات (إنجليزي/عربي/صيني) — رمز عملة عالمي بيفهمه الكل.
     SAARLI_PRIMARY = (224, 141, 44)      # #e08d2c
     SAARLI_DARK = (168, 71, 26)          # #a8471a
-    make_icon(192, SAARLI_PRIMARY, SAARLI_DARK, "س", rounded=True, filename=f"{out}/icon-192.png")
-    make_icon(512, SAARLI_PRIMARY, SAARLI_DARK, "س", rounded=True, filename=f"{out}/icon-512.png")
-    make_icon(512, SAARLI_PRIMARY, SAARLI_DARK, "س", rounded=False, safe_padding=0.1, filename=f"{out}/icon-maskable-512.png")
-    make_icon(180, SAARLI_PRIMARY, SAARLI_DARK, "س", rounded=False, filename=f"{out}/apple-touch-icon.png")
-    make_icon(48, SAARLI_PRIMARY, SAARLI_DARK, "س", rounded=True, filename=f"{out}/favicon-48.png")
-    make_icon(32, SAARLI_PRIMARY, SAARLI_DARK, "س", rounded=True, filename=f"{out}/favicon-32.png")
+    GLYPH = "¥"
+    make_icon(192, SAARLI_PRIMARY, SAARLI_DARK, GLYPH, rounded=True, filename=f"{out}/icon-192.png")
+    make_icon(512, SAARLI_PRIMARY, SAARLI_DARK, GLYPH, rounded=True, filename=f"{out}/icon-512.png")
+    make_icon(512, SAARLI_PRIMARY, SAARLI_DARK, GLYPH, rounded=False, safe_padding=0.1, filename=f"{out}/icon-maskable-512.png")
+    make_icon(180, SAARLI_PRIMARY, SAARLI_DARK, GLYPH, rounded=False, filename=f"{out}/apple-touch-icon.png")
+    make_icon(48, SAARLI_PRIMARY, SAARLI_DARK, GLYPH, rounded=True, filename=f"{out}/favicon-48.png")
+    make_icon(32, SAARLI_PRIMARY, SAARLI_DARK, GLYPH, rounded=True, filename=f"{out}/favicon-32.png")

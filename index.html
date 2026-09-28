@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>سعّرلي — حاسبة أسعار الشراء من الصين</title>
-<meta name="description" content="احسب سعر أي منتج بالجنيه المصري قبل ما تشتريه من الصين — المنتج، الشحن، والجمارك.">
+<title>Sa3arli — China Purchase Price Calculator</title>
+<meta name="description" content="Calculate any product's price in EGP before you buy it from China — product, shipping, and customs.">
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#e08d2c">
@@ -14,11 +14,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="سعّرلي">
+<meta name="apple-mobile-web-app-title" content="Sa3arli">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Tajawal:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
 
 <!-- Google Analytics (GA4) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9HY2NF4WZ6"></script>
@@ -33,7 +33,11 @@
   :root{
     --font-display:"Cairo","Segoe UI","Tahoma",Arial,sans-serif;
     --font-body:"Tajawal","Segoe UI","Tahoma",Arial,sans-serif;
+    --radius:16px;
+    --shadow-sm:0 1px 2px rgba(20,20,20,.08), 0 1px 1px rgba(20,20,20,.05);
+    --shadow-md:0 6px 20px rgba(20,20,20,.12);
 
+    /* ---- Theme: Spice (default) ---- */
     --primary:#e08d2c;
     --primary-dark:#b8691a;
     --primary-light:#faead0;
@@ -51,13 +55,15 @@
     --warning-light:#f7e6da;
     --danger:#b3261e;
     --danger-light:#fbe6e3;
-    --radius:16px;
-    --shadow-sm:0 1px 2px rgba(60,35,10,.06), 0 1px 1px rgba(60,35,10,.04);
-    --shadow-md:0 6px 20px rgba(60,35,10,.10);
     --input-bg:#fffaf1;
   }
+  html[lang="zh"]{
+    --font-display:"Noto Sans SC","Segoe UI",Arial,sans-serif;
+    --font-body:"Noto Sans SC","Segoe UI",Arial,sans-serif;
+  }
+
   @media (prefers-color-scheme: dark){
-    :root{
+    :root, :root[data-theme="spice"]{
       --primary:#f0a942;
       --primary-dark:#d1832e;
       --primary-light:#34260f;
@@ -75,77 +81,159 @@
       --warning-light:#3a2415;
       --danger:#f0776d;
       --danger-light:#3a1512;
-      --shadow-sm:0 1px 2px rgba(0,0,0,.35);
-      --shadow-md:0 8px 24px rgba(0,0,0,.4);
       --input-bg:#2b1f10;
     }
   }
+
+  /* ---- Theme: Ocean ---- */
+  :root[data-theme="ocean"]{
+    --primary:#2b8a9e;
+    --primary-dark:#1c6473;
+    --primary-light:#dff1f4;
+    --secondary:#2563eb;
+    --secondary-dark:#1d4ed8;
+    --secondary-light:#dbe8fe;
+    --bg:#eef6f7;
+    --card:#ffffff;
+    --text:#142b30;
+    --muted:#5c7c82;
+    --border:#cfe3e6;
+    --success:#2f9e58;
+    --success-light:#e3f6e9;
+    --warning:#d97706;
+    --warning-light:#fdf0dc;
+    --danger:#dc2626;
+    --danger-light:#fbe2e2;
+    --input-bg:#ffffff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root[data-theme="ocean"]{
+      --primary:#4fb8cf;
+      --primary-dark:#2e8a9e;
+      --primary-light:#143035;
+      --secondary:#5b8def;
+      --secondary-dark:#3f6fd1;
+      --secondary-light:#17233d;
+      --bg:#0b1a1e;
+      --card:#10262b;
+      --text:#d9eef1;
+      --muted:#85a9ae;
+      --border:#234249;
+      --success:#5cc885;
+      --success-light:#16301f;
+      --warning:#eba84e;
+      --warning-light:#332210;
+      --danger:#ef6b64;
+      --danger-light:#331413;
+      --input-bg:#10262b;
+    }
+  }
+
+  /* ---- Theme: Royal ---- */
+  :root[data-theme="royal"]{
+    --primary:#7c3aed;
+    --primary-dark:#5b21b6;
+    --primary-light:#efe4fd;
+    --secondary:#b8860b;
+    --secondary-dark:#8f6607;
+    --secondary-light:#f7ecd0;
+    --bg:#f6f1fb;
+    --card:#ffffff;
+    --text:#241b32;
+    --muted:#7a6e8c;
+    --border:#ded3ef;
+    --success:#2f9e58;
+    --success-light:#e3f6e9;
+    --warning:#c2760a;
+    --warning-light:#fbecd6;
+    --danger:#c0263a;
+    --danger-light:#fbe1e5;
+    --input-bg:#ffffff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root[data-theme="royal"]{
+      --primary:#a780f5;
+      --primary-dark:#7c3aed;
+      --primary-light:#241833;
+      --secondary:#e0b34a;
+      --secondary-dark:#b8860b;
+      --secondary-light:#2e2711;
+      --bg:#160f22;
+      --card:#201731;
+      --text:#ece5f7;
+      --muted:#a596bc;
+      --border:#382a4d;
+      --success:#5cc885;
+      --success-light:#16301f;
+      --warning:#eba84e;
+      --warning-light:#332210;
+      --danger:#ef6b64;
+      --danger-light:#331413;
+      --input-bg:#201731;
+    }
+  }
+
+  /* ---- Theme: Midnight (always dark) ---- */
+  :root[data-theme="midnight"]{
+    --primary:#22d3ee;
+    --primary-dark:#0891b2;
+    --primary-light:#0e2f36;
+    --secondary:#f43f5e;
+    --secondary-dark:#be123c;
+    --secondary-light:#3a1420;
+    --bg:#05070d;
+    --card:#101521;
+    --text:#e9edf5;
+    --muted:#8992a8;
+    --border:#232a3d;
+    --success:#34d399;
+    --success-light:#0f2a22;
+    --warning:#fbbf24;
+    --warning-light:#332708;
+    --danger:#f87171;
+    --danger-light:#33161a;
+    --input-bg:#101521;
+  }
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
-    background:#0b0d13;
+    background:var(--bg);
     color:var(--text);
     font-family:var(--font-body);
     font-size:16px;
     line-height:1.6;
-    transition:background .2s;
+    padding-bottom:70px;
+    min-height:100vh;
+    transition:background .2s, color .2s;
   }
-  #app-saarli, #app-ahram, #app-container12, #app-container3{background:var(--bg);padding-bottom:70px;min-height:100vh;}
   .container{max-width:640px;margin:0 auto;padding:12px 14px 24px;}
   :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
   b, strong{font-family:var(--font-display);font-weight:700;}
 
-  #app-launcher[hidden], #app-saarli[hidden],
-  #app-ahram[hidden], #app-container12[hidden], #app-container3[hidden]{display:none;}
-  #app-launcher{
-    min-height:100vh;
-    display:flex;align-items:center;justify-content:center;
-    background-color:#0b0d13;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 15v14M15 22h14' stroke='%23ffffff' stroke-opacity='0.08' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
-    padding:40px 20px;
-  }
-  .launcher-grid{
-    display:flex;gap:36px;justify-content:center;flex-wrap:wrap;
-  }
-  .launcher-tile{
-    display:flex;flex-direction:column;align-items:center;gap:12px;
-    background:none;border:none;cursor:pointer;padding:6px;
-    width:120px;
-  }
-  .tile-icon{
-    width:92px;height:92px;border-radius:26px;
-    display:flex;align-items:center;justify-content:center;
-    overflow:hidden;
-    transition:transform .15s;
-  }
-  .launcher-tile:active .tile-icon{transform:scale(.94);}
-  .tile-icon img{width:100%;height:100%;object-fit:cover;}
-  .tile-icon-saarli{box-shadow:0 8px 24px rgba(224,141,44,.45);}
-  .tile-icon-emoji{font-size:2.4rem;}
-  .tile-icon-ahram{background:linear-gradient(135deg,#f0c869,#b8860b);box-shadow:0 8px 24px rgba(184,134,11,.45);}
-  .tile-icon-container12{background:linear-gradient(135deg,#60a5fa,#2563eb);box-shadow:0 8px 24px rgba(37,99,235,.45);}
-  .tile-icon-container3{background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 8px 24px rgba(5,150,105,.45);}
-  .tile-label{
-    color:#fff;font-family:var(--font-display);font-weight:700;
-    font-size:.92rem;text-align:center;line-height:1.4;
-  }
-
-  .home-btn{
-    display:block;margin:12px auto 0;
-    background:var(--card);border:1px solid var(--border);
-    color:var(--secondary);font-family:var(--font-display);font-weight:700;
-    font-size:.82rem;padding:7px 16px;border-radius:20px;cursor:pointer;
-    box-shadow:var(--shadow-sm);
-  }
-  .home-btn:hover{background:var(--primary-light);}
-  .placeholder-note{text-align:center;color:var(--muted);padding:34px 12px;font-size:.92rem;}
-
   header.app-header{
     background:linear-gradient(135deg,var(--primary),var(--secondary));
     color:#fff;
-    padding:20px 16px 16px;
+    padding:14px 16px 16px;
     text-align:center;
   }
+  .header-utils{
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    margin-bottom:12px;max-width:640px;margin-inline:auto;
+  }
+  .util-select{
+    display:flex;align-items:center;gap:4px;
+    background:rgba(255,255,255,.18);border-radius:20px;padding:4px 10px 4px 8px;
+  }
+  .util-select .util-icon{font-size:.85rem;}
+  .util-select select{
+    background:transparent;border:none;color:#fff;font-size:.76rem;
+    font-family:var(--font-body);font-weight:500;cursor:pointer;
+    -webkit-appearance:none;appearance:none;padding:2px 2px;
+  }
+  .util-select select:focus{outline:1px solid rgba(255,255,255,.7);border-radius:6px;}
+  .util-select select option{color:#1a1a1a;}
+
   .brand{
     display:flex;align-items:center;justify-content:center;gap:10px;
     margin-bottom:16px;
@@ -155,7 +243,7 @@
     box-shadow:0 2px 8px rgba(0,0,0,.2);
     flex-shrink:0;
   }
-  .brand-text{text-align:right;}
+  .brand-text{text-align:start;}
   header.app-header h1{margin:0;font-size:1.4rem;letter-spacing:0;font-family:var(--font-display);font-weight:800;}
   header.app-header p{margin:1px 0 0;font-size:.8rem;opacity:.9;}
 
@@ -190,7 +278,7 @@
     border-radius:10px;
     padding:1px 7px;
     font-size:.72rem;
-    margin-right:4px;
+    margin-inline-start:4px;
     font-family:var(--font-body);
   }
   .tab.active .count{background:var(--primary-light);color:var(--secondary-dark);}
@@ -260,16 +348,18 @@
     padding:10px 12px;
     margin-bottom:12px;
     font-size:.88rem;
+    flex-wrap:wrap;
+    gap:4px;
   }
   .rate-line .status{font-size:.72rem;color:var(--muted);}
   .status.live{color:var(--success);}
   .status.fallback{color:var(--warning);}
 
-  /* ---- الصفحة الرئيسية: السعر السريع ---- */
+  /* ---- Home: quick price ---- */
   .hero-card{text-align:center;}
   .hero-card label{font-size:.9rem;color:var(--muted);display:block;margin-bottom:8px;}
   .hero-sub{margin-top:6px;font-size:.9rem;color:var(--muted);min-height:1.3em;font-variant-numeric:tabular-nums;}
-  .price-chain{margin-top:18px;text-align:right;}
+  .price-chain{margin-top:18px;text-align:start;}
   .chain-row{
     display:flex;justify-content:space-between;align-items:baseline;
     padding:8px 2px;border-bottom:1px dashed var(--border);
@@ -351,55 +441,7 @@
   .btn-danger:hover{color:#fff;}
   .btn-primary:active,.btn-secondary:active,.btn-danger:active{transform:scale(.98);}
 
-  /* ---- شيتات الأسعار (عبد الرازق) ---- */
-  .upload-meta{
-    margin-top:10px;font-size:.8rem;color:var(--muted);
-    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
-  }
-  .clear-data-btn{
-    background:none;border:none;color:var(--danger);font-size:.78rem;
-    font-family:var(--font-body);text-decoration:underline;cursor:pointer;padding:2px;
-  }
-  .search-field{position:relative;}
-  .search-field input{padding-right:40px !important;}
-  .search-field .search-icon{
-    position:absolute;right:12px;top:50%;transform:translateY(-50%);
-    font-size:1rem;color:var(--muted);pointer-events:none;
-  }
-  .result-count{font-size:.78rem;color:var(--muted);margin-top:6px;text-align:left;}
-
-  .price-list{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    box-shadow:var(--shadow-sm);margin-top:14px;overflow:hidden;
-  }
-  .price-row{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:13px 14px;border-bottom:1px solid var(--border);
-    transition:background .1s;
-  }
-  .price-row:last-child{border-bottom:none;}
-  .price-row:hover{background:var(--primary-light);}
-  .price-row-info{min-width:0;flex:1;}
-  .price-row-name{
-    font-weight:700;font-family:var(--font-display);font-size:.94rem;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  }
-  .price-row-code{
-    font-size:.76rem;color:var(--muted);margin-top:2px;
-    font-variant-numeric:tabular-nums;font-family:ui-monospace,"Consolas",monospace;
-  }
-  .price-row-extra{
-    font-size:.74rem;color:var(--muted);margin-top:2px;
-    font-variant-numeric:tabular-nums;
-  }
-  .price-row-value{
-    font-weight:800;font-family:var(--font-display);color:var(--secondary);
-    font-size:1.05rem;white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums;
-  }
-  .price-row-value small{font-size:.68rem;font-weight:400;color:var(--muted);font-family:var(--font-body);}
-  .price-table-note{text-align:center;color:var(--muted);font-size:.78rem;padding:10px;}
-
-  /* ---- المفضلة ---- */
+  /* ---- Favorites ---- */
   .fav-note{font-size:.8rem;color:var(--muted);text-align:center;margin:14px 0 4px;}
   .empty-state{
     text-align:center;color:var(--muted);font-size:.9rem;
@@ -481,7 +523,7 @@
   }
   .ship-opt.recommended{border-color:var(--success);background:var(--success-light);}
   .ship-opt .badge{
-    position:absolute;top:-10px;left:12px;
+    position:absolute;top:-10px;inset-inline-end:12px;
     background:var(--success);color:#fff;
     font-size:.72rem;padding:3px 8px;border-radius:20px;
   }
@@ -560,13 +602,13 @@
     position:relative;
   }
   .modal-close{
-    position:absolute;top:10px;left:10px;
+    position:absolute;top:10px;inset-inline-end:10px;
     background:none;border:none;font-size:1.1rem;
     color:var(--secondary-dark);cursor:pointer;padding:4px 8px;
   }
   .modal-box h3{margin:0 0 6px;color:var(--secondary-dark);font-size:.95rem;font-family:var(--font-display);}
   .modal-box p{font-size:.82rem;color:var(--secondary-dark);margin:0 0 10px;}
-  .modal-box .field{text-align:right;}
+  .modal-box .field{text-align:start;}
   .modal-box button.submit-btn{
     width:100%;
     background:var(--secondary);
@@ -603,7 +645,7 @@
 
   .toast{
     position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
-    background:var(--text);color:#fff;padding:10px 18px;border-radius:30px;
+    background:var(--text);color:var(--bg);padding:10px 18px;border-radius:30px;
     font-size:.85rem;opacity:0;pointer-events:none;transition:all .25s;z-index:50;
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -611,267 +653,521 @@
 </head>
 <body>
 
-<div id="app-launcher">
-  <div class="launcher-grid">
-    <button class="launcher-tile" id="tileSaarli" data-app="saarli" type="button">
-      <span class="tile-icon tile-icon-saarli"><img src="icons/icon-192.png" alt=""></span>
-      <span class="tile-label">سعّرلي</span>
-    </button>
-    <button class="launcher-tile" id="tileAhram" data-app="ahram" type="button">
-      <span class="tile-icon tile-icon-emoji tile-icon-ahram">🏛️</span>
-      <span class="tile-label">أسعار الأهرام</span>
-    </button>
-    <button class="launcher-tile" id="tileContainer12" data-app="container12" type="button">
-      <span class="tile-icon tile-icon-emoji tile-icon-container12">📦</span>
-      <span class="tile-label">أسعار الحاوية<br>1&amp;2</span>
-    </button>
-    <button class="launcher-tile" id="tileContainer3" data-app="container3" type="button">
-      <span class="tile-icon tile-icon-emoji tile-icon-container3">📦</span>
-      <span class="tile-label">أسعار الحاوية 3</span>
-    </button>
-  </div>
-</div>
-
-<div id="app-saarli" hidden>
-  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
-
 <header class="app-header">
+  <div class="header-utils">
+    <label class="util-select">
+      <span class="util-icon">🌐</span>
+      <select id="langSelect" aria-label="Language">
+        <option value="en">English</option>
+        <option value="ar">العربية</option>
+        <option value="zh">中文</option>
+      </select>
+    </label>
+    <label class="util-select">
+      <span class="util-icon">🎨</span>
+      <select id="themeSelect" aria-label="Theme">
+        <option value="spice">Spice</option>
+        <option value="ocean">Ocean</option>
+        <option value="royal">Royal</option>
+        <option value="midnight">Midnight</option>
+      </select>
+    </label>
+  </div>
   <div class="brand">
     <img src="icons/icon-192.png" alt="" class="brand-icon">
     <div class="brand-text">
-      <h1>سعّرلي</h1>
-      <p>حاسبة أسعار الشراء من الصين</p>
+      <h1>Sa3arli</h1>
+      <p data-i18n="brandSubtitle">China purchase price calculator</p>
     </div>
   </div>
   <div class="tabs">
-    <button class="tab active" id="tabHome" data-view="home">🧮 السعر السريع</button>
-    <button class="tab" id="tabFav" data-view="favorites">⭐ المفضلة <span class="count" id="favCount">0</span></button>
+    <button class="tab active" id="tabHome" data-view="home"><span data-i18n="tabHome">🧮 Quick Price</span></button>
+    <button class="tab" id="tabFav" data-view="favorites"><span data-i18n="tabFav">⭐ Favorites</span> <span class="count" id="favCount">0</span></button>
   </div>
 </header>
 
 <div class="install-banner" id="installBanner" hidden>
   <div class="install-text">
-    <strong>ثبّت سعّرلي على جهازك 📲</strong>
-    <span id="installSubtext">هيبقى زي أي تطبيق، تفتحه من غير متصفح</span>
+    <strong data-i18n="installTitle">Install Sa3arli on your device 📲</strong>
+    <span id="installSubtext" data-i18n="installSubtextDefault">Works like a real app, opens without a browser</span>
   </div>
   <div class="install-actions">
-    <button id="installBtn" class="install-btn" type="button" hidden>تثبيت</button>
-    <button id="installDismiss" class="install-dismiss" type="button" aria-label="إغلاق">✕</button>
+    <button id="installBtn" class="install-btn" type="button" data-i18n="installBtn" hidden>Install</button>
+    <button id="installDismiss" class="install-dismiss" type="button" data-i18n-aria="installDismissAria" aria-label="Close">✕</button>
   </div>
 </div>
 
 <div class="container">
 
-  <!-- ============== الصفحة الرئيسية ============== -->
+  <!-- ============== Home ============== -->
   <section id="view-home">
     <div class="card">
       <div class="rate-line">
-        <span>السعر العالمي: 1 دولار = <b id="liveUsdRate">—</b> جنيه</span>
-        <span class="status" id="rateStatus">جارِ التحديث...</span>
+        <span><span data-i18n="rateLabelPrefix">Global rate: 1 USD =</span> <b id="liveUsdRate">—</b> <span data-i18n="rateLabelSuffix">EGP</span></span>
+        <span class="status" id="rateStatus" data-i18n="rateStatusUpdating">Updating...</span>
       </div>
       <div class="field" id="userUsdRateField" style="margin-bottom:0;">
-        <label for="userUsdRate">سعر الدولار اللي هتشتريه (أو اشتريته) بيه من مصر</label>
+        <label for="userUsdRate" data-i18n="userUsdRateLabel">The USD rate you're buying (or bought) at from Egypt</label>
         <input type="number" id="userUsdRate" min="0" step="0.01" placeholder="0">
       </div>
       <div class="live-box" id="derivedRateBox"></div>
     </div>
 
     <div class="card hero-card">
-      <label for="quickPriceCny">سعر المنتج (يوان)</label>
+      <label for="quickPriceCny" data-i18n="quickPriceLabel">Product price (yuan)</label>
       <input type="number" id="quickPriceCny" class="hero-input" min="0" step="0.01" placeholder="0" inputmode="decimal">
 
       <div class="price-chain">
-        <div class="chain-row"><span>السعر بالجنيه</span><b id="chainBase">0</b></div>
+        <div class="chain-row"><span data-i18n="chainBaseLabel">Price in EGP</span><b id="chainBase">0</b></div>
         <div class="chain-field">
-          <label for="markup1Percent">نسبة الزيادة الأولى (%)</label>
+          <label for="markup1Percent" data-i18n="markup1Label">First markup (%)</label>
           <input type="number" id="markup1Percent" value="60" min="0" step="1">
         </div>
-        <div class="chain-row"><span>بعد الزيادة</span><b id="chainAfterMarkup1">0</b></div>
+        <div class="chain-row"><span data-i18n="chainAfterMarkup1Label">After markup</span><b id="chainAfterMarkup1">0</b></div>
         <div class="chain-field">
-          <label for="markup2Percent">نسبة إضافية (%)</label>
+          <label for="markup2Percent" data-i18n="markup2Label">Additional markup (%)</label>
           <input type="number" id="markup2Percent" value="22" min="0" step="1">
         </div>
-        <div class="chain-row"><span>بعد الإضافة</span><b id="chainAfterMarkup2">0</b></div>
+        <div class="chain-row"><span data-i18n="chainAfterMarkup2Label">After addition</span><b id="chainAfterMarkup2">0</b></div>
         <div class="chain-field">
-          <label for="marginPercent">هامش الربح (%)</label>
+          <label for="marginPercent" data-i18n="marginLabel">Profit margin (%)</label>
           <input type="number" id="marginPercent" value="35" min="0" step="1">
         </div>
       </div>
 
-      <div class="hero-result"><span id="quickResultEgp">0</span> <small>جنيه</small></div>
+      <div class="hero-result"><span id="quickResultEgp">0</span> <small data-i18n="resultCurrency">EGP</small></div>
       <div class="hero-sub" id="quickResultSub"></div>
-      <button id="quickFavBtn" class="fav-btn" disabled>⭐ حفظ في المفضلة</button>
+      <button id="quickFavBtn" class="fav-btn" disabled><span data-i18n="quickFavBtn">⭐ Save to favorites</span></button>
     </div>
 
     <div class="card save-form" id="saveForm" hidden>
-      <h2>حفظ بيانات المنتج (اختياري)</h2>
+      <h2 data-i18n="saveFormTitle">Save product info (optional)</h2>
       <div class="field">
-        <label for="saveName">اسم المنتج</label>
-        <input type="text" id="saveName" placeholder="مثال: طقم أكواب زجاج">
+        <label for="saveName" data-i18n="saveNameLabel">Product name</label>
+        <input type="text" id="saveName" data-i18n-placeholder="saveNamePlaceholder" placeholder="e.g. glass cup set">
       </div>
       <div class="field">
-        <label for="saveSupplier">اسم المورد</label>
-        <input type="text" id="saveSupplier" placeholder="اسم المصنع / المحل">
+        <label for="saveSupplier" data-i18n="saveSupplierLabel">Supplier name</label>
+        <input type="text" id="saveSupplier" data-i18n-placeholder="saveSupplierPlaceholder" placeholder="Factory / shop name">
       </div>
       <div class="field">
-        <label for="savePhoto">صورة المنتج</label>
+        <label for="savePhoto" data-i18n="savePhotoLabel">Product photo</label>
         <input type="file" id="savePhoto" accept="image/*" capture="environment">
         <img id="savePhotoPreview" class="photo-preview" hidden>
       </div>
       <div class="btn-row">
-        <button id="saveConfirmBtn" class="btn-primary" type="button">حفظ في المفضلة</button>
-        <button id="saveCancelBtn" class="btn-secondary" type="button">إلغاء</button>
+        <button id="saveConfirmBtn" class="btn-primary" type="button" data-i18n="saveConfirmBtn">Save to favorites</button>
+        <button id="saveCancelBtn" class="btn-secondary" type="button" data-i18n="saveCancelBtn">Cancel</button>
       </div>
     </div>
   </section>
 
-  <!-- ============== المفضلة ============== -->
+  <!-- ============== Favorites ============== -->
   <section id="view-favorites" hidden>
     <div class="fav-note" id="favRateNote"></div>
-    <div class="empty-state" id="favEmpty">لسه مفيش منتجات محفوظة.<br>احسب سعر منتج من "السعر السريع" واضغط ⭐ لحفظه هنا.</div>
+    <div class="empty-state" id="favEmpty" data-i18n-html="favEmpty">No saved products yet.<br>Calculate a price from "Quick Price" and tap ⭐ to save it here.</div>
     <div id="favList"></div>
   </section>
 
-  <!-- بانر إعلاني -->
-  <div class="ad-banner" id="adBanner">مساحة إعلانية</div>
+  <!-- Ad banner -->
+  <div class="ad-banner" id="adBanner" data-i18n="adBannerText">Ad space</div>
 
-  <footer class="app-footer">سعّرلي — أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل</footer>
+  <footer class="app-footer" data-i18n="footerText">Sa3arli — a free tool for Egyptian traders — figures are estimates and editable</footer>
 </div>
 
 <div class="modal-overlay" id="referralModal" hidden>
   <div class="modal-box">
-    <button class="modal-close" id="modalCloseBtn" type="button">✕</button>
-    <h3>🚚 محتاج تشحن الكمية دي فعلياً؟</h3>
-    <p>اطلب عرض سعر مجاني من شركاء الشحن والتخليص الجمركي</p>
-    <div class="field"><label>الاسم</label><input type="text" id="modalRefName" placeholder="اسمك"></div>
-    <div class="field"><label>رقم الموبايل</label><input type="tel" id="modalRefPhone" placeholder="01xxxxxxxxx"></div>
+    <button class="modal-close" id="modalCloseBtn" type="button" data-i18n-aria="modalCloseAria" aria-label="Close">✕</button>
+    <h3 data-i18n="modalTitle">🚚 Need to actually ship this quantity?</h3>
+    <p data-i18n="modalDesc">Request a free quote from our shipping &amp; customs clearance partners</p>
+    <div class="field"><label data-i18n="modalNameLabel">Name</label><input type="text" id="modalRefName" data-i18n-placeholder="modalNamePlaceholder" placeholder="Your name"></div>
+    <div class="field"><label data-i18n="modalPhoneLabel">Mobile number</label><input type="tel" id="modalRefPhone" placeholder="01xxxxxxxxx"></div>
     <div class="field">
-      <label>طريقة الشحن المفضلة</label>
+      <label data-i18n="modalShipTypeLabel">Preferred shipping method</label>
       <select id="modalRefShipType">
-        <option value="air">✈️ شحن جوي</option>
-        <option value="lcl">🚢 شحن بحري جزئي (LCL)</option>
-        <option value="container">📦 حاوية كاملة</option>
-        <option value="unsure">مش عارف / محتاج استشارة</option>
+        <option value="air" data-i18n="shipTypeAir">✈️ Air freight</option>
+        <option value="lcl" data-i18n="shipTypeLcl">🚢 Partial sea freight (LCL)</option>
+        <option value="container" data-i18n="shipTypeContainer">📦 Full container</option>
+        <option value="unsure" data-i18n="shipTypeUnsure">Not sure / need advice</option>
       </select>
     </div>
-    <div class="field"><label>المدينة في مصر</label><input type="text" id="modalRefCity" placeholder="مثال: القاهرة، الإسكندرية"></div>
-    <div class="field"><label>الوزن / الحجم التقديري</label><input type="text" id="modalRefWeight" placeholder="مثال: 160 كجم / 0.6 م³"></div>
-    <button class="submit-btn" id="modalRefSubmit" type="button">اطلب عرض سعر</button>
-    <div class="referral-note">* الخدمة قيد التجهيز — سيتم التواصل معك قريباً من أحد شركاء الشحن.</div>
+    <div class="field"><label data-i18n="modalCityLabel">City in Egypt</label><input type="text" id="modalRefCity" data-i18n-placeholder="modalCityPlaceholder" placeholder="e.g. Cairo, Alexandria"></div>
+    <div class="field"><label data-i18n="modalWeightLabel">Estimated weight / volume</label><input type="text" id="modalRefWeight" data-i18n-placeholder="modalWeightPlaceholder" placeholder="e.g. 160 kg / 0.6 m³"></div>
+    <button class="submit-btn" id="modalRefSubmit" type="button" data-i18n="modalSubmitBtn">Request a quote</button>
+    <div class="referral-note" data-i18n="modalNote">* Service in progress — one of our shipping partners will contact you soon.</div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-</div><!-- /app-saarli -->
-
-<div id="app-ahram" hidden>
-  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
-  <header class="app-header">
-    <div class="brand">
-      <div class="brand-text" style="text-align:center;">
-        <h1>أسعار الأهرام</h1>
-      </div>
-    </div>
-  </header>
-
-  <div class="container">
-    <section>
-      <div class="card">
-        <h2>📤 رفع شيت الأسعار</h2>
-        <div class="field" style="margin-bottom:0;">
-          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
-          <input type="file" accept=".xlsx,.xls,.csv" data-upload="ahram">
-        </div>
-        <div class="upload-meta" data-upload-meta="ahram"></div>
-      </div>
-      <div class="card">
-        <div class="field" style="margin-bottom:0;">
-          <label>بحث بالكود أو الاسم</label>
-          <div class="search-field">
-            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="ahram" inputmode="search">
-            <span class="search-icon">🔍</span>
-          </div>
-        </div>
-        <div class="result-count" data-result-count="ahram"></div>
-      </div>
-      <div data-table="ahram"></div>
-    </section>
-  </div>
-</div><!-- /app-ahram -->
-
-<div id="app-container12" hidden>
-  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
-  <header class="app-header">
-    <div class="brand">
-      <div class="brand-text" style="text-align:center;">
-        <h1>أسعار الحاوية 1&amp;2</h1>
-      </div>
-    </div>
-  </header>
-
-  <div class="container">
-    <section>
-      <div class="card">
-        <h2>📤 رفع شيت الأسعار</h2>
-        <div class="field" style="margin-bottom:0;">
-          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
-          <input type="file" accept=".xlsx,.xls,.csv" data-upload="container12">
-        </div>
-        <div class="upload-meta" data-upload-meta="container12"></div>
-      </div>
-      <div class="card">
-        <div class="field" style="margin-bottom:0;">
-          <label>بحث بالكود أو الاسم</label>
-          <div class="search-field">
-            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="container12" inputmode="search">
-            <span class="search-icon">🔍</span>
-          </div>
-        </div>
-        <div class="result-count" data-result-count="container12"></div>
-      </div>
-      <div data-table="container12"></div>
-    </section>
-  </div>
-</div><!-- /app-container12 -->
-
-<div id="app-container3" hidden>
-  <button class="home-btn" data-go-home type="button">🏠 الرئيسية</button>
-  <header class="app-header">
-    <div class="brand">
-      <div class="brand-text" style="text-align:center;">
-        <h1>أسعار الحاوية 3</h1>
-      </div>
-    </div>
-  </header>
-
-  <div class="container">
-    <section>
-      <div class="card">
-        <h2>📤 رفع شيت الأسعار</h2>
-        <div class="field" style="margin-bottom:0;">
-          <label>ملف إكسيل بيه 3 أعمدة: code / name / price</label>
-          <input type="file" accept=".xlsx,.xls,.csv" data-upload="container3">
-        </div>
-        <div class="upload-meta" data-upload-meta="container3"></div>
-      </div>
-      <div class="card">
-        <div class="field" style="margin-bottom:0;">
-          <label>بحث بالكود أو الاسم</label>
-          <div class="search-field">
-            <input type="text" placeholder="اكتب كود أو اسم المنتج..." data-search="container3" inputmode="search">
-            <span class="search-icon">🔍</span>
-          </div>
-        </div>
-        <div class="result-count" data-result-count="container3"></div>
-      </div>
-      <div data-table="container3"></div>
-    </section>
-  </div>
-</div><!-- /app-container3 -->
-
 <script>
 (function(){
+
+  /* ============================================================
+     Translations
+     ============================================================ */
+  const TRANSLATIONS = {
+    en: {
+      pageTitle: "Sa3arli — China Purchase Price Calculator",
+      pageDescription: "Calculate any product's price in EGP before you buy it from China — product, shipping, and customs.",
+      brandSubtitle: "China purchase price calculator",
+      tabHome: "🧮 Quick Price",
+      tabFav: "⭐ Favorites",
+      installTitle: "Install Sa3arli on your device 📲",
+      installSubtextDefault: "Works like a real app, opens without a browser",
+      installSubtextIos: "From Safari: tap Share ⬆️ then \"Add to Home Screen\"",
+      installBtn: "Install",
+      installDismissAria: "Close",
+      rateLabelPrefix: "Global rate: 1 USD =",
+      rateLabelSuffix: "EGP",
+      rateStatusUpdating: "Updating...",
+      rateStatusLive: "Updated now",
+      rateStatusFallback: "Fallback value",
+      userUsdRateLabel: "The USD rate you're buying (or bought) at from Egypt",
+      derivedRateLine1: "1 Chinese yuan ≈ <b>{usd}</b> USD ≈ <b>{egp}</b> EGP",
+      derivedRateLine2: "(Calculated using the rate you entered above, not the global rate, since you pay in China with USD you bought using EGP)",
+      favRateNote: "Based on your current rate: 1 yuan ≈ {rate} EGP",
+      quickPriceLabel: "Product price (yuan)",
+      chainBaseLabel: "Price in EGP",
+      markup1Label: "First markup (%)",
+      chainAfterMarkup1Label: "After markup",
+      markup2Label: "Additional markup (%)",
+      chainAfterMarkup2Label: "After addition",
+      marginLabel: "Profit margin (%)",
+      resultCurrency: "EGP",
+      quickResultSub: "≈ {cny} yuan · {usd} $",
+      quickFavBtn: "⭐ Save to favorites",
+      saveFormTitle: "Save product info (optional)",
+      saveNameLabel: "Product name",
+      saveNamePlaceholder: "e.g. glass cup set",
+      saveSupplierLabel: "Supplier name",
+      saveSupplierPlaceholder: "Factory / shop name",
+      savePhotoLabel: "Product photo",
+      saveConfirmBtn: "Save to favorites",
+      saveCancelBtn: "Cancel",
+      favEmpty: "No saved products yet.<br>Calculate a price from \"Quick Price\" and tap ⭐ to save it here.",
+      favNameFallback: "Unnamed product",
+      pricingRatiosLabel: "Pricing ratios (applied in order to the yuan price)",
+      markup1ShortLabel: "First markup (%)",
+      markup2ShortLabel: "Addition (%)",
+      marginShortLabel: "Profit margin (%)",
+      shippingSectionTitle: "🚚 Shipping cost calculation (optional)",
+      shippingEnableLabel: "Enable shipping calculation for this product",
+      qtyLabel: "Quantity (pieces)",
+      lengthLabel: "Length (cm)",
+      widthLabel: "Width (cm)",
+      heightLabel: "Height (cm)",
+      weightLabel: "Actual weight per piece (kg)",
+      weightBoxTemplate: "Volumetric weight per piece: <b>{vw}</b> kg — Billable weight: <b>{bw}</b> kg<br>Total: volume <b>{cbm}</b> m³ (CBM) — shipping weight <b>{tw}</b> kg",
+      weightBoxEmpty: "Enter dimensions and weight and enable shipping calculation to see shipping options.",
+      shipAirName: "✈️ Air freight",
+      shipAirDesc: "Fastest, suited for small quantities",
+      shipLclName: "🚢 Partial sea freight (LCL)",
+      shipLclDesc: "To Port Said, approx. 1 m³ minimum",
+      shipContainerName: "📦 Full container",
+      badgeRecommended: "Best fit",
+      advancedShippingSummary: "⚙️ Edit default shipping rates (USD, applies to all products)",
+      airRateLabel: "Air freight ($/kg)",
+      lclRateLabel: "Sea freight ($/m³)",
+      container20Label: "20ft container ($)",
+      container40Label: "40ft container ($)",
+      customsSectionTitle: "🛃 Estimated customs (optional)",
+      customsEnableLabel: "Enable customs calculation for this product",
+      customsCategoryLabel: "Product category",
+      customsRateLabel: "Estimated customs rate (%)",
+      customsDisclaimer: "These are estimated rates for guidance only, not official customs rates. Please confirm actual customs with the Egyptian Customs Authority.",
+      catKitchen: "Kitchen & tableware",
+      catPlastic: "Plastic & household",
+      catTextile: "Textiles & furnishings",
+      catElectronics: "Small electrical appliances",
+      catOther: "Other",
+      vatSectionTitle: "🧾 VAT (optional)",
+      vatEnableLabel: "Enable VAT calculation for this product",
+      vatRateLabel: "VAT rate (%)",
+      vatDisclaimer: "Calculated on (product + shipping + customs) — default 14% per Egypt's general bracket, may differ by product type.",
+      resultProductCost: "Product cost",
+      resultShipping: "Shipping cost",
+      resultCustoms: "Estimated customs",
+      resultVat: "VAT",
+      resultTotal: "Grand total",
+      shareBtn: "📤 Share result",
+      marginTableHeadMargin: "Profit margin",
+      marginTableHeadTotal: "Total sell price",
+      marginTableHeadPerPiece: "Price per piece",
+      referralLinkText: "🚚 Need to actually ship this quantity? Request a quote",
+      deleteBtn: "🗑 Delete product",
+      confirmDeleteMsg: "Delete this product from favorites?",
+      toastDeleted: "Deleted",
+      modalTitle: "🚚 Need to actually ship this quantity?",
+      modalDesc: "Request a free quote from our shipping & customs clearance partners",
+      modalNameLabel: "Name",
+      modalNamePlaceholder: "Your name",
+      modalPhoneLabel: "Mobile number",
+      modalPhonePlaceholder: "01xxxxxxxxx",
+      modalShipTypeLabel: "Preferred shipping method",
+      shipTypeAir: "✈️ Air freight",
+      shipTypeLcl: "🚢 Partial sea freight (LCL)",
+      shipTypeContainer: "📦 Full container",
+      shipTypeUnsure: "Not sure / need advice",
+      modalCityLabel: "City in Egypt",
+      modalCityPlaceholder: "e.g. Cairo, Alexandria",
+      modalWeightLabel: "Estimated weight / volume",
+      modalWeightPlaceholder: "e.g. 160 kg / 0.6 m³",
+      modalSubmitBtn: "Request a quote",
+      modalNote: "* Service in progress — one of our shipping partners will contact you soon.",
+      modalCloseAria: "Close",
+      toastFillNamePhone: "Please enter your name and mobile number",
+      toastFillCity: "Please enter your city",
+      toastRequestReceived: "Your request has been received! We'll contact you soon",
+      adBannerText: "Ad space",
+      footerText: "Sa3arli — a free tool for Egyptian traders — figures are estimates and editable",
+      toastNeedPrice: "Enter a price first",
+      toastSavedFav: "Saved to favorites ✅",
+      shareCalculatedBy: "Calculated by Sa3arli 🧮",
+      shareProductFallback: "Product",
+      egp: "EGP"
+    },
+    ar: {
+      pageTitle: "سعّرلي — حاسبة أسعار الشراء من الصين",
+      pageDescription: "احسب سعر أي منتج بالجنيه المصري قبل ما تشتريه من الصين — المنتج، الشحن، والجمارك.",
+      brandSubtitle: "حاسبة أسعار الشراء من الصين",
+      tabHome: "🧮 السعر السريع",
+      tabFav: "⭐ المفضلة",
+      installTitle: "ثبّت سعّرلي على جهازك 📲",
+      installSubtextDefault: "هيبقى زي أي تطبيق، تفتحه من غير متصفح",
+      installSubtextIos: "من Safari: اضغط زر المشاركة ⬆️ ثم \"إضافة إلى الشاشة الرئيسية\"",
+      installBtn: "تثبيت",
+      installDismissAria: "إغلاق",
+      rateLabelPrefix: "السعر العالمي: 1 دولار =",
+      rateLabelSuffix: "جنيه",
+      rateStatusUpdating: "جارِ التحديث...",
+      rateStatusLive: "محدّث الآن",
+      rateStatusFallback: "قيمة احتياطية",
+      userUsdRateLabel: "سعر الدولار اللي هتشتريه (أو اشتريته) بيه من مصر",
+      derivedRateLine1: "1 يوان صيني ≈ <b>{usd}</b> دولار ≈ <b>{egp}</b> جنيه",
+      derivedRateLine2: "(الحساب بيعدّي على الدولار بالسعر اللي إنت حاطّه فوق، مش السعر العالمي، لأنك بتدفع في الصين بدولار اشتريته إنت بالجنيه)",
+      favRateNote: "بناءً على سعرك الحالي: 1 يوان ≈ {rate} جنيه",
+      quickPriceLabel: "سعر المنتج (يوان)",
+      chainBaseLabel: "السعر بالجنيه",
+      markup1Label: "نسبة الزيادة الأولى (%)",
+      chainAfterMarkup1Label: "بعد الزيادة",
+      markup2Label: "نسبة إضافية (%)",
+      chainAfterMarkup2Label: "بعد الإضافة",
+      marginLabel: "هامش الربح (%)",
+      resultCurrency: "جنيه",
+      quickResultSub: "≈ {cny} يوان · {usd} $",
+      quickFavBtn: "⭐ حفظ في المفضلة",
+      saveFormTitle: "حفظ بيانات المنتج (اختياري)",
+      saveNameLabel: "اسم المنتج",
+      saveNamePlaceholder: "مثال: طقم أكواب زجاج",
+      saveSupplierLabel: "اسم المورد",
+      saveSupplierPlaceholder: "اسم المصنع / المحل",
+      savePhotoLabel: "صورة المنتج",
+      saveConfirmBtn: "حفظ في المفضلة",
+      saveCancelBtn: "إلغاء",
+      favEmpty: "لسه مفيش منتجات محفوظة.<br>احسب سعر منتج من \"السعر السريع\" واضغط ⭐ لحفظه هنا.",
+      favNameFallback: "منتج بدون اسم",
+      pricingRatiosLabel: "نسب التسعير (بتتحسب بالترتيب على سعر اليوان)",
+      markup1ShortLabel: "الزيادة الأولى (%)",
+      markup2ShortLabel: "الإضافة (%)",
+      marginShortLabel: "هامش الربح (%)",
+      shippingSectionTitle: "🚚 حساب تكلفة الشحن (اختياري)",
+      shippingEnableLabel: "فعّل حساب الشحن لهذا المنتج",
+      qtyLabel: "الكمية (عدد القطع)",
+      lengthLabel: "الطول (سم)",
+      widthLabel: "العرض (سم)",
+      heightLabel: "الارتفاع (سم)",
+      weightLabel: "الوزن الفعلي للقطعة (كجم)",
+      weightBoxTemplate: "الوزن الحجمي للقطعة: <b>{vw}</b> كجم — الوزن المُعتمد: <b>{bw}</b> كجم<br>الإجمالي: حجم <b>{cbm}</b> م³ (CBM) — وزن شحن <b>{tw}</b> كجم",
+      weightBoxEmpty: "أدخل الأبعاد والوزن وفعّل حساب الشحن لعرض خيارات الشحن.",
+      shipAirName: "✈️ شحن جوي",
+      shipAirDesc: "الأسرع، مناسب للكميات الصغيرة",
+      shipLclName: "🚢 شحن بحري جزئي (LCL)",
+      shipLclDesc: "لميناء بورسعيد، حد أدنى تقريبي 1 م³",
+      shipContainerName: "📦 حاوية كاملة",
+      badgeRecommended: "الأنسب",
+      advancedShippingSummary: "⚙️ تعديل أسعار الشحن الافتراضية (بالدولار، تُطبّق على كل المنتجات)",
+      airRateLabel: "شحن جوي ($/كجم)",
+      lclRateLabel: "شحن بحري ($/م³)",
+      container20Label: "حاوية 20 قدم ($)",
+      container40Label: "حاوية 40 قدم ($)",
+      customsSectionTitle: "🛃 حساب الجمارك التقديرية (اختياري)",
+      customsEnableLabel: "فعّل حساب الجمارك لهذا المنتج",
+      customsCategoryLabel: "فئة المنتج",
+      customsRateLabel: "نسبة الجمارك التقديرية (%)",
+      customsDisclaimer: "هذه نسب تقديرية للاسترشاد فقط، وليست نسب جمركية رسمية. يُرجى التأكد من الجمارك الفعلية عبر مصلحة الجمارك المصرية.",
+      catKitchen: "أدوات مطبخ ومائدة",
+      catPlastic: "بلاستيك ومنزلية",
+      catTextile: "تكستايل ومفروشات",
+      catElectronics: "أجهزة كهربائية صغيرة",
+      catOther: "أخرى",
+      vatSectionTitle: "🧾 ضريبة القيمة المضافة (اختياري)",
+      vatEnableLabel: "فعّل حساب الضريبة لهذا المنتج",
+      vatRateLabel: "نسبة ضريبة القيمة المضافة (%)",
+      vatDisclaimer: "بتتحسب على (المنتج + الشحن + الجمارك) — القيمة الافتراضية 14% حسب الشريحة العامة في مصر، وقد تختلف حسب نوع السلعة.",
+      resultProductCost: "تكلفة المنتج",
+      resultShipping: "تكلفة الشحن",
+      resultCustoms: "الجمارك التقديرية",
+      resultVat: "ضريبة القيمة المضافة",
+      resultTotal: "الإجمالي الكلي",
+      shareBtn: "📤 شارك النتيجة",
+      marginTableHeadMargin: "هامش الربح",
+      marginTableHeadTotal: "سعر البيع الإجمالي",
+      marginTableHeadPerPiece: "سعر القطعة",
+      referralLinkText: "🚚 محتاج تشحن الكمية دي فعلياً؟ اطلب عرض سعر",
+      deleteBtn: "🗑 حذف المنتج",
+      confirmDeleteMsg: "تحذف المنتج ده من المفضلة؟",
+      toastDeleted: "تم الحذف",
+      modalTitle: "🚚 محتاج تشحن الكمية دي فعلياً؟",
+      modalDesc: "اطلب عرض سعر مجاني من شركاء الشحن والتخليص الجمركي",
+      modalNameLabel: "الاسم",
+      modalNamePlaceholder: "اسمك",
+      modalPhoneLabel: "رقم الموبايل",
+      modalPhonePlaceholder: "01xxxxxxxxx",
+      modalShipTypeLabel: "طريقة الشحن المفضلة",
+      shipTypeAir: "✈️ شحن جوي",
+      shipTypeLcl: "🚢 شحن بحري جزئي (LCL)",
+      shipTypeContainer: "📦 حاوية كاملة",
+      shipTypeUnsure: "مش عارف / محتاج استشارة",
+      modalCityLabel: "المدينة في مصر",
+      modalCityPlaceholder: "مثال: القاهرة، الإسكندرية",
+      modalWeightLabel: "الوزن / الحجم التقديري",
+      modalWeightPlaceholder: "مثال: 160 كجم / 0.6 م³",
+      modalSubmitBtn: "اطلب عرض سعر",
+      modalNote: "* الخدمة قيد التجهيز — سيتم التواصل معك قريباً من أحد شركاء الشحن.",
+      modalCloseAria: "إغلاق",
+      toastFillNamePhone: "من فضلك أدخل الاسم ورقم الموبايل",
+      toastFillCity: "من فضلك أدخل المدينة",
+      toastRequestReceived: "تم استلام طلبك! هنتواصل معك قريباً",
+      adBannerText: "مساحة إعلانية",
+      footerText: "سعّرلي — أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل",
+      toastNeedPrice: "محتاج تحط سعر أولاً",
+      toastSavedFav: "تم الحفظ في المفضلة ✅",
+      shareCalculatedBy: "حُسب بواسطة سعّرلي 🧮",
+      shareProductFallback: "منتج",
+      egp: "جنيه"
+    },
+    zh: {
+      pageTitle: "Sa3arli — 中国采购报价计算器",
+      pageDescription: "在从中国购买之前，用埃及镑计算任何产品的价格 — 产品、运费和关税。",
+      brandSubtitle: "中国采购报价计算器",
+      tabHome: "🧮 快速报价",
+      tabFav: "⭐ 收藏",
+      installTitle: "将 Sa3arli 安装到您的设备 📲",
+      installSubtextDefault: "像真正的应用一样，无需浏览器即可打开",
+      installSubtextIos: "在 Safari 中：点击分享 ⬆️ 然后选择“添加到主屏幕”",
+      installBtn: "安装",
+      installDismissAria: "关闭",
+      rateLabelPrefix: "全球汇率：1 美元 =",
+      rateLabelSuffix: "埃镑",
+      rateStatusUpdating: "更新中...",
+      rateStatusLive: "刚刚更新",
+      rateStatusFallback: "备用数值",
+      userUsdRateLabel: "您在埃及购买（或已购买）美元的汇率",
+      derivedRateLine1: "1 人民币 ≈ <b>{usd}</b> 美元 ≈ <b>{egp}</b> 埃镑",
+      derivedRateLine2: "（按您上面填写的汇率计算，而非全球汇率，因为您在中国用的是以埃镑购买的美元付款）",
+      favRateNote: "按您当前的汇率：1 人民币 ≈ {rate} 埃镑",
+      quickPriceLabel: "产品价格（人民币）",
+      chainBaseLabel: "埃镑价格",
+      markup1Label: "第一次加价 (%)",
+      chainAfterMarkup1Label: "加价后",
+      markup2Label: "额外加价 (%)",
+      chainAfterMarkup2Label: "加成后",
+      marginLabel: "利润率 (%)",
+      resultCurrency: "埃镑",
+      quickResultSub: "≈ {cny} 元 · {usd} 美元",
+      quickFavBtn: "⭐ 保存到收藏",
+      saveFormTitle: "保存产品信息（可选）",
+      saveNameLabel: "产品名称",
+      saveNamePlaceholder: "例如：玻璃杯套装",
+      saveSupplierLabel: "供应商名称",
+      saveSupplierPlaceholder: "工厂 / 店铺名称",
+      savePhotoLabel: "产品照片",
+      saveConfirmBtn: "保存到收藏",
+      saveCancelBtn: "取消",
+      favEmpty: "还没有已保存的产品。<br>在“快速报价”中计算价格并点击 ⭐ 保存到这里。",
+      favNameFallback: "未命名产品",
+      pricingRatiosLabel: "定价比例（按顺序应用于人民币价格）",
+      markup1ShortLabel: "第一次加价 (%)",
+      markup2ShortLabel: "加成 (%)",
+      marginShortLabel: "利润率 (%)",
+      shippingSectionTitle: "🚚 运费计算（可选）",
+      shippingEnableLabel: "为此产品启用运费计算",
+      qtyLabel: "数量（件）",
+      lengthLabel: "长度 (厘米)",
+      widthLabel: "宽度 (厘米)",
+      heightLabel: "高度 (厘米)",
+      weightLabel: "每件实际重量 (公斤)",
+      weightBoxTemplate: "每件体积重量：<b>{vw}</b> 公斤 — 计费重量：<b>{bw}</b> 公斤<br>总计：体积 <b>{cbm}</b> 立方米 (CBM) — 运费重量 <b>{tw}</b> 公斤",
+      weightBoxEmpty: "输入尺寸和重量并启用运费计算以查看运输选项。",
+      shipAirName: "✈️ 空运",
+      shipAirDesc: "最快，适合小批量",
+      shipLclName: "🚢 部分海运 (LCL)",
+      shipLclDesc: "发往塞得港，最低约 1 立方米",
+      shipContainerName: "📦 整柜",
+      badgeRecommended: "最优选择",
+      advancedShippingSummary: "⚙️ 编辑默认运费（美元，适用于所有产品）",
+      airRateLabel: "空运 ($/公斤)",
+      lclRateLabel: "海运 ($/立方米)",
+      container20Label: "20 英尺柜 ($)",
+      container40Label: "40 英尺柜 ($)",
+      customsSectionTitle: "🛃 预估关税（可选）",
+      customsEnableLabel: "为此产品启用关税计算",
+      customsCategoryLabel: "产品类别",
+      customsRateLabel: "预估关税率 (%)",
+      customsDisclaimer: "这些是仅供参考的预估税率，并非官方关税税率。请通过埃及海关总署确认实际关税。",
+      catKitchen: "厨房与餐具",
+      catPlastic: "塑料与家居用品",
+      catTextile: "纺织品与家纺",
+      catElectronics: "小型电器",
+      catOther: "其他",
+      vatSectionTitle: "🧾 增值税（可选）",
+      vatEnableLabel: "为此产品启用增值税计算",
+      vatRateLabel: "增值税率 (%)",
+      vatDisclaimer: "按（产品 + 运费 + 关税）计算 — 默认按埃及通用税率 14%，可能因产品类型而异。",
+      resultProductCost: "产品成本",
+      resultShipping: "运费",
+      resultCustoms: "预估关税",
+      resultVat: "增值税",
+      resultTotal: "总计",
+      shareBtn: "📤 分享结果",
+      marginTableHeadMargin: "利润率",
+      marginTableHeadTotal: "总售价",
+      marginTableHeadPerPiece: "单件价格",
+      referralLinkText: "🚚 需要实际运输这批货物？申请报价",
+      deleteBtn: "🗑 删除产品",
+      confirmDeleteMsg: "确定要从收藏中删除此产品吗？",
+      toastDeleted: "已删除",
+      modalTitle: "🚚 需要实际运输这批货物？",
+      modalDesc: "向我们的物流和清关合作伙伴免费申请报价",
+      modalNameLabel: "姓名",
+      modalNamePlaceholder: "您的姓名",
+      modalPhoneLabel: "手机号码",
+      modalPhonePlaceholder: "01xxxxxxxxx",
+      modalShipTypeLabel: "首选运输方式",
+      shipTypeAir: "✈️ 空运",
+      shipTypeLcl: "🚢 部分海运 (LCL)",
+      shipTypeContainer: "📦 整柜",
+      shipTypeUnsure: "不确定 / 需要咨询",
+      modalCityLabel: "埃及城市",
+      modalCityPlaceholder: "例如：开罗、亚历山大",
+      modalWeightLabel: "预估重量 / 体积",
+      modalWeightPlaceholder: "例如：160 公斤 / 0.6 立方米",
+      modalSubmitBtn: "申请报价",
+      modalNote: "* 服务筹备中 — 我们的物流合作伙伴将尽快与您联系。",
+      modalCloseAria: "关闭",
+      toastFillNamePhone: "请输入姓名和手机号码",
+      toastFillCity: "请输入城市",
+      toastRequestReceived: "已收到您的申请！我们会尽快与您联系",
+      adBannerText: "广告位",
+      footerText: "Sa3arli — 面向埃及贸易商的免费工具 — 数据为估算值，可自行编辑",
+      toastNeedPrice: "请先输入价格",
+      toastSavedFav: "已保存到收藏 ✅",
+      shareCalculatedBy: "由 Sa3arli 计算 🧮",
+      shareProductFallback: "产品",
+      egp: "埃镑"
+    }
+  };
 
   /* ============================================================
      القيم الافتراضية — عدّلها هنا عند الحاجة لتحديث دوري
@@ -893,17 +1189,68 @@
     photoQuality: 0.65,      // جودة ضغط الصورة (JPEG)
     shippingDefaults: { airRate: 6, lclRate: 105, container20Rate: 1850, container40Rate: 2400 },
     customsCategories: [
-      { value: "kitchen", label: "أدوات مطبخ ومائدة", rate: 30 },
-      { value: "plastic", label: "بلاستيك ومنزلية", rate: 25 },
-      { value: "textile", label: "تكستايل ومفروشات", rate: 40 },
-      { value: "electronics", label: "أجهزة كهربائية صغيرة", rate: 35 },
-      { value: "other", label: "أخرى", rate: 30 }
+      { value: "kitchen", i18n: "catKitchen", rate: 30 },
+      { value: "plastic", i18n: "catPlastic", rate: 25 },
+      { value: "textile", i18n: "catTextile", rate: 40 },
+      { value: "electronics", i18n: "catElectronics", rate: 35 },
+      { value: "other", i18n: "catOther", rate: 30 }
     ]
   };
 
   const $ = id => document.getElementById(id);
-  const fmt = n => Math.round(n).toLocaleString("ar-EG");
-  const fmtPriceOrDash = n => (n === null || n === undefined || isNaN(n)) ? "—" : fmt(n);
+
+  /* ---------------- لغة الواجهة والسمة اللونية ---------------- */
+  let currentLang = localStorage.getItem("cpc_lang") || "en";
+  let currentTheme = localStorage.getItem("cpc_theme") || "spice";
+
+  function t(key){
+    const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+    if(dict && dict[key] !== undefined) return dict[key];
+    return TRANSLATIONS.en[key] !== undefined ? TRANSLATIONS.en[key] : key;
+  }
+  function tf(key, vars){
+    let s = t(key);
+    Object.keys(vars || {}).forEach(k => { s = s.replace(new RegExp("\\{" + k + "\\}", "g"), vars[k]); });
+    return s;
+  }
+  function numberLocale(){
+    return currentLang === "ar" ? "ar-EG" : currentLang === "zh" ? "zh-CN" : "en-US";
+  }
+  const fmt = n => Math.round(n).toLocaleString(numberLocale());
+
+  function applyTranslations(){
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+    document.title = t("pageTitle");
+    const descMeta = document.querySelector('meta[name="description"]');
+    if(descMeta) descMeta.setAttribute("content", t("pageDescription"));
+    document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => { el.placeholder = t(el.getAttribute("data-i18n-placeholder")); });
+    document.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria"))); });
+    if($("langSelect")) $("langSelect").value = currentLang;
+    if($("themeSelect")) $("themeSelect").value = currentTheme;
+  }
+  function setLang(lang){
+    currentLang = lang;
+    localStorage.setItem("cpc_lang", lang);
+    applyTranslations();
+    updateRateDisplay();
+    updateQuickResult();
+    if(!$("view-favorites").hidden) renderFavorites();
+    trackEvent("language_changed", { language: lang });
+  }
+  function applyTheme(){
+    document.documentElement.setAttribute("data-theme", currentTheme);
+  }
+  function setTheme(theme){
+    currentTheme = theme;
+    localStorage.setItem("cpc_theme", theme);
+    applyTheme();
+    trackEvent("theme_changed", { theme });
+  }
+  $("langSelect").addEventListener("change", function(){ setLang(this.value); });
+  $("themeSelect").addEventListener("change", function(){ setTheme(this.value); });
 
   // تتبّع أحداث الاستخدام (Google Analytics) — من غير أي بيانات شخصية (اسم/رقم موبايل)
   function trackEvent(name, params){
@@ -956,339 +1303,6 @@
   $("tabHome").addEventListener("click", () => switchView("home"));
   $("tabFav").addEventListener("click", () => switchView("favorites"));
 
-  /* ---------------- الشاشة الرئيسية (لانشر) وتبديل التطبيقات ---------------- */
-  const ALL_APPS = ["saarli", "ahram", "container12", "container3"];
-  const PRICE_APPS = ["ahram", "container12", "container3"]; // فيها حاسبة أسعار محتاجة Firebase
-
-  function goHome(){
-    $("app-launcher").hidden = false;
-    ALL_APPS.forEach(a => { $("app-" + a).hidden = true; });
-    trackEvent("screen_view", { screen_name: "launcher" });
-  }
-  function openApp(app){
-    $("app-launcher").hidden = true;
-    ALL_APPS.forEach(a => { $("app-" + a).hidden = (a !== app); });
-    trackEvent("app_opened", { app });
-    if(PRICE_APPS.includes(app)) initCloudPriceSync();
-  }
-  document.querySelectorAll(".launcher-tile").forEach(tile => {
-    tile.addEventListener("click", () => openApp(tile.getAttribute("data-app")));
-  });
-  document.querySelectorAll("[data-go-home]").forEach(btn => {
-    btn.addEventListener("click", goHome);
-  });
-
-  /* ---------------- شيتات الأسعار (رفع إكسيل + مزامنة سحابية + بحث) ---------------- */
-  let xlsxLoadPromise = null;
-  function ensureXlsxLoaded(){
-    if(window.XLSX) return Promise.resolve();
-    if(xlsxLoadPromise) return xlsxLoadPromise;
-    xlsxLoadPromise = new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-    return xlsxLoadPromise;
-  }
-
-  // مزامنة سحابية عبر Firestore — نفس بيانات الأسعار تظهر على كل أجهزتك، مش بس الجهاز اللي رفعت منه.
-  // بيستخدم مشروع Firebase مشترك مع تطبيق تاني (Nexus) غير مرتبط بيه إطلاقًا — Collection معزولة تمامًا.
-  const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyCzDuaf-4hN0f9ZZYUXUywQ6Lbe_ZbBVVQ",
-    authDomain: "nexus-2fec6.firebaseapp.com",
-    projectId: "nexus-2fec6",
-    storageBucket: "nexus-2fec6.firebasestorage.app",
-    messagingSenderId: "923229931538",
-    appId: "1:923229931538:web:f0c13bf6533018d38230cb"
-  };
-  const PRICE_SOURCES = ["ahram", "container12", "container3"];
-  const priceListeners = {};
-  let firestoreDb = null;
-  let firebaseLoadPromise = null;
-  let firebaseReadyPromise = null;
-  let cloudSyncEnabled = false;
-
-  function ensureFirebaseLoaded(){
-    if(window.firebase && window.firebase.apps) return Promise.resolve();
-    if(firebaseLoadPromise) return firebaseLoadPromise;
-    const scripts = [
-      "https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js",
-      "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js",
-      "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"
-    ];
-    firebaseLoadPromise = scripts.reduce((p, src) => p.then(() => new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      s.src = src;
-      s.onload = resolve;
-      s.onerror = reject;
-      document.head.appendChild(s);
-    })), Promise.resolve());
-    return firebaseLoadPromise;
-  }
-
-  async function ensureFirebaseReady(){
-    await ensureFirebaseLoaded();
-    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-    firestoreDb = firebase.firestore();
-    if(!firebaseReadyPromise){
-      try{ firestoreDb.enablePersistence({ synchronizeTabs: true }).catch(() => {}); }catch(e){}
-      firebaseReadyPromise = new Promise((resolve) => {
-        firebase.auth().onAuthStateChanged(user => {
-          if(user) resolve(user);
-          else firebase.auth().signInAnonymously().catch(() => resolve(null));
-        });
-      });
-    }
-    return firebaseReadyPromise;
-  }
-
-  async function initCloudPriceSync(){
-    if(cloudSyncEnabled) return;
-    try{
-      await ensureFirebaseReady();
-      cloudSyncEnabled = true;
-      PRICE_SOURCES.forEach(source => {
-        if(priceListeners[source]) return;
-        priceListeners[source] = firestoreDb.collection("china_pricing_prices").doc(source)
-          .onSnapshot(snap => {
-            if(!snap.exists) return;
-            const data = snap.data();
-            const rows = Array.isArray(data.rows) ? data.rows : [];
-            localStorage.setItem("cpc_prices_" + source, JSON.stringify(rows));
-            localStorage.setItem("cpc_prices_" + source + "_meta", JSON.stringify({
-              updatedAt: (data.updatedAt && data.updatedAt.toMillis) ? data.updatedAt.toMillis() : Date.now(),
-              count: rows.length
-            }));
-            const activeSearch = document.querySelector(`[data-search="${source}"]`);
-            renderPriceTable(source, activeSearch ? activeSearch.value : "");
-          }, () => { /* أوفلاين أو تعذر الوصول — الأداة تفضل شغالة بآخر نسخة محفوظة محليًا */ });
-      });
-    }catch(e){
-      // تعذر تحميل Firebase (مفيش إنترنت غالبًا) — رجوع صامت للتخزين المحلي بس
-    }
-  }
-
-  function loadPriceData(source){
-    try{ return JSON.parse(localStorage.getItem("cpc_prices_" + source)) || []; }
-    catch(e){ return []; }
-  }
-  function savePriceData(source, rows){
-    localStorage.setItem("cpc_prices_" + source, JSON.stringify(rows));
-    localStorage.setItem("cpc_prices_" + source + "_meta", JSON.stringify({ updatedAt: Date.now(), count: rows.length }));
-  }
-  function loadPriceMeta(source){
-    try{ return JSON.parse(localStorage.getItem("cpc_prices_" + source + "_meta")); }
-    catch(e){ return null; }
-  }
-
-  function findColumnIndex(headerRow, names){
-    for(let i = 0; i < headerRow.length; i++){
-      const h = String(headerRow[i] || "").trim().toLowerCase();
-      if(names.includes(h)) return i;
-    }
-    return -1;
-  }
-
-  // شيتات كتالوج حقيقية بتستخدم "خلايا مدمجة" (Merge) عشان تجمع أكتر من صنف تحت نفس الاسم/الرقم —
-  // البرنامج اللي بيقرأ الإكسيل بيشوف بس الخلية الأولى من الدمج، والباقي بيرجع فاضي. الدالة دي بتاخد
-  // القيمة من أول خلية في كل نطاق دمج وتحطها في كل الصفوف اللي تحته، زي بالظبط اللي إكسيل بيوريه للعين.
-  function forwardFillMerges(sheet, rows){
-    const merges = sheet["!merges"] || [];
-    merges.forEach(m => {
-      const topAddr = XLSX.utils.encode_cell({ r: m.s.r, c: m.s.c });
-      const topCell = sheet[topAddr];
-      const val = topCell ? topCell.v : undefined;
-      if(val === undefined || val === null || val === "") return;
-      for(let r = m.s.r; r <= m.e.r; r++){
-        if(!rows[r]) continue;
-        for(let c = m.s.c; c <= m.e.c; c++){
-          const cur = rows[r][c];
-          if(cur === undefined || cur === null || String(cur).trim() === ""){
-            rows[r][c] = val;
-          }
-        }
-      }
-    });
-    return rows;
-  }
-
-  // خلايا اكسل ممكن تفضل فيها نصوص أخطاء صيغ قديمة (زي #N/A لو دالة VLOOKUP فشلت) — دي مش "صفر"،
-  // دي "مجهول"، فمينفعش نحولها صفر لأن الصفر بيبقى قيمة حقيقية مضللة (يبان وكأنه سعر فعلي).
-  const EXCEL_ERROR_STRINGS = new Set(["#N/A", "#REF!", "#DIV/0!", "#VALUE!", "#NAME?", "#NULL!", "#NUM!"]);
-  function parsePriceCell(val){
-    if(val === undefined || val === null || val === "") return null;
-    if(typeof val === "string" && EXCEL_ERROR_STRINGS.has(val.trim().toUpperCase())) return null;
-    const n = parseFloat(val);
-    return isNaN(n) ? null : n;
-  }
-
-  async function handlePriceUpload(source, file){
-    showToast("جارِ قراءة الملف...");
-    try{
-      await ensureXlsxLoaded();
-    }catch(e){
-      showToast("تعذر تحميل قارئ الإكسيل — تأكد من الاتصال بالإنترنت");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try{
-        const data = new Uint8Array(e.target.result);
-        const wb = XLSX.read(data, { type: "array" });
-        const sheet = wb.Sheets[wb.SheetNames[0]];
-        let rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-        if(!rows.length){ showToast("الملف فاضي"); return; }
-        rows = forwardFillMerges(sheet, rows);
-
-        const header = rows[0];
-        const itemNoIdx = findColumnIndex(header, ["item no", "itemno", "item", "item number", "رقم الصنف"]);
-        let codeIdx = findColumnIndex(header, ["code", "كود"]);
-        let nameIdx = findColumnIndex(header, ["name", "اسم", "الاسم"]);
-        const chinaPriceIdx = findColumnIndex(header, ["china price", "china", "سعر الصين"]);
-        const costIdx = findColumnIndex(header, ["cost", "تكلفة", "التكلفة"]);
-        const sellingIdx = findColumnIndex(header, ["selling price", "selling", "سعر البيع"]);
-        const photoIdx = findColumnIndex(header, ["photo", "صورة", "الصورة"]);
-        let priceIdx = findColumnIndex(header, ["price", "سعر", "السعر"]); // توافق مع شيتات بسيطة قديمة (3 أعمدة بس)
-
-        const hasHeaderRow = [itemNoIdx, codeIdx, nameIdx, chinaPriceIdx, costIdx, sellingIdx, priceIdx].some(i => i >= 0);
-        const dataRows = hasHeaderRow ? rows.slice(1) : rows;
-        if(!hasHeaderRow){ codeIdx = 0; nameIdx = 1; priceIdx = 2; }
-
-        const parsed = dataRows
-          .filter(r => String(r[codeIdx] ?? "").trim() || String(r[nameIdx] ?? "").trim())
-          .map(r => {
-            const item = {
-              code: codeIdx >= 0 ? String(r[codeIdx] ?? "").trim() : "",
-              name: nameIdx >= 0 ? String(r[nameIdx] ?? "").trim() : ""
-            };
-            if(itemNoIdx >= 0){
-              const v = String(r[itemNoIdx] ?? "").trim();
-              if(v) item.itemNo = v;
-            }
-            if(chinaPriceIdx >= 0) item.chinaPrice = parsePriceCell(r[chinaPriceIdx]);
-            if(costIdx >= 0) item.cost = parsePriceCell(r[costIdx]);
-            if(sellingIdx >= 0) item.sellingPrice = parsePriceCell(r[sellingIdx]);
-            item.price = (chinaPriceIdx >= 0 || sellingIdx >= 0)
-              ? (item.sellingPrice !== undefined ? item.sellingPrice : null)
-              : parsePriceCell(r[priceIdx]);
-            return item;
-          });
-
-        if(!parsed.length){ showToast("مفيش صفوف قابلة للقراءة في الملف"); return; }
-
-        savePriceData(source, parsed);
-        renderPriceTable(source, "");
-        const searchInput = document.querySelector(`[data-search="${source}"]`);
-        if(searchInput) searchInput.value = "";
-        showToast(`تم رفع ${parsed.length} صنف` + (photoIdx >= 0 ? " (⚠️ عمود الصور اتجاهل — صور مضمنة في الملف، مش نص/رابط، فمينفعش تتقرأ تلقائيًا)" : ""));
-        trackEvent("price_sheet_uploaded", { source, rows: parsed.length });
-
-        ensureFirebaseReady().then(() => {
-          return firestoreDb.collection("china_pricing_prices").doc(source).set({
-            rows: parsed,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-        }).then(() => {
-          trackEvent("price_sheet_synced", { source });
-        }).catch(() => {
-          showToast("اتحفظ على الجهاز ده، لكن تعذرت المزامنة مع باقي أجهزتك — هيحاول تاني لما يبقى فيه إنترنت");
-        });
-      }catch(err){
-        showToast("تعذر قراءة الملف — تأكد إنه إكسيل صحيح");
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  }
-
-  function renderUploadMeta(source){
-    const metaEl = document.querySelector(`[data-upload-meta="${source}"]`);
-    if(!metaEl) return;
-    const meta = loadPriceMeta(source);
-    if(meta && meta.count){
-      const d = new Date(meta.updatedAt);
-      metaEl.innerHTML = `<span>آخر تحديث: ${d.toLocaleDateString("ar-EG")} — ${meta.count} صنف</span><button type="button" class="clear-data-btn" data-clear="${source}">حذف البيانات</button>`;
-    }else{
-      metaEl.textContent = "لسه مفيش بيانات مرفوعة";
-    }
-  }
-
-  function renderPriceTable(source, filter){
-    const wrap = document.querySelector(`[data-table="${source}"]`);
-    const countEl = document.querySelector(`[data-result-count="${source}"]`);
-    if(!wrap) return;
-    const rows = loadPriceData(source);
-    renderUploadMeta(source);
-    if(!rows.length){
-      wrap.innerHTML = `<div class="empty-state">مفيش بيانات مرفوعة لسه — ارفع شيت الإكسيل فوق.</div>`;
-      if(countEl) countEl.textContent = "";
-      return;
-    }
-    const q = (filter || "").trim().toLowerCase();
-    const filtered = q ? rows.filter(r =>
-      r.code.toLowerCase().includes(q) ||
-      r.name.toLowerCase().includes(q) ||
-      (r.itemNo && r.itemNo.toLowerCase().includes(q))
-    ) : rows;
-    if(countEl) countEl.textContent = q ? `${filtered.length} نتيجة` : `${rows.length} صنف`;
-    if(!filtered.length){
-      wrap.innerHTML = `<div class="empty-state">مفيش نتايج مطابقة</div>`;
-      return;
-    }
-    const shown = filtered.slice(0, 300);
-    wrap.innerHTML = `
-      <div class="price-list">
-        ${shown.map(r => {
-          const idBits = [r.itemNo, r.code].filter(Boolean).map(escapeHtml).join(" · ");
-          const extraBits = [];
-          if(r.chinaPrice != null) extraBits.push(`الصين: ¥${fmt(r.chinaPrice)}`);
-          if(r.cost != null) extraBits.push(`التكلفة: ${fmt(r.cost)} جنيه`);
-          return `
-          <div class="price-row">
-            <div class="price-row-info">
-              <div class="price-row-name">${escapeHtml(r.name) || "بدون اسم"}</div>
-              ${idBits ? `<div class="price-row-code">${idBits}</div>` : ``}
-              ${extraBits.length ? `<div class="price-row-extra">${extraBits.join(" · ")}</div>` : ``}
-            </div>
-            <div class="price-row-value">${fmtPriceOrDash(r.price)} <small>جنيه</small></div>
-          </div>
-        `;}).join("")}
-      </div>
-      ${filtered.length > 300 ? `<div class="price-table-note">عرض أول 300 من ${filtered.length} نتيجة — ضيّق البحث لعرض أدق</div>` : ``}
-    `;
-  }
-
-  document.querySelectorAll("[data-upload]").forEach(input => {
-    input.addEventListener("change", function(){
-      const source = this.getAttribute("data-upload");
-      const file = this.files && this.files[0];
-      if(!file) return;
-      handlePriceUpload(source, file);
-      this.value = "";
-    });
-  });
-  document.querySelectorAll("[data-search]").forEach(input => {
-    input.addEventListener("input", function(){
-      renderPriceTable(this.getAttribute("data-search"), this.value);
-    });
-  });
-  document.body.addEventListener("click", function(e){
-    const clearBtn = e.target.closest("[data-clear]");
-    if(!clearBtn) return;
-    const source = clearBtn.getAttribute("data-clear");
-    if(confirm("متأكد إنك عايز تمسح كل البيانات المرفوعة؟")){
-      localStorage.removeItem("cpc_prices_" + source);
-      localStorage.removeItem("cpc_prices_" + source + "_meta");
-      renderPriceTable(source, "");
-      showToast("اتمسحت البيانات");
-      ensureFirebaseReady().then(() => {
-        return firestoreDb.collection("china_pricing_prices").doc(source).delete();
-      }).catch(() => {});
-    }
-  });
-  PRICE_SOURCES.forEach(source => renderPriceTable(source, ""));
-
   /* ---------------- سعر الصرف ---------------- */
   async function fetchExchangeRate(){
     try{
@@ -1319,17 +1333,17 @@
     $("liveUsdRate").textContent = liveRates.usdToEgp.toFixed(2);
     const statusEl = $("rateStatus");
     if(liveRates.isLive){
-      statusEl.textContent = "محدّث الآن";
+      statusEl.textContent = t("rateStatusLive");
       statusEl.className = "status live";
     }else{
-      statusEl.textContent = "قيمة احتياطية";
+      statusEl.textContent = t("rateStatusFallback");
       statusEl.className = "status fallback";
     }
     const rates = getAdjustedRates();
     $("derivedRateBox").innerHTML =
-      `1 يوان صيني ≈ <b>${rates.cnyToUsd.toFixed(3)}</b> دولار ≈ <b>${rates.cnyToEgp.toFixed(2)}</b> جنيه` +
-      `<br>(الحساب بيعدّي على الدولار بالسعر اللي إنت حاطّه فوق، مش السعر العالمي، لأنك بتدفع في الصين بدولار اشتريته إنت بالجنيه)`;
-    $("favRateNote").textContent = `بناءً على سعرك الحالي: 1 يوان ≈ ${rates.cnyToEgp.toFixed(2)} جنيه`;
+      tf("derivedRateLine1", { usd: rates.cnyToUsd.toFixed(3), egp: rates.cnyToEgp.toFixed(2) }) +
+      "<br>" + t("derivedRateLine2");
+    $("favRateNote").textContent = tf("favRateNote", { rate: rates.cnyToEgp.toFixed(2) });
   }
 
   function getAdjustedRates(){
@@ -1367,7 +1381,7 @@
     if(c.priceCny > 0){
       const finalUsd = c.rates.usdToEgp ? c.finalEgp / c.rates.usdToEgp : 0;
       const finalCny = c.rates.cnyToEgp ? c.finalEgp / c.rates.cnyToEgp : 0;
-      $("quickResultSub").textContent = `≈ ${fmt(finalCny)} يوان · ${finalUsd.toFixed(2)} $`;
+      $("quickResultSub").textContent = tf("quickResultSub", { cny: fmt(finalCny), usd: finalUsd.toFixed(2) });
     }else{
       $("quickResultSub").textContent = "";
     }
@@ -1445,7 +1459,7 @@
 
   $("saveConfirmBtn").addEventListener("click", () => {
     const priceCny = parseFloat($("quickPriceCny").value) || 0;
-    if(priceCny <= 0){ showToast("محتاج تحط سعر أولاً"); return; }
+    if(priceCny <= 0){ showToast(t("toastNeedPrice")); return; }
     const defaultCategory = DEFAULTS.customsCategories[0];
     const item = {
       id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
@@ -1472,7 +1486,7 @@
     resetSaveForm();
     $("quickPriceCny").value = "";
     updateQuickResult();
-    showToast("تم الحفظ في المفضلة ✅");
+    showToast(t("toastSavedFav"));
     updateFavCount();
     trackEvent("favorite_saved", { has_photo: !!item.photo });
   });
@@ -1482,11 +1496,11 @@
   }
 
   function showToast(msg){
-    const t = $("toast");
-    t.textContent = msg;
-    t.classList.add("show");
+    const el = $("toast");
+    el.textContent = msg;
+    el.classList.add("show");
     clearTimeout(showToast._timer);
-    showToast._timer = setTimeout(() => t.classList.remove("show"), 2200);
+    showToast._timer = setTimeout(() => el.classList.remove("show"), 2200);
   }
 
   /* ---------------- حساب عنصر مفضلة ---------------- */
@@ -1523,14 +1537,14 @@
       let containerCostUsd, containerLabel;
       if(totalCbm <= DEFAULTS.container20CapacityCbm){
         containerCostUsd = shippingSettings.container20Rate;
-        containerLabel = "حاوية 20 قدم";
+        containerLabel = t("container20Label");
       }else if(totalCbm <= DEFAULTS.container40CapacityCbm){
         containerCostUsd = shippingSettings.container40Rate;
-        containerLabel = "حاوية 40 قدم";
+        containerLabel = t("container40Label");
       }else{
         const containersNeeded = Math.ceil(totalCbm / DEFAULTS.container40CapacityCbm);
         containerCostUsd = containersNeeded * shippingSettings.container40Rate;
-        containerLabel = `${containersNeeded} × حاوية 40 قدم`;
+        containerLabel = `${containersNeeded} × ${t("container40Label")}`;
       }
 
       const air = airCostUsd * rates.usdToEgp;
@@ -1589,10 +1603,10 @@
         <div class="fav-summary" data-toggle="${item.id}">
           <div class="fav-thumb">${thumb}</div>
           <div class="fav-info">
-            <div class="fav-name">${escapeHtml(item.name) || "منتج بدون اسم"}</div>
+            <div class="fav-name">${escapeHtml(item.name) || escapeHtml(t("favNameFallback"))}</div>
             <div class="fav-sub">${escapeHtml(item.supplier) || ""}</div>
           </div>
-          <div class="fav-price">${fmt(r.totalEgp)} جنيه</div>
+          <div class="fav-price">${fmt(r.totalEgp)} ${t("egp")}</div>
           <div class="fav-chevron">˅</div>
         </div>
         <div class="fav-detail" hidden>
@@ -1604,91 +1618,91 @@
 
   function buildFavDetailHtml(item){
     const cats = DEFAULTS.customsCategories.map(c =>
-      `<option value="${c.value}" data-rate="${c.rate}" ${item.customsCategory===c.value?"selected":""}>${c.label}</option>`
+      `<option value="${c.value}" data-rate="${c.rate}" ${item.customsCategory===c.value?"selected":""}>${escapeHtml(t(c.i18n))}</option>`
     ).join("");
     return `
       <div class="field">
-        <label>اسم المنتج</label>
-        <input type="text" data-field="name" data-id="${item.id}" value="${escapeAttr(item.name)}" placeholder="اسم المنتج">
+        <label>${t("saveNameLabel")}</label>
+        <input type="text" data-field="name" data-id="${item.id}" value="${escapeAttr(item.name)}" placeholder="${escapeAttr(t("saveNameLabel"))}">
       </div>
       <div class="field">
-        <label>اسم المورد</label>
-        <input type="text" data-field="supplier" data-id="${item.id}" value="${escapeAttr(item.supplier)}" placeholder="اسم المورد">
+        <label>${t("saveSupplierLabel")}</label>
+        <input type="text" data-field="supplier" data-id="${item.id}" value="${escapeAttr(item.supplier)}" placeholder="${escapeAttr(t("saveSupplierLabel"))}">
       </div>
       <div class="field">
-        <label>صورة المنتج</label>
+        <label>${t("savePhotoLabel")}</label>
         <input type="file" accept="image/*" capture="environment" data-photo="${item.id}">
         ${item.photo ? `<img src="${item.photo}" class="photo-preview">` : ``}
       </div>
       <div class="field">
-        <label>نسب التسعير (بتتحسب بالترتيب على سعر اليوان)</label>
+        <label>${t("pricingRatiosLabel")}</label>
         <div class="row3">
           <div class="field" style="margin-bottom:0;">
-            <label>الزيادة الأولى (%)</label>
+            <label>${t("markup1ShortLabel")}</label>
             <input type="number" min="0" step="1" data-field="markup1Percent" data-id="${item.id}" value="${item.markup1Percent !== undefined ? item.markup1Percent : DEFAULTS.homeMarkup1}">
           </div>
           <div class="field" style="margin-bottom:0;">
-            <label>الإضافة (%)</label>
+            <label>${t("markup2ShortLabel")}</label>
             <input type="number" min="0" step="1" data-field="markup2Percent" data-id="${item.id}" value="${item.markup2Percent !== undefined ? item.markup2Percent : DEFAULTS.homeMarkup2}">
           </div>
           <div class="field" style="margin-bottom:0;">
-            <label>هامش الربح (%)</label>
+            <label>${t("marginShortLabel")}</label>
             <input type="number" min="0" step="1" data-field="marginPercent" data-id="${item.id}" value="${item.marginPercent !== undefined ? item.marginPercent : DEFAULTS.homeMargin}">
           </div>
         </div>
       </div>
       <details class="section" data-id="${item.id}" ${item.shippingEnabled ? "open" : ""}>
-        <summary>🚚 حساب تكلفة الشحن (اختياري)</summary>
+        <summary>${t("shippingSectionTitle")}</summary>
         <div class="section-body">
           <div class="field">
             <label style="display:flex;align-items:center;gap:6px;">
               <input type="checkbox" data-field="shippingEnabled" data-id="${item.id}" ${item.shippingEnabled?"checked":""} style="width:auto;">
-              فعّل حساب الشحن لهذا المنتج
+              ${t("shippingEnableLabel")}
             </label>
           </div>
           <div class="field">
-            <label>الكمية (عدد القطع)</label>
+            <label>${t("qtyLabel")}</label>
             <input type="number" min="1" step="1" data-field="qty" data-id="${item.id}" value="${item.qty || 1}">
           </div>
           <div class="row3">
             <div class="field">
-              <label>الطول (سم)</label>
+              <label>${t("lengthLabel")}</label>
               <input type="number" min="0" step="0.1" data-field="length" data-id="${item.id}" value="${item.length || ""}">
             </div>
             <div class="field">
-              <label>العرض (سم)</label>
+              <label>${t("widthLabel")}</label>
               <input type="number" min="0" step="0.1" data-field="width" data-id="${item.id}" value="${item.width || ""}">
             </div>
             <div class="field">
-              <label>الارتفاع (سم)</label>
+              <label>${t("heightLabel")}</label>
               <input type="number" min="0" step="0.1" data-field="height" data-id="${item.id}" value="${item.height || ""}">
             </div>
           </div>
           <div class="field" style="margin-bottom:0;">
-            <label>الوزن الفعلي للقطعة (كجم)</label>
+            <label>${t("weightLabel")}</label>
             <input type="number" min="0" step="0.01" data-field="weight" data-id="${item.id}" value="${item.weight || ""}">
           </div>
           <div class="live-box" data-weightbox="${item.id}"></div>
           <div class="ship-options" data-shipoptions="${item.id}"></div>
           <details class="advanced">
-            <summary>⚙️ تعديل أسعار الشحن الافتراضية (بالدولار، تُطبّق على كل المنتجات)</summary>
+            <summary>${t("advancedShippingSummary")}</summary>
             <div class="row2">
               <div class="field">
-                <label>شحن جوي ($/كجم)</label>
+                <label>${t("airRateLabel")}</label>
                 <input type="number" min="0" step="0.1" data-global-ship="airRate" value="${shippingSettings.airRate}">
               </div>
               <div class="field">
-                <label>شحن بحري ($/م³)</label>
+                <label>${t("lclRateLabel")}</label>
                 <input type="number" min="0" step="1" data-global-ship="lclRate" value="${shippingSettings.lclRate}">
               </div>
             </div>
             <div class="row2">
               <div class="field">
-                <label>حاوية 20 قدم ($)</label>
+                <label>${t("container20Label")}</label>
                 <input type="number" min="0" step="10" data-global-ship="container20Rate" value="${shippingSettings.container20Rate}">
               </div>
               <div class="field">
-                <label>حاوية 40 قدم ($)</label>
+                <label>${t("container40Label")}</label>
                 <input type="number" min="0" step="10" data-global-ship="container40Rate" value="${shippingSettings.container40Rate}">
               </div>
             </div>
@@ -1697,43 +1711,43 @@
       </details>
 
       <details class="section" data-id="${item.id}" ${item.customsEnabled ? "open" : ""}>
-        <summary>🛃 حساب الجمارك التقديرية (اختياري)</summary>
+        <summary>${t("customsSectionTitle")}</summary>
         <div class="section-body">
           <div class="field">
             <label style="display:flex;align-items:center;gap:6px;">
               <input type="checkbox" data-field="customsEnabled" data-id="${item.id}" ${item.customsEnabled?"checked":""} style="width:auto;">
-              فعّل حساب الجمارك لهذا المنتج
+              ${t("customsEnableLabel")}
             </label>
           </div>
           <div class="field">
-            <label>فئة المنتج</label>
+            <label>${t("customsCategoryLabel")}</label>
             <select data-field="customsCategory" data-id="${item.id}">${cats}</select>
           </div>
           <div class="field" style="margin-bottom:0;">
-            <label>نسبة الجمارك التقديرية (%)</label>
+            <label>${t("customsRateLabel")}</label>
             <input type="number" min="0" step="1" data-field="customsRate" data-id="${item.id}" value="${item.customsRate}">
           </div>
           <div class="disclaimer">
-            هذه نسب تقديرية للاسترشاد فقط، وليست نسب جمركية رسمية. يُرجى التأكد من الجمارك الفعلية عبر مصلحة الجمارك المصرية.
+            ${t("customsDisclaimer")}
           </div>
         </div>
       </details>
 
       <details class="section" data-id="${item.id}" ${item.vatEnabled ? "open" : ""}>
-        <summary>🧾 ضريبة القيمة المضافة (اختياري)</summary>
+        <summary>${t("vatSectionTitle")}</summary>
         <div class="section-body">
           <div class="field">
             <label style="display:flex;align-items:center;gap:6px;">
               <input type="checkbox" data-field="vatEnabled" data-id="${item.id}" ${item.vatEnabled?"checked":""} style="width:auto;">
-              فعّل حساب الضريبة لهذا المنتج
+              ${t("vatEnableLabel")}
             </label>
           </div>
           <div class="field" style="margin-bottom:0;">
-            <label>نسبة ضريبة القيمة المضافة (%)</label>
+            <label>${t("vatRateLabel")}</label>
             <input type="number" min="0" step="0.5" data-field="vatRate" data-id="${item.id}" value="${item.vatRate}">
           </div>
           <div class="disclaimer">
-            بتتحسب على (المنتج + الشحن + الجمارك) — القيمة الافتراضية 14% حسب الشريحة العامة في مصر، وقد تختلف حسب نوع السلعة.
+            ${t("vatDisclaimer")}
           </div>
         </div>
       </details>
@@ -1741,10 +1755,10 @@
       <div class="result-card" data-result="${item.id}"></div>
 
       <div class="referral-link-wrap">
-        <button type="button" class="referral-link" data-open-referral="${item.id}">🚚 محتاج تشحن الكمية دي فعلياً؟ اطلب عرض سعر</button>
+        <button type="button" class="referral-link" data-open-referral="${item.id}">${t("referralLinkText")}</button>
       </div>
 
-      <button class="btn-danger" data-delete="${item.id}" type="button">🗑 حذف المنتج</button>
+      <button class="btn-danger" data-delete="${item.id}" type="button">${t("deleteBtn")}</button>
     `;
   }
 
@@ -1759,31 +1773,34 @@
     if(weightBox && shipOptionsBox){
       if(r.shippingDetail){
         const d = r.shippingDetail;
-        weightBox.innerHTML =
-          `الوزن الحجمي للقطعة: <b>${d.volumetricWeightPerPiece.toFixed(2)}</b> كجم — الوزن المُعتمد: <b>${d.billableWeightPerPiece.toFixed(2)}</b> كجم` +
-          `<br>الإجمالي: حجم <b>${d.totalCbm.toFixed(3)}</b> م³ (CBM) — وزن شحن <b>${d.totalBillableWeight.toFixed(2)}</b> كجم`;
+        weightBox.innerHTML = tf("weightBoxTemplate", {
+          vw: d.volumetricWeightPerPiece.toFixed(2),
+          bw: d.billableWeightPerPiece.toFixed(2),
+          cbm: d.totalCbm.toFixed(3),
+          tw: d.totalBillableWeight.toFixed(2)
+        });
         shipOptionsBox.innerHTML = `
           <div class="ship-opt ${d.recommendedKey==='air'?'recommended':''}">
-            ${d.recommendedKey==='air' ? '<span class="badge">الأنسب</span>' : ''}
-            <div class="name">✈️ شحن جوي</div>
-            <div class="desc">الأسرع، مناسب للكميات الصغيرة</div>
-            <div class="cost">${fmt(d.air)} <small>جنيه</small></div>
+            ${d.recommendedKey==='air' ? `<span class="badge">${t("badgeRecommended")}</span>` : ''}
+            <div class="name">${t("shipAirName")}</div>
+            <div class="desc">${t("shipAirDesc")}</div>
+            <div class="cost">${fmt(d.air)} <small>${t("egp")}</small></div>
           </div>
           <div class="ship-opt ${d.recommendedKey==='lcl'?'recommended':''}">
-            ${d.recommendedKey==='lcl' ? '<span class="badge">الأنسب</span>' : ''}
-            <div class="name">🚢 شحن بحري جزئي (LCL)</div>
-            <div class="desc">لميناء بورسعيد، حد أدنى تقريبي 1 م³</div>
-            <div class="cost">${fmt(d.lcl)} <small>جنيه</small></div>
+            ${d.recommendedKey==='lcl' ? `<span class="badge">${t("badgeRecommended")}</span>` : ''}
+            <div class="name">${t("shipLclName")}</div>
+            <div class="desc">${t("shipLclDesc")}</div>
+            <div class="cost">${fmt(d.lcl)} <small>${t("egp")}</small></div>
           </div>
           <div class="ship-opt ${d.recommendedKey==='container'?'recommended':''}">
-            ${d.recommendedKey==='container' ? '<span class="badge">الأنسب</span>' : ''}
-            <div class="name">📦 حاوية كاملة</div>
+            ${d.recommendedKey==='container' ? `<span class="badge">${t("badgeRecommended")}</span>` : ''}
+            <div class="name">${t("shipContainerName")}</div>
             <div class="desc">${d.containerLabel}</div>
-            <div class="cost">${fmt(d.container)} <small>جنيه</small></div>
+            <div class="cost">${fmt(d.container)} <small>${t("egp")}</small></div>
           </div>
         `;
       }else{
-        weightBox.innerHTML = `أدخل الأبعاد والوزن وفعّل حساب الشحن لعرض خيارات الشحن.`;
+        weightBox.innerHTML = t("weightBoxEmpty");
         shipOptionsBox.innerHTML = "";
       }
     }
@@ -1793,14 +1810,14 @@
     if(resultBox){
       const margins = item.margins && item.margins.length ? item.margins : DEFAULTS.profitMargins;
       resultBox.innerHTML = `
-        <div class="invoice-row"><span>تكلفة المنتج</span><span>${fmt(r.baseEgp)} جنيه</span></div>
-        ${item.shippingEnabled ? `<div class="invoice-row"><span>تكلفة الشحن</span><span>${fmt(r.shippingEgp)} جنيه</span></div>` : ``}
-        ${item.customsEnabled ? `<div class="invoice-row"><span>الجمارك التقديرية</span><span>${fmt(r.customsEgp)} جنيه</span></div>` : ``}
-        ${item.vatEnabled ? `<div class="invoice-row"><span>ضريبة القيمة المضافة</span><span>${fmt(r.vatEgp)} جنيه</span></div>` : ``}
-        <div class="invoice-row total"><span>الإجمالي الكلي</span><span>${fmt(r.totalEgp)} جنيه</span></div>
-        <button type="button" class="share-btn" data-share="${id}">📤 شارك النتيجة</button>
+        <div class="invoice-row"><span>${t("resultProductCost")}</span><span>${fmt(r.baseEgp)} ${t("egp")}</span></div>
+        ${item.shippingEnabled ? `<div class="invoice-row"><span>${t("resultShipping")}</span><span>${fmt(r.shippingEgp)} ${t("egp")}</span></div>` : ``}
+        ${item.customsEnabled ? `<div class="invoice-row"><span>${t("resultCustoms")}</span><span>${fmt(r.customsEgp)} ${t("egp")}</span></div>` : ``}
+        ${item.vatEnabled ? `<div class="invoice-row"><span>${t("resultVat")}</span><span>${fmt(r.vatEgp)} ${t("egp")}</span></div>` : ``}
+        <div class="invoice-row total"><span>${t("resultTotal")}</span><span>${fmt(r.totalEgp)} ${t("egp")}</span></div>
+        <button type="button" class="share-btn" data-share="${id}">${t("shareBtn")}</button>
         <table class="margin-table">
-          <thead><tr><th>هامش الربح</th><th>سعر البيع الإجمالي</th><th>سعر القطعة</th></tr></thead>
+          <thead><tr><th>${t("marginTableHeadMargin")}</th><th>${t("marginTableHeadTotal")}</th><th>${t("marginTableHeadPerPiece")}</th></tr></thead>
           <tbody>
             ${margins.map((m, idx) => {
               const sellTotal = r.totalEgp * (1 + m/100);
@@ -1820,7 +1837,7 @@
     const card = document.querySelector(`.fav-card[data-id="${id}"]`);
     if(card){
       const priceEl = card.querySelector(".fav-price");
-      if(priceEl) priceEl.textContent = `${fmt(r.totalEgp)} جنيه`;
+      if(priceEl) priceEl.textContent = `${fmt(r.totalEgp)} ${t("egp")}`;
     }
   }
 
@@ -1845,12 +1862,12 @@
     const del = e.target.closest("[data-delete]");
     if(del){
       const id = del.getAttribute("data-delete");
-      if(confirm("تحذف المنتج ده من المفضلة؟")){
+      if(confirm(t("confirmDeleteMsg"))){
         favorites = favorites.filter(f => f.id !== id);
         openIds.delete(id);
         saveFavorites();
         renderFavorites();
-        showToast("تم الحذف");
+        showToast(t("toastDeleted"));
       }
       return;
     }
@@ -1922,7 +1939,7 @@
         if(card){
           const nameEl = card.querySelector(".fav-name");
           const subEl = card.querySelector(".fav-sub");
-          if(key === "name") nameEl.textContent = field.value || "منتج بدون اسم";
+          if(key === "name") nameEl.textContent = field.value || t("favNameFallback");
           if(key === "supplier") subEl.textContent = field.value || "";
         }
       }
@@ -1958,15 +1975,16 @@
     const item = favorites.find(f => f.id === itemId);
     if(!item) return;
     const r = computeItemResult(item);
+    const egp = t("egp");
     const lines = [
-      `📦 ${item.name || "منتج"}`,
-      `تكلفة المنتج: ${fmt(r.baseEgp)} جنيه`
+      `📦 ${item.name || t("shareProductFallback")}`,
+      `${t("resultProductCost")}: ${fmt(r.baseEgp)} ${egp}`
     ];
-    if(item.shippingEnabled) lines.push(`الشحن: ${fmt(r.shippingEgp)} جنيه`);
-    if(item.customsEnabled) lines.push(`الجمارك: ${fmt(r.customsEgp)} جنيه`);
-    if(item.vatEnabled) lines.push(`ضريبة القيمة المضافة: ${fmt(r.vatEgp)} جنيه`);
-    lines.push(`الإجمالي: ${fmt(r.totalEgp)} جنيه`);
-    lines.push("", "حُسب بواسطة سعّرلي 🧮");
+    if(item.shippingEnabled) lines.push(`${t("resultShipping")}: ${fmt(r.shippingEgp)} ${egp}`);
+    if(item.customsEnabled) lines.push(`${t("resultCustoms")}: ${fmt(r.customsEgp)} ${egp}`);
+    if(item.vatEnabled) lines.push(`${t("resultVat")}: ${fmt(r.vatEgp)} ${egp}`);
+    lines.push(`${t("resultTotal")}: ${fmt(r.totalEgp)} ${egp}`);
+    lines.push("", t("shareCalculatedBy"));
     const text = lines.join("\n");
 
     trackEvent("result_shared");
@@ -1986,7 +2004,7 @@
     if(item){
       const r = computeItemResult(item);
       if(r.shippingDetail){
-        weightText = `${r.shippingDetail.totalBillableWeight.toFixed(1)} كجم / ${r.shippingDetail.totalCbm.toFixed(2)} م³`;
+        weightText = `${r.shippingDetail.totalBillableWeight.toFixed(1)} kg / ${r.shippingDetail.totalCbm.toFixed(2)} m³`;
         recommended = r.shippingDetail.recommendedKey;
       }
     }
@@ -2008,9 +2026,9 @@
     const name = $("modalRefName").value.trim();
     const phone = $("modalRefPhone").value.trim();
     const city = $("modalRefCity").value.trim();
-    if(!name || !phone){ showToast("من فضلك أدخل الاسم ورقم الموبايل"); return; }
-    if(!city){ showToast("من فضلك أدخل المدينة"); return; }
-    showToast("تم استلام طلبك! هنتواصل معك قريباً");
+    if(!name || !phone){ showToast(t("toastFillNamePhone")); return; }
+    if(!city){ showToast(t("toastFillCity")); return; }
+    showToast(t("toastRequestReceived"));
     trackEvent("referral_requested", { ship_type: $("modalRefShipType").value });
     closeReferralModal();
   });
@@ -2029,11 +2047,11 @@
     if(isStandalone() || localStorage.getItem(INSTALL_DISMISS_KEY)) return;
     if(deferredInstallPrompt){
       $("installBtn").hidden = false;
-      $("installSubtext").textContent = "هيبقى زي أي تطبيق، تفتحه من غير متصفح";
+      $("installSubtext").textContent = t("installSubtextDefault");
       $("installBanner").hidden = false;
     }else if(isIos()){
       $("installBtn").hidden = true;
-      $("installSubtext").textContent = "من Safari: اضغط زر المشاركة ⬆️ ثم \"إضافة إلى الشاشة الرئيسية\"";
+      $("installSubtext").textContent = t("installSubtextIos");
       $("installBanner").hidden = false;
     }
   }
@@ -2066,8 +2084,11 @@
   }
 
   /* ---------------- بدء التشغيل ---------------- */
+  applyTheme();
+  applyTranslations();
   if(userUsdRate !== null) $("userUsdRate").value = userUsdRate.toFixed(2);
   updateFavCount();
+  trackEvent("app_opened", { app: "saarli" });
   fetchExchangeRate();
 })();
 </script>
