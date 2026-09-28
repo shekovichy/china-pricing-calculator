@@ -1,7 +1,7 @@
 {
-  "name": "Sa3arli — China Purchase Price Calculator",
-  "short_name": "Sa3arli",
-  "description": "Calculate any product's price in EGP before you buy it from China — product, shipping, and customs.",
+  "name": "Ship To Sell — Landed Cost Calculator",
+  "short_name": "Ship To Sell",
+  "description": "Calculate your landed cost from China — product price, shipping, customs, and margin — in the currency of your choice.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

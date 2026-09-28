@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Sa3arli — China Purchase Price Calculator</title>
-<meta name="description" content="Calculate any product's price in EGP before you buy it from China — product, shipping, and customs.">
+<title>Ship To Sell — Landed Cost Calculator</title>
+<meta name="description" content="Calculate your landed cost from China — product price, shipping, customs, and margin — in the currency of your choice.">
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#e08d2c">
@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Sa3arli">
+<meta name="apple-mobile-web-app-title" content="Ship To Sell">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -683,8 +683,8 @@
   <div class="brand">
     <img src="icons/icon-192.png" alt="" class="brand-icon">
     <div class="brand-text">
-      <h1>Sa3arli</h1>
-      <p data-i18n="brandSubtitle">China purchase price calculator</p>
+      <h1>Ship To Sell</h1>
+      <p data-i18n="brandSubtitle">Landed Cost Calculator</p>
     </div>
   </div>
   <div class="tabs">
@@ -695,7 +695,7 @@
 
 <div class="install-banner" id="installBanner" hidden>
   <div class="install-text">
-    <strong data-i18n="installTitle">Install Sa3arli on your device 📲</strong>
+    <strong data-i18n="installTitle">Install Ship To Sell on your device 📲</strong>
     <span id="installSubtext" data-i18n="installSubtextDefault">Works like a real app, opens without a browser</span>
   </div>
   <div class="install-actions">
@@ -780,7 +780,7 @@
   <!-- Ad banner -->
   <div class="ad-banner" id="adBanner" data-i18n="adBannerText">Ad space</div>
 
-  <footer class="app-footer" data-i18n="footerText">Sa3arli — a free tool for Egyptian traders — figures are estimates and editable</footer>
+  <footer class="app-footer" data-i18n="footerText">Ship To Sell — a free tool for Egyptian traders — figures are estimates and editable</footer>
 </div>
 
 <div class="modal-overlay" id="referralModal" hidden>
@@ -816,12 +816,12 @@
      ============================================================ */
   const TRANSLATIONS = {
     en: {
-      pageTitle: "Sa3arli — China Purchase Price Calculator",
-      pageDescription: "Calculate any product's price in EGP before you buy it from China — product, shipping, and customs.",
-      brandSubtitle: "China purchase price calculator",
+      pageTitle: "Ship To Sell — Landed Cost Calculator",
+      pageDescription: "Calculate your landed cost from China — product price, shipping, customs, and margin — in the currency of your choice.",
+      brandSubtitle: "Landed Cost Calculator",
       tabHome: "🧮 Quick Price",
       tabFav: "⭐ Favorites",
-      installTitle: "Install Sa3arli on your device 📲",
+      installTitle: "Install Ship To Sell on your device 📲",
       installSubtextDefault: "Works like a real app, opens without a browser",
       installSubtextIos: "From Safari: tap Share ⬆️ then \"Add to Home Screen\"",
       installBtn: "Install",
@@ -935,19 +935,19 @@
       toastFillCity: "Please enter your city",
       toastRequestReceived: "Your request has been received! We'll contact you soon",
       adBannerText: "Ad space",
-      footerText: "Sa3arli — a free tool for Egyptian traders — figures are estimates and editable",
+      footerText: "Ship To Sell — a free tool for Egyptian traders — figures are estimates and editable",
       toastNeedPrice: "Enter a price first",
       toastSavedFav: "Saved to favorites ✅",
-      shareCalculatedBy: "Calculated by Sa3arli 🧮",
+      shareCalculatedBy: "Calculated by Ship To Sell 🧮",
       shareProductFallback: "Product"
     },
     ar: {
-      pageTitle: "سعّرلي — حاسبة أسعار الشراء من الصين",
-      pageDescription: "احسب سعر أي منتج بالجنيه المصري قبل ما تشتريه من الصين — المنتج، الشحن، والجمارك.",
-      brandSubtitle: "حاسبة أسعار الشراء من الصين",
+      pageTitle: "Ship To Sell — حاسبة التكلفة الإجمالية",
+      pageDescription: "احسب التكلفة النهائية لمنتجك من الصين — سعر المنتج، الشحن، الجمارك، وهامش الربح — بالعملة اللي تختارها.",
+      brandSubtitle: "حاسبة التكلفة الإجمالية",
       tabHome: "🧮 السعر السريع",
       tabFav: "⭐ المفضلة",
-      installTitle: "ثبّت سعّرلي على جهازك 📲",
+      installTitle: "ثبّت Ship To Sell على جهازك 📲",
       installSubtextDefault: "هيبقى زي أي تطبيق، تفتحه من غير متصفح",
       installSubtextIos: "من Safari: اضغط زر المشاركة ⬆️ ثم \"إضافة إلى الشاشة الرئيسية\"",
       installBtn: "تثبيت",
@@ -1061,19 +1061,19 @@
       toastFillCity: "من فضلك أدخل المدينة",
       toastRequestReceived: "تم استلام طلبك! هنتواصل معك قريباً",
       adBannerText: "مساحة إعلانية",
-      footerText: "سعّرلي — أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل",
+      footerText: "Ship To Sell — أداة مجانية للتجار المصريين — الأرقام تقديرية وقابلة للتعديل",
       toastNeedPrice: "محتاج تحط سعر أولاً",
       toastSavedFav: "تم الحفظ في المفضلة ✅",
-      shareCalculatedBy: "حُسب بواسطة سعّرلي 🧮",
+      shareCalculatedBy: "حُسب بواسطة Ship To Sell 🧮",
       shareProductFallback: "منتج"
     },
     zh: {
-      pageTitle: "Sa3arli — 中国采购报价计算器",
-      pageDescription: "在从中国购买之前，用埃及镑计算任何产品的价格 — 产品、运费和关税。",
-      brandSubtitle: "中国采购报价计算器",
+      pageTitle: "Ship To Sell — 到岸成本计算器",
+      pageDescription: "计算您从中国进口商品的到岸成本 — 产品价格、运费、关税和利润率 — 使用您选择的货币。",
+      brandSubtitle: "到岸成本计算器",
       tabHome: "🧮 快速报价",
       tabFav: "⭐ 收藏",
-      installTitle: "将 Sa3arli 安装到您的设备 📲",
+      installTitle: "将 Ship To Sell 安装到您的设备 📲",
       installSubtextDefault: "像真正的应用一样，无需浏览器即可打开",
       installSubtextIos: "在 Safari 中：点击分享 ⬆️ 然后选择“添加到主屏幕”",
       installBtn: "安装",
@@ -1187,10 +1187,10 @@
       toastFillCity: "请输入城市",
       toastRequestReceived: "已收到您的申请！我们会尽快与您联系",
       adBannerText: "广告位",
-      footerText: "Sa3arli — 面向埃及贸易商的免费工具 — 数据为估算值，可自行编辑",
+      footerText: "Ship To Sell — 面向埃及贸易商的免费工具 — 数据为估算值，可自行编辑",
       toastNeedPrice: "请先输入价格",
       toastSavedFav: "已保存到收藏 ✅",
-      shareCalculatedBy: "由 Sa3arli 计算 🧮",
+      shareCalculatedBy: "由 Ship To Sell 计算 🧮",
       shareProductFallback: "产品"
     }
   };
