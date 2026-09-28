@@ -402,6 +402,13 @@
     font-variant-numeric:tabular-nums;
   }
   .hero-result small{font-size:1.1rem;font-weight:400;color:var(--muted);font-family:var(--font-body);}
+  .currency-select{
+    font-size:1.1rem;font-weight:700;font-family:var(--font-display);
+    color:var(--secondary);background:var(--primary-light);
+    border:none;border-radius:8px;padding:3px 6px;cursor:pointer;vertical-align:middle;
+  }
+  .rate-currency-note{font-size:.78rem;color:var(--muted);margin-top:10px;}
+  .rate-currency-note[hidden]{display:none;}
   .fav-btn{
     margin-top:18px;
     width:100%;
@@ -703,13 +710,14 @@
   <section id="view-home">
     <div class="card">
       <div class="rate-line">
-        <span><span data-i18n="rateLabelPrefix">Global rate: 1 USD =</span> <b id="liveUsdRate">—</b> <span data-i18n="rateLabelSuffix">EGP</span></span>
+        <span><span data-i18n="rateLabelPrefix">Global rate: 1 USD =</span> <b id="liveUsdRate">—</b> <b id="rateCurrencyCode">EGP</b></span>
         <span class="status" id="rateStatus" data-i18n="rateStatusUpdating">Updating...</span>
       </div>
       <div class="field" id="userUsdRateField" style="margin-bottom:0;">
         <label for="userUsdRate" data-i18n="userUsdRateLabel">The USD rate you're buying (or bought) at from Egypt</label>
         <input type="number" id="userUsdRate" min="0" step="0.01" placeholder="0">
       </div>
+      <div class="rate-currency-note" id="nonEgpRateNote" hidden></div>
       <div class="live-box" id="derivedRateBox"></div>
     </div>
 
@@ -718,7 +726,7 @@
       <input type="number" id="quickPriceCny" class="hero-input" min="0" step="0.01" placeholder="0" inputmode="decimal">
 
       <div class="price-chain">
-        <div class="chain-row"><span data-i18n="chainBaseLabel">Price in EGP</span><b id="chainBase">0</b></div>
+        <div class="chain-row"><span id="chainBaseLabelText">Price in EGP</span><b id="chainBase">0</b></div>
         <div class="chain-field">
           <label for="markup1Percent" data-i18n="markup1Label">First markup (%)</label>
           <input type="number" id="markup1Percent" value="60" min="0" step="1">
@@ -735,7 +743,7 @@
         </div>
       </div>
 
-      <div class="hero-result"><span id="quickResultEgp">0</span> <small data-i18n="resultCurrency">EGP</small></div>
+      <div class="hero-result"><span id="quickResultEgp">0</span> <select id="currencySelect" class="currency-select" aria-label="Currency"></select></div>
       <div class="hero-sub" id="quickResultSub"></div>
       <button id="quickFavBtn" class="fav-btn" disabled><span data-i18n="quickFavBtn">⭐ Save to favorites</span></button>
     </div>
@@ -819,22 +827,29 @@
       installBtn: "Install",
       installDismissAria: "Close",
       rateLabelPrefix: "Global rate: 1 USD =",
-      rateLabelSuffix: "EGP",
       rateStatusUpdating: "Updating...",
       rateStatusLive: "Updated now",
       rateStatusFallback: "Fallback value",
       userUsdRateLabel: "The USD rate you're buying (or bought) at from Egypt",
-      derivedRateLine1: "1 Chinese yuan ≈ <b>{usd}</b> USD ≈ <b>{egp}</b> EGP",
+      usingLiveRateNote: "Showing the live market rate for {cur}. The custom-rate override above is only available when EGP is selected.",
+      rateUnavailable: "The rate for {cur} isn't available right now — try again later or pick another currency.",
+      derivedRateLine1: "1 Chinese yuan ≈ <b>{usd}</b> USD ≈ <b>{amt}</b> {cur}",
       derivedRateLine2: "(Calculated using the rate you entered above, not the global rate, since you pay in China with USD you bought using EGP)",
-      favRateNote: "Based on your current rate: 1 yuan ≈ {rate} EGP",
+      favRateNote: "Based on your current rate: 1 yuan ≈ {rate} {cur}",
       quickPriceLabel: "Product price (yuan)",
-      chainBaseLabel: "Price in EGP",
+      chainBaseLabel: "Price in {cur}",
       markup1Label: "First markup (%)",
       chainAfterMarkup1Label: "After markup",
       markup2Label: "Additional markup (%)",
       chainAfterMarkup2Label: "After addition",
       marginLabel: "Profit margin (%)",
-      resultCurrency: "EGP",
+      curGroupPopular: "Popular",
+      curGroupGulf: "Middle East & Gulf",
+      curGroupAfrica: "Africa",
+      curGroupAsia: "Asia",
+      curGroupEurope: "Europe",
+      curGroupAmericas: "Americas",
+      curGroupOceania: "Oceania",
       quickResultSub: "≈ {cny} yuan · {usd} $",
       quickFavBtn: "⭐ Save to favorites",
       saveFormTitle: "Save product info (optional)",
@@ -924,8 +939,7 @@
       toastNeedPrice: "Enter a price first",
       toastSavedFav: "Saved to favorites ✅",
       shareCalculatedBy: "Calculated by Sa3arli 🧮",
-      shareProductFallback: "Product",
-      egp: "EGP"
+      shareProductFallback: "Product"
     },
     ar: {
       pageTitle: "سعّرلي — حاسبة أسعار الشراء من الصين",
@@ -939,22 +953,29 @@
       installBtn: "تثبيت",
       installDismissAria: "إغلاق",
       rateLabelPrefix: "السعر العالمي: 1 دولار =",
-      rateLabelSuffix: "جنيه",
       rateStatusUpdating: "جارِ التحديث...",
       rateStatusLive: "محدّث الآن",
       rateStatusFallback: "قيمة احتياطية",
       userUsdRateLabel: "سعر الدولار اللي هتشتريه (أو اشتريته) بيه من مصر",
-      derivedRateLine1: "1 يوان صيني ≈ <b>{usd}</b> دولار ≈ <b>{egp}</b> جنيه",
+      usingLiveRateNote: "بيتعرض سعر السوق الحي لعملة {cur}. تعديل السعر اليدوي فوق متاح بس لما تختار الجنيه المصري.",
+      rateUnavailable: "سعر {cur} مش متاح دلوقتي — حاول تاني بعدين أو اختار عملة تانية.",
+      derivedRateLine1: "1 يوان صيني ≈ <b>{usd}</b> دولار ≈ <b>{amt}</b> {cur}",
       derivedRateLine2: "(الحساب بيعدّي على الدولار بالسعر اللي إنت حاطّه فوق، مش السعر العالمي، لأنك بتدفع في الصين بدولار اشتريته إنت بالجنيه)",
-      favRateNote: "بناءً على سعرك الحالي: 1 يوان ≈ {rate} جنيه",
+      favRateNote: "بناءً على سعرك الحالي: 1 يوان ≈ {rate} {cur}",
       quickPriceLabel: "سعر المنتج (يوان)",
-      chainBaseLabel: "السعر بالجنيه",
+      chainBaseLabel: "السعر بعملة {cur}",
       markup1Label: "نسبة الزيادة الأولى (%)",
       chainAfterMarkup1Label: "بعد الزيادة",
       markup2Label: "نسبة إضافية (%)",
       chainAfterMarkup2Label: "بعد الإضافة",
       marginLabel: "هامش الربح (%)",
-      resultCurrency: "جنيه",
+      curGroupPopular: "الأكثر استخدامًا",
+      curGroupGulf: "الشرق الأوسط والخليج",
+      curGroupAfrica: "أفريقيا",
+      curGroupAsia: "آسيا",
+      curGroupEurope: "أوروبا",
+      curGroupAmericas: "الأمريكتين",
+      curGroupOceania: "أوقيانوسيا",
       quickResultSub: "≈ {cny} يوان · {usd} $",
       quickFavBtn: "⭐ حفظ في المفضلة",
       saveFormTitle: "حفظ بيانات المنتج (اختياري)",
@@ -1044,8 +1065,7 @@
       toastNeedPrice: "محتاج تحط سعر أولاً",
       toastSavedFav: "تم الحفظ في المفضلة ✅",
       shareCalculatedBy: "حُسب بواسطة سعّرلي 🧮",
-      shareProductFallback: "منتج",
-      egp: "جنيه"
+      shareProductFallback: "منتج"
     },
     zh: {
       pageTitle: "Sa3arli — 中国采购报价计算器",
@@ -1059,22 +1079,29 @@
       installBtn: "安装",
       installDismissAria: "关闭",
       rateLabelPrefix: "全球汇率：1 美元 =",
-      rateLabelSuffix: "埃镑",
       rateStatusUpdating: "更新中...",
       rateStatusLive: "刚刚更新",
       rateStatusFallback: "备用数值",
       userUsdRateLabel: "您在埃及购买（或已购买）美元的汇率",
-      derivedRateLine1: "1 人民币 ≈ <b>{usd}</b> 美元 ≈ <b>{egp}</b> 埃镑",
+      usingLiveRateNote: "当前显示 {cur} 的实时市场汇率。上方的自定义汇率仅在选择埃镑 (EGP) 时可用。",
+      rateUnavailable: "暂时无法获取 {cur} 的汇率 — 请稍后重试或选择其他货币。",
+      derivedRateLine1: "1 人民币 ≈ <b>{usd}</b> 美元 ≈ <b>{amt}</b> {cur}",
       derivedRateLine2: "（按您上面填写的汇率计算，而非全球汇率，因为您在中国用的是以埃镑购买的美元付款）",
-      favRateNote: "按您当前的汇率：1 人民币 ≈ {rate} 埃镑",
+      favRateNote: "按您当前的汇率：1 人民币 ≈ {rate} {cur}",
       quickPriceLabel: "产品价格（人民币）",
-      chainBaseLabel: "埃镑价格",
+      chainBaseLabel: "{cur} 价格",
       markup1Label: "第一次加价 (%)",
       chainAfterMarkup1Label: "加价后",
       markup2Label: "额外加价 (%)",
       chainAfterMarkup2Label: "加成后",
       marginLabel: "利润率 (%)",
-      resultCurrency: "埃镑",
+      curGroupPopular: "常用",
+      curGroupGulf: "中东与海湾地区",
+      curGroupAfrica: "非洲",
+      curGroupAsia: "亚洲",
+      curGroupEurope: "欧洲",
+      curGroupAmericas: "美洲",
+      curGroupOceania: "大洋洲",
       quickResultSub: "≈ {cny} 元 · {usd} 美元",
       quickFavBtn: "⭐ 保存到收藏",
       saveFormTitle: "保存产品信息（可选）",
@@ -1164,8 +1191,7 @@
       toastNeedPrice: "请先输入价格",
       toastSavedFav: "已保存到收藏 ✅",
       shareCalculatedBy: "由 Sa3arli 计算 🧮",
-      shareProductFallback: "产品",
-      egp: "埃镑"
+      shareProductFallback: "产品"
     }
   };
 
@@ -1197,11 +1223,69 @@
     ]
   };
 
+  // عملة الإخراج — قايمة كبيرة يختار منها المستخدم بدل ما تكون الجنيه المصري بس.
+  // الكود (3 حروف) + علم الدولة كافيين كتسمية عالمية من غير ما نحتاج نترجم اسم كل عملة لكل لغة.
+  const CURRENCIES = [
+    { code: "EGP", flag: "🇪🇬", group: "curGroupPopular" },
+    { code: "USD", flag: "🇺🇸", group: "curGroupPopular" },
+    { code: "EUR", flag: "🇪🇺", group: "curGroupPopular" },
+    { code: "GBP", flag: "🇬🇧", group: "curGroupPopular" },
+    { code: "SAR", flag: "🇸🇦", group: "curGroupPopular" },
+    { code: "AED", flag: "🇦🇪", group: "curGroupPopular" },
+    { code: "KWD", flag: "🇰🇼", group: "curGroupGulf" },
+    { code: "QAR", flag: "🇶🇦", group: "curGroupGulf" },
+    { code: "BHD", flag: "🇧🇭", group: "curGroupGulf" },
+    { code: "OMR", flag: "🇴🇲", group: "curGroupGulf" },
+    { code: "JOD", flag: "🇯🇴", group: "curGroupGulf" },
+    { code: "LBP", flag: "🇱🇧", group: "curGroupGulf" },
+    { code: "ILS", flag: "🇮🇱", group: "curGroupGulf" },
+    { code: "TRY", flag: "🇹🇷", group: "curGroupGulf" },
+    { code: "IQD", flag: "🇮🇶", group: "curGroupGulf" },
+    { code: "MAD", flag: "🇲🇦", group: "curGroupAfrica" },
+    { code: "TND", flag: "🇹🇳", group: "curGroupAfrica" },
+    { code: "DZD", flag: "🇩🇿", group: "curGroupAfrica" },
+    { code: "LYD", flag: "🇱🇾", group: "curGroupAfrica" },
+    { code: "SDG", flag: "🇸🇩", group: "curGroupAfrica" },
+    { code: "NGN", flag: "🇳🇬", group: "curGroupAfrica" },
+    { code: "KES", flag: "🇰🇪", group: "curGroupAfrica" },
+    { code: "ZAR", flag: "🇿🇦", group: "curGroupAfrica" },
+    { code: "INR", flag: "🇮🇳", group: "curGroupAsia" },
+    { code: "PKR", flag: "🇵🇰", group: "curGroupAsia" },
+    { code: "IDR", flag: "🇮🇩", group: "curGroupAsia" },
+    { code: "MYR", flag: "🇲🇾", group: "curGroupAsia" },
+    { code: "PHP", flag: "🇵🇭", group: "curGroupAsia" },
+    { code: "THB", flag: "🇹🇭", group: "curGroupAsia" },
+    { code: "VND", flag: "🇻🇳", group: "curGroupAsia" },
+    { code: "KRW", flag: "🇰🇷", group: "curGroupAsia" },
+    { code: "HKD", flag: "🇭🇰", group: "curGroupAsia" },
+    { code: "SGD", flag: "🇸🇬", group: "curGroupAsia" },
+    { code: "JPY", flag: "🇯🇵", group: "curGroupAsia" },
+    { code: "CHF", flag: "🇨🇭", group: "curGroupEurope" },
+    { code: "SEK", flag: "🇸🇪", group: "curGroupEurope" },
+    { code: "NOK", flag: "🇳🇴", group: "curGroupEurope" },
+    { code: "DKK", flag: "🇩🇰", group: "curGroupEurope" },
+    { code: "PLN", flag: "🇵🇱", group: "curGroupEurope" },
+    { code: "RON", flag: "🇷🇴", group: "curGroupEurope" },
+    { code: "CZK", flag: "🇨🇿", group: "curGroupEurope" },
+    { code: "RUB", flag: "🇷🇺", group: "curGroupEurope" },
+    { code: "CAD", flag: "🇨🇦", group: "curGroupAmericas" },
+    { code: "MXN", flag: "🇲🇽", group: "curGroupAmericas" },
+    { code: "BRL", flag: "🇧🇷", group: "curGroupAmericas" },
+    { code: "ARS", flag: "🇦🇷", group: "curGroupAmericas" },
+    { code: "AUD", flag: "🇦🇺", group: "curGroupOceania" },
+    { code: "NZD", flag: "🇳🇿", group: "curGroupOceania" }
+  ];
+  const CURRENCY_GROUP_ORDER = ["curGroupPopular", "curGroupGulf", "curGroupAfrica", "curGroupAsia", "curGroupEurope", "curGroupAmericas", "curGroupOceania"];
+  // عدد الخانات العشرية الصحيح لكل عملة (بعض عملات الخليج بتتعامل بـ 3 خانات، مش 2 زي الافتراضي)
+  const CURRENCY_DECIMALS = { JPY: 0, KRW: 0, VND: 0, CLP: 0, ISK: 0, BHD: 3, KWD: 3, OMR: 3, JOD: 3, IQD: 3, LYD: 3, TND: 3 };
+  function decimalsFor(code){ return CURRENCY_DECIMALS[code] !== undefined ? CURRENCY_DECIMALS[code] : 2; }
+
   const $ = id => document.getElementById(id);
 
-  /* ---------------- لغة الواجهة والسمة اللونية ---------------- */
+  /* ---------------- لغة الواجهة والسمة اللونية وعملة الإخراج ---------------- */
   let currentLang = localStorage.getItem("cpc_lang") || "en";
   let currentTheme = localStorage.getItem("cpc_theme") || "spice";
+  let targetCurrency = localStorage.getItem("cpc_currency") || "EGP";
 
   function t(key){
     const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
@@ -1216,7 +1300,10 @@
   function numberLocale(){
     return currentLang === "ar" ? "ar-EG" : currentLang === "zh" ? "zh-CN" : "en-US";
   }
-  const fmt = n => Math.round(n).toLocaleString(numberLocale());
+  // fmt: بيقرب على عدد الخانات العشرية الصح لعملة الإخراج الحالية (مش صفر دايمًا زي قبل كده،
+  // عشان عملة زي الدينار الكويتي لو قرّبناها لصفر خانة هتبين "0" غلط تمامًا).
+  const fmt = n => n.toLocaleString(numberLocale(), { minimumFractionDigits: decimalsFor(targetCurrency), maximumFractionDigits: decimalsFor(targetCurrency) });
+  const fmt2 = n => n.toLocaleString(numberLocale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   function applyTranslations(){
     document.documentElement.lang = currentLang;
@@ -1230,6 +1317,8 @@
     document.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria"))); });
     if($("langSelect")) $("langSelect").value = currentLang;
     if($("themeSelect")) $("themeSelect").value = currentTheme;
+    populateCurrencySelect();
+    updateCurrencyLabels();
   }
   function setLang(lang){
     currentLang = lang;
@@ -1252,12 +1341,38 @@
   $("langSelect").addEventListener("change", function(){ setLang(this.value); });
   $("themeSelect").addEventListener("change", function(){ setTheme(this.value); });
 
+  /* ---------------- عملة الإخراج ---------------- */
+  function populateCurrencySelect(){
+    const sel = $("currencySelect");
+    if(!sel) return;
+    sel.innerHTML = CURRENCY_GROUP_ORDER.map(groupKey => {
+      const items = CURRENCIES.filter(c => c.group === groupKey);
+      const opts = items.map(c => `<option value="${c.code}">${c.flag} ${c.code}</option>`).join("");
+      return `<optgroup label="${escapeHtml(t(groupKey))}">${opts}</optgroup>`;
+    }).join("");
+    sel.value = targetCurrency;
+  }
+  function updateCurrencyLabels(){
+    if($("rateCurrencyCode")) $("rateCurrencyCode").textContent = targetCurrency;
+    if($("chainBaseLabelText")) $("chainBaseLabelText").textContent = tf("chainBaseLabel", { cur: targetCurrency });
+  }
+  function setCurrency(code){
+    targetCurrency = code;
+    localStorage.setItem("cpc_currency", code);
+    updateCurrencyLabels();
+    updateRateDisplay();
+    updateQuickResult();
+    if(!$("view-favorites").hidden) renderFavorites();
+    trackEvent("currency_changed", { currency: code });
+  }
+  $("currencySelect").addEventListener("change", function(){ setCurrency(this.value); });
+
   // تتبّع أحداث الاستخدام (Google Analytics) — من غير أي بيانات شخصية (اسم/رقم موبايل)
   function trackEvent(name, params){
     try{ if(typeof gtag === "function") gtag("event", name, params || {}); }catch(e){}
   }
 
-  let liveRates = { usdToEgp: null, usdToCny: null, isLive: false };
+  let liveRates = { usdToEgp: null, usdToCny: null, isLive: false, allRates: null };
   let favorites = loadFavorites();
   let shippingSettings = loadShippingSettings();
   let capturedPhotoDataUrl = null;
@@ -1314,10 +1429,12 @@
       if(!usdToEgp || !usdToCny) throw new Error("missing rates");
       liveRates.usdToEgp = usdToEgp;
       liveRates.usdToCny = usdToCny;
+      liveRates.allRates = data.rates;
       liveRates.isLive = true;
     }catch(e){
       liveRates.usdToEgp = DEFAULTS.usdToEgpFallback;
       liveRates.usdToCny = DEFAULTS.usdToEgpFallback / DEFAULTS.cnyToEgpFallback;
+      liveRates.allRates = null;
       liveRates.isLive = false;
     }
     if(userUsdRate === null){
@@ -1331,6 +1448,7 @@
 
   function updateRateDisplay(){
     $("liveUsdRate").textContent = liveRates.usdToEgp.toFixed(2);
+    $("rateCurrencyCode").textContent = targetCurrency;
     const statusEl = $("rateStatus");
     if(liveRates.isLive){
       statusEl.textContent = t("rateStatusLive");
@@ -1339,20 +1457,36 @@
       statusEl.textContent = t("rateStatusFallback");
       statusEl.className = "status fallback";
     }
+
+    const isEgp = targetCurrency === "EGP";
+    $("userUsdRateField").hidden = !isEgp;
+    $("nonEgpRateNote").hidden = isEgp;
+    if(!isEgp) $("nonEgpRateNote").textContent = tf("usingLiveRateNote", { cur: targetCurrency });
+
     const rates = getAdjustedRates();
+    if(!rates.usdToTarget){
+      $("derivedRateBox").innerHTML = tf("rateUnavailable", { cur: targetCurrency });
+      $("favRateNote").textContent = tf("rateUnavailable", { cur: targetCurrency });
+      return;
+    }
     $("derivedRateBox").innerHTML =
-      tf("derivedRateLine1", { usd: rates.cnyToUsd.toFixed(3), egp: rates.cnyToEgp.toFixed(2) }) +
-      "<br>" + t("derivedRateLine2");
-    $("favRateNote").textContent = tf("favRateNote", { rate: rates.cnyToEgp.toFixed(2) });
+      tf("derivedRateLine1", { usd: rates.cnyToUsd.toFixed(3), amt: rates.cnyToTarget.toFixed(decimalsFor(targetCurrency)), cur: targetCurrency }) +
+      (isEgp ? ("<br>" + t("derivedRateLine2")) : "");
+    $("favRateNote").textContent = tf("favRateNote", { rate: rates.cnyToTarget.toFixed(decimalsFor(targetCurrency)), cur: targetCurrency });
   }
 
   function getAdjustedRates(){
     const cnyToUsd = liveRates.usdToCny ? (1 / liveRates.usdToCny) : 0;
-    const effectiveUsdToEgp = userUsdRate || liveRates.usdToEgp || 0;
+    let usdToTarget;
+    if(targetCurrency === "EGP"){
+      usdToTarget = userUsdRate || liveRates.usdToEgp || 0;
+    }else{
+      usdToTarget = (liveRates.allRates && liveRates.allRates[targetCurrency]) || 0;
+    }
     return {
       cnyToUsd,
-      usdToEgp: effectiveUsdToEgp,
-      cnyToEgp: cnyToUsd * effectiveUsdToEgp
+      usdToTarget,
+      cnyToTarget: cnyToUsd * usdToTarget
     };
   }
 
@@ -1361,27 +1495,27 @@
   function computeQuickChain(){
     const rates = getAdjustedRates();
     const priceCny = parseFloat($("quickPriceCny").value) || 0;
-    const baseEgp = priceCny * rates.cnyToEgp;
+    const baseAmt = priceCny * rates.cnyToTarget;
     const m1 = parseFloat($("markup1Percent").value) || 0;
     const m2 = parseFloat($("markup2Percent").value) || 0;
     const mg = parseFloat($("marginPercent").value) || 0;
-    const afterMarkup1 = baseEgp * (1 + m1 / 100);
+    const afterMarkup1 = baseAmt * (1 + m1 / 100);
     const afterMarkup2 = afterMarkup1 * (1 + m2 / 100);
-    const finalEgp = afterMarkup2 * (1 + mg / 100);
-    return { priceCny, rates, baseEgp, m1, m2, mg, afterMarkup1, afterMarkup2, finalEgp };
+    const finalAmt = afterMarkup2 * (1 + mg / 100);
+    return { priceCny, rates, baseAmt, m1, m2, mg, afterMarkup1, afterMarkup2, finalAmt };
   }
 
   function updateQuickResult(){
     if(liveRates.usdToCny === null) return;
     const c = computeQuickChain();
-    $("chainBase").textContent = fmt(c.baseEgp);
+    $("chainBase").textContent = fmt(c.baseAmt);
     $("chainAfterMarkup1").textContent = fmt(c.afterMarkup1);
     $("chainAfterMarkup2").textContent = fmt(c.afterMarkup2);
-    $("quickResultEgp").textContent = fmt(c.finalEgp);
-    if(c.priceCny > 0){
-      const finalUsd = c.rates.usdToEgp ? c.finalEgp / c.rates.usdToEgp : 0;
-      const finalCny = c.rates.cnyToEgp ? c.finalEgp / c.rates.cnyToEgp : 0;
-      $("quickResultSub").textContent = tf("quickResultSub", { cny: fmt(finalCny), usd: finalUsd.toFixed(2) });
+    $("quickResultEgp").textContent = fmt(c.finalAmt);
+    if(c.priceCny > 0 && c.rates.cnyToTarget){
+      const finalCny = c.finalAmt / c.rates.cnyToTarget;
+      const finalUsd = finalCny * c.rates.cnyToUsd;
+      $("quickResultSub").textContent = tf("quickResultSub", { cny: fmt2(finalCny), usd: finalUsd.toFixed(2) });
     }else{
       $("quickResultSub").textContent = "";
     }
@@ -1511,18 +1645,18 @@
     // منتجات اتحفظت قبل إضافة سلسلة "الزيادة/المارجن" (مفيش عندها markup1Percent) بتفضل بسعرها المباشر
     // القديم زي ما اتحفظت بالظبط، مش بتتأثر بالنسب الافتراضية الجديدة.
     const hasMarkupChain = item.markup1Percent !== undefined || item.markup2Percent !== undefined || item.marginPercent !== undefined;
-    let baseEgp;
+    let baseAmt;
     if(hasMarkupChain){
-      const perUnitBase = item.priceCny * rates.cnyToEgp;
+      const perUnitBase = item.priceCny * rates.cnyToTarget;
       const perUnitAfterMarkup1 = perUnitBase * (1 + (item.markup1Percent || 0) / 100);
       const perUnitAfterMarkup2 = perUnitAfterMarkup1 * (1 + (item.markup2Percent || 0) / 100);
       const perUnitFinal = perUnitAfterMarkup2 * (1 + (item.marginPercent || 0) / 100);
-      baseEgp = perUnitFinal * qty;
+      baseAmt = perUnitFinal * qty;
     }else{
-      baseEgp = item.priceCny * qty * rates.cnyToEgp;
+      baseAmt = item.priceCny * qty * rates.cnyToTarget;
     }
 
-    let shippingEgp = 0, shippingDetail = null;
+    let shippingAmt = 0, shippingDetail = null;
     const L = item.length, W = item.width, H = item.height, wt = item.weight;
     if(item.shippingEnabled && L > 0 && W > 0 && H > 0 && wt > 0){
       const volumetricWeightPerPiece = (L * W * H) / DEFAULTS.volumetricDivisor;
@@ -1547,9 +1681,9 @@
         containerLabel = `${containersNeeded} × ${t("container40Label")}`;
       }
 
-      const air = airCostUsd * rates.usdToEgp;
-      const lcl = lclCostUsd * rates.usdToEgp;
-      const container = containerCostUsd * rates.usdToEgp;
+      const air = airCostUsd * rates.usdToTarget;
+      const lcl = lclCostUsd * rates.usdToTarget;
+      const container = containerCostUsd * rates.usdToTarget;
       const costs = { air, lcl, container };
       const recommendedKey = Object.keys(costs).reduce((a,b) => costs[a] <= costs[b] ? a : b);
 
@@ -1557,21 +1691,21 @@
         air, lcl, container, containerLabel, recommendedKey,
         volumetricWeightPerPiece, billableWeightPerPiece, totalBillableWeight, totalCbm
       };
-      shippingEgp = costs[recommendedKey];
+      shippingAmt = costs[recommendedKey];
     }
 
-    let customsEgp = 0;
+    let customsAmt = 0;
     if(item.customsEnabled){
-      customsEgp = (baseEgp + shippingEgp) * ((item.customsRate || 0) / 100);
+      customsAmt = (baseAmt + shippingAmt) * ((item.customsRate || 0) / 100);
     }
 
-    let vatEgp = 0;
+    let vatAmt = 0;
     if(item.vatEnabled){
-      vatEgp = (baseEgp + shippingEgp + customsEgp) * ((item.vatRate || 0) / 100);
+      vatAmt = (baseAmt + shippingAmt + customsAmt) * ((item.vatRate || 0) / 100);
     }
 
-    const totalEgp = baseEgp + shippingEgp + customsEgp + vatEgp;
-    return { baseEgp, shippingEgp, customsEgp, vatEgp, totalEgp, shippingDetail, qty };
+    const totalAmt = baseAmt + shippingAmt + customsAmt + vatAmt;
+    return { baseAmt, shippingAmt, customsAmt, vatAmt, totalAmt, shippingDetail, qty };
   }
 
   /* ---------------- رسم قائمة المفضلة ---------------- */
@@ -1606,7 +1740,7 @@
             <div class="fav-name">${escapeHtml(item.name) || escapeHtml(t("favNameFallback"))}</div>
             <div class="fav-sub">${escapeHtml(item.supplier) || ""}</div>
           </div>
-          <div class="fav-price">${fmt(r.totalEgp)} ${t("egp")}</div>
+          <div class="fav-price">${fmt(r.totalAmt)} ${targetCurrency}</div>
           <div class="fav-chevron">˅</div>
         </div>
         <div class="fav-detail" hidden>
@@ -1784,19 +1918,19 @@
             ${d.recommendedKey==='air' ? `<span class="badge">${t("badgeRecommended")}</span>` : ''}
             <div class="name">${t("shipAirName")}</div>
             <div class="desc">${t("shipAirDesc")}</div>
-            <div class="cost">${fmt(d.air)} <small>${t("egp")}</small></div>
+            <div class="cost">${fmt(d.air)} <small>${targetCurrency}</small></div>
           </div>
           <div class="ship-opt ${d.recommendedKey==='lcl'?'recommended':''}">
             ${d.recommendedKey==='lcl' ? `<span class="badge">${t("badgeRecommended")}</span>` : ''}
             <div class="name">${t("shipLclName")}</div>
             <div class="desc">${t("shipLclDesc")}</div>
-            <div class="cost">${fmt(d.lcl)} <small>${t("egp")}</small></div>
+            <div class="cost">${fmt(d.lcl)} <small>${targetCurrency}</small></div>
           </div>
           <div class="ship-opt ${d.recommendedKey==='container'?'recommended':''}">
             ${d.recommendedKey==='container' ? `<span class="badge">${t("badgeRecommended")}</span>` : ''}
             <div class="name">${t("shipContainerName")}</div>
             <div class="desc">${d.containerLabel}</div>
-            <div class="cost">${fmt(d.container)} <small>${t("egp")}</small></div>
+            <div class="cost">${fmt(d.container)} <small>${targetCurrency}</small></div>
           </div>
         `;
       }else{
@@ -1810,17 +1944,17 @@
     if(resultBox){
       const margins = item.margins && item.margins.length ? item.margins : DEFAULTS.profitMargins;
       resultBox.innerHTML = `
-        <div class="invoice-row"><span>${t("resultProductCost")}</span><span>${fmt(r.baseEgp)} ${t("egp")}</span></div>
-        ${item.shippingEnabled ? `<div class="invoice-row"><span>${t("resultShipping")}</span><span>${fmt(r.shippingEgp)} ${t("egp")}</span></div>` : ``}
-        ${item.customsEnabled ? `<div class="invoice-row"><span>${t("resultCustoms")}</span><span>${fmt(r.customsEgp)} ${t("egp")}</span></div>` : ``}
-        ${item.vatEnabled ? `<div class="invoice-row"><span>${t("resultVat")}</span><span>${fmt(r.vatEgp)} ${t("egp")}</span></div>` : ``}
-        <div class="invoice-row total"><span>${t("resultTotal")}</span><span>${fmt(r.totalEgp)} ${t("egp")}</span></div>
+        <div class="invoice-row"><span>${t("resultProductCost")}</span><span>${fmt(r.baseAmt)} ${targetCurrency}</span></div>
+        ${item.shippingEnabled ? `<div class="invoice-row"><span>${t("resultShipping")}</span><span>${fmt(r.shippingAmt)} ${targetCurrency}</span></div>` : ``}
+        ${item.customsEnabled ? `<div class="invoice-row"><span>${t("resultCustoms")}</span><span>${fmt(r.customsAmt)} ${targetCurrency}</span></div>` : ``}
+        ${item.vatEnabled ? `<div class="invoice-row"><span>${t("resultVat")}</span><span>${fmt(r.vatAmt)} ${targetCurrency}</span></div>` : ``}
+        <div class="invoice-row total"><span>${t("resultTotal")}</span><span>${fmt(r.totalAmt)} ${targetCurrency}</span></div>
         <button type="button" class="share-btn" data-share="${id}">${t("shareBtn")}</button>
         <table class="margin-table">
           <thead><tr><th>${t("marginTableHeadMargin")}</th><th>${t("marginTableHeadTotal")}</th><th>${t("marginTableHeadPerPiece")}</th></tr></thead>
           <tbody>
             ${margins.map((m, idx) => {
-              const sellTotal = r.totalEgp * (1 + m/100);
+              const sellTotal = r.totalAmt * (1 + m/100);
               const perPiece = r.qty > 0 ? sellTotal / r.qty : 0;
               return `<tr>
                 <td><input type="number" min="0" step="1" data-margin-idx="${idx}" data-id="${id}" value="${m}"> %</td>
@@ -1837,7 +1971,7 @@
     const card = document.querySelector(`.fav-card[data-id="${id}"]`);
     if(card){
       const priceEl = card.querySelector(".fav-price");
-      if(priceEl) priceEl.textContent = `${fmt(r.totalEgp)} ${t("egp")}`;
+      if(priceEl) priceEl.textContent = `${fmt(r.totalAmt)} ${targetCurrency}`;
     }
   }
 
@@ -1975,15 +2109,15 @@
     const item = favorites.find(f => f.id === itemId);
     if(!item) return;
     const r = computeItemResult(item);
-    const egp = t("egp");
+    const egp = targetCurrency;
     const lines = [
       `📦 ${item.name || t("shareProductFallback")}`,
-      `${t("resultProductCost")}: ${fmt(r.baseEgp)} ${egp}`
+      `${t("resultProductCost")}: ${fmt(r.baseAmt)} ${egp}`
     ];
-    if(item.shippingEnabled) lines.push(`${t("resultShipping")}: ${fmt(r.shippingEgp)} ${egp}`);
-    if(item.customsEnabled) lines.push(`${t("resultCustoms")}: ${fmt(r.customsEgp)} ${egp}`);
-    if(item.vatEnabled) lines.push(`${t("resultVat")}: ${fmt(r.vatEgp)} ${egp}`);
-    lines.push(`${t("resultTotal")}: ${fmt(r.totalEgp)} ${egp}`);
+    if(item.shippingEnabled) lines.push(`${t("resultShipping")}: ${fmt(r.shippingAmt)} ${egp}`);
+    if(item.customsEnabled) lines.push(`${t("resultCustoms")}: ${fmt(r.customsAmt)} ${egp}`);
+    if(item.vatEnabled) lines.push(`${t("resultVat")}: ${fmt(r.vatAmt)} ${egp}`);
+    lines.push(`${t("resultTotal")}: ${fmt(r.totalAmt)} ${egp}`);
     lines.push("", t("shareCalculatedBy"));
     const text = lines.join("\n");
 
